@@ -1,0 +1,114 @@
+.color1{
+	color: #183641;
+}
+
+.color2{
+	color: #20566e;
+}
+
+.color3{
+	color: #4699b7;
+}
+
+.color4{
+	color: #6db3bf;
+}
+
+.color5{
+	color: #94cfc9;
+}
+
+.color6{
+	color: #cee9f4;
+}
+body{
+	/*font-family: "Times New Roman", Times, serif;*/
+	font-family: Helvetica;
+}
+input[type="submit"]{
+	border:none;
+}
+html, body, h3{
+				margin: 0px;
+				padding: 0px;
+
+			}
+			body{
+				background-color: rgba(236, 236, 236, 1);
+			}
+			.header{
+				width: 100%;
+				height: 80px;
+				background-color: #183641;
+			}
+			.header-cont, .mid-cont{
+				width: 100%;
+				height: 100%;
+				max-width: 1200px;
+				margin-left: auto; 
+				margin-right: auto;
+			}
+
+			.mid{
+				background-color: rgba(236, 236, 236, 1);
+				-webkit-box-shadow: inset 0px 3px 3px 0px rgba(0,0,0,0.3);
+				-moz-box-shadow: inset 0px 3px 3px 0px rgba(0,0,0,0.3);
+				box-shadow: inset 0px 3px 3px 0px rgba(0,0,0,0.3);
+				padding-top: 30px;
+			}
+			.ini-ses{
+				margin-left: auto;
+				margin-right: auto;
+				width: 70%;
+				background-color: #ffffff;
+				padding: 20px;
+				-webkit-border-radius: 10px;
+				-moz-border-radius: 10px;
+				border-radius: 10px;
+				-webkit-box-shadow: 0px 3px 3px 0px rgba(0,0,0,0.3);
+				-moz-box-shadow: 0px 3px 3px 0px rgba(0,0,0,0.3);
+				box-shadow: 0px 3px 3px 0px rgba(0,0,0,0.3);
+			}
+			.ini-ses h3{
+				margin-bottom: 20px;
+				text-align: center;
+			}
+			.cont-boton{
+				margin-left: auto;
+				margin-right: auto;
+			}
+			.boton-general{
+				background-color: #20566e;
+				color: #FFFFFF;
+				padding: 10px 30px;
+				display:inline-block;
+				text-decoration: none;
+				-webkit-border-radius: 5px;
+				-moz-border-radius: 5px;
+				border-radius: 5px;
+			}
+			.boton-general:hover{
+				background-color: #4699b7;
+				text-decoration: underline;
+			}
+			.user-header-cont{
+				float: left;
+				margin-top: 12px;
+			}
+			.user-header-cont img {
+				float: left;
+				width: 40px;
+				height: auto;
+				margin-top: 10px;
+				margin-right: 15px;
+				-webkit-box-shadow: 0px 3px 3px 0px rgba(0,0,0,0.3);
+				-moz-box-shadow: 0px 3px 3px 0px rgba(0,0,0,0.3);
+				box-shadow: 0px 3px 3px 0px rgba(0,0,0,0.3); 
+				-webkit-border-radius: 50%;
+				-moz-border-radius: 50%;
+				border-radius: 50%;
+			}
+			.user-header-cont h4{
+				float: left;
+				color: #94cfc9;
+			}

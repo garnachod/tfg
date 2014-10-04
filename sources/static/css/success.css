@@ -1,0 +1,20 @@
+.success-cont{
+	margin-left: auto;
+	margin-right: auto;
+	width: 100%;
+	background-color: #ffffff;
+	padding: 60px 20px;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	-webkit-box-shadow: 0px 3px 3px 0px rgba(0,0,0,0.3);
+	-moz-box-shadow: 0px 3px 3px 0px rgba(0,0,0,0.3);
+	box-shadow: 0px 3px 3px 0px rgba(0,0,0,0.3); 
+	text-align: center;
+}
+.success-cont h3{
+	color: #183641;
+}
+.success-cont p{
+	color: #20566e;
+}

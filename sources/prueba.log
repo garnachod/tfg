@@ -1,0 +1,70 @@
+Abriendo stream. Track=%s; follows=%s; locations=%s
+2014:06:25-18:20:54--Abriendo stream. Track=%s; follows=%s; locations=%s
+2014:06:25-19:21:20--Abriendo stream. Track=; follows=; locations=-9,36,4,43.5
+2014:06:25-22:34:13--Abriendo stream. Track=; follows=; locations=-9,36,4,43.5
+2014:06:25-23:02:44--Abriendo stream. Track=; follows=; locations=-9,36,4,43.5
+2014:06:25-23:04:00--Abriendo stream. Track=; follows=; locations=-9,36,4,43.5
+2014:07:05-00:17:21--Buscando tweets con lista de keywords: ['hableconellas13', 'Venezuela']
+2014:07:05-00:18:36--Buscando tweets con lista de keywords: ['hableconellas13', 'Venezuela']
+2014:07:05-00:19:15--Buscando tweets con lista de keywords: ['hableconellas13', 'Venezuela']
+2014:07:05-00:26:11--TwythonError error(HTTPSConnectionPool(host='api.twitter.com', port=443): Max retries exceeded with url: /1.1/search/tweets.json?q=hableconellas13+OR+Venezuela&count=100&max_id=485142118282047487&since_id=0 (Caused by <class 'httplib.BadStatusLine'>: '')): (u"HTTPSConnectionPool(host='api.twitter.com', port=443): Max retries exceeded with url: /1.1/search/tweets.json?q=hableconellas13+OR+Venezuela&count=100&max_id=485142118282047487&since_id=0 (Caused by <class 'httplib.BadStatusLine'>: '')",)
+2014:07:05-16:30:23--Buscando tweets con lista de keywords: ['hableconellas13', 'Venezuela']
+2014:07:05-16:30:43--Buscando tweets con lista de keywords: ['hableconellas13', 'Venezuela']
+2014:07:05-16:31:10--Buscando tweets con lista de keywords: ['hableconellas13']
+2014:07:05-16:33:13--Total tweets con lista de keywords []: 7689
+2014:07:17-23:03:47--Buscando tweets con lista de keywords: ['UIP']
+2014:07:17-23:04:21--Total tweets con lista de keywords []: 2157
+2014:07:17-23:26:02--Buscando tweets con lista de keywords: ['UIP']
+2014:07:17-23:26:04--Total tweets con lista de keywords []: 11
+2014:07:17-23:32:03--Buscando tweets con lista de keywords: ['#PoliciasEnAccion']
+2014:07:17-23:37:43--TwythonError error(Twitter API returned a 503 (Service Unavailable), Over capacity): (u'Twitter API returned a 503 (Service Unavailable), Over capacity',)
+2014:07:17-23:47:16--Buscando tweets con lista de keywords: ['#PoliciasEnAccion']
+2014:07:17-23:54:19--Total tweets con lista de keywords []: 12123
+2014:07:18-00:06:12--Buscando tweets con lista de keywords: ['#PoliciasEnAccion']
+2014:07:18-00:06:18--Total tweets con lista de keywords []: 256
+2014:07:18-00:07:06--Buscando tweets con lista de keywords: ['#PoliciasEnAccion']
+2014:07:18-00:07:08--Total tweets con lista de keywords []: 14
+2014:07:18-00:15:36--Buscando tweets con lista de keywords: ['#PoliciasEnAccion']
+2014:07:18-00:15:40--Total tweets con lista de keywords []: 106
+2014:07:18-00:18:27--Buscando tweets con lista de keywords: ['#PoliciasEnAccion']
+2014:07:18-00:18:29--Total tweets con lista de keywords []: 37
+2014:07:18-00:20:41--Buscando tweets con lista de keywords: ['#PoliciasEnAccion']
+2014:07:18-00:20:43--Total tweets con lista de keywords []: 13
+2014:07:18-01:21:54--Buscando tweets con lista de keywords: ['#PoliciasEnAccion']
+2014:07:18-01:22:01--Total tweets con lista de keywords []: 254
+2014:07:18-16:59:12--Buscando tweets con lista de keywords: ['#PoliciasEnAccion']
+2014:07:18-16:59:15--Total tweets con lista de keywords []: 153
+2014:07:18-17:01:00--Buscando tweets con lista de keywords: ['#PoliciasEnAccion']
+2014:07:18-17:01:00--Total tweets con lista de keywords []: 0
+2014:07:18-17:01:05--Buscando tweets con lista de keywords: ['#PoliciasEnAccion']
+2014:07:18-17:01:06--Total tweets con lista de keywords []: 0
+2014:07:19-07:52:42--Buscando tweets con lista de keywords: ['#PoliciasEnAccion']
+2014:07:19-07:52:44--Total tweets con lista de keywords []: 44
+2014:07:22-01:38:31--Buscando tweets con lista de keywords: ['#PoliciasEnAccion']
+2014:07:22-01:38:38--Total tweets con lista de keywords []: 184
+2014:07:23-00:22:15--Buscando tweets con lista de keywords: ['#19J']
+2014:07:23-00:24:34--TwythonError error(HTTPSConnectionPool(host='api.twitter.com', port=443): Max retries exceeded with url: /1.1/search/tweets.json?q=%2319J&count=100&max_id=490593937359257599&since_id=0 (Caused by <class 'httplib.BadStatusLine'>: '')): (u"HTTPSConnectionPool(host='api.twitter.com', port=443): Max retries exceeded with url: /1.1/search/tweets.json?q=%2319J&count=100&max_id=490593937359257599&since_id=0 (Caused by <class 'httplib.BadStatusLine'>: '')",)
+2014:07:23-00:27:31--Buscando tweets con lista de keywords: ['#19J']
+2014:07:23-00:36:57--Buscando tweets con lista de keywords: ['#19J']
+2014:07:23-00:41:24--Total tweets con lista de keywords []: 14306
+2014:07:23-19:03:32--Buscando tweets con lista de keywords: ['#19J']
+2014:07:23-19:03:34--Total tweets con lista de keywords []: 15
+2014:07:23-19:05:01--Buscando tweets con lista de keywords: ['#19J']
+2014:07:23-19:05:02--Total tweets con lista de keywords []: 0
+2014:07:23-19:07:26--Buscando tweets con lista de keywords: ['#19J']
+2014:07:23-19:07:27--Total tweets con lista de keywords []: 0
+2014:07:23-19:07:52--Buscando tweets con lista de keywords: ['#19J']
+2014:07:23-19:07:53--TwythonError error(Twitter API returned a 401 (Unauthorized), Could not authenticate you): (u'Twitter API returned a 401 (Unauthorized), Could not authenticate you',)
+2014:07:23-20:25:04--Buscando tweets con lista de keywords: ['#19J']
+2014:07:23-20:25:05--TwythonError error(Twitter API returned a 401 (Unauthorized), Could not authenticate you): (u'Twitter API returned a 401 (Unauthorized), Could not authenticate you',)
+2014:07:23-20:25:50--Buscando tweets con lista de keywords: ['#19J']
+2014:07:23-20:25:51--TwythonError error(Twitter API returned a 401 (Unauthorized), Could not authenticate you): (u'Twitter API returned a 401 (Unauthorized), Could not authenticate you',)
+2014:07:23-20:42:49--Buscando tweets con lista de keywords: ['#19J']
+2014:07:23-20:42:51--Total tweets con lista de keywords []: 2
+2014:07:25-20:36:32--Buscando tweets con lista de keywords: ['#19J']
+2014:07:25-20:36:35--Total tweets con lista de keywords []: 38
+2014:07:25-20:37:05--Buscando tweets con lista de keywords: ['#19J']
+2014:07:25-20:37:06--Total tweets con lista de keywords []: 0
+2014:07:25-21:25:02--Buscando tweets con lista de keywords: ['#19J']
+2014:07:25-21:26:05--Buscando tweets con lista de keywords: ['#19J']
+2014:07:25-21:26:06--Total tweets con lista de keywords []: 0
