@@ -122,7 +122,6 @@ def crea_tablas():
              'access_token varchar(100), '
              'access_token_secret varchar(100), '
              'oauth varchar(200), '
-             'n_consultas int'
             ');'
              )
     cur.execute(query)
@@ -131,7 +130,8 @@ def crea_tablas():
              'CREATE TABLE tokens_count('
              'id serial PRIMARY KEY, '
              'tiempo timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, '
-             'id_token int REFERENCES twitter_tokens (id)'
+             'id_token int REFERENCES twitter_tokens (id), '
+             'simulado boolean DEFAULT false'
              ');'
              )
     cur.execute(query)
