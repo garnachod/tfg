@@ -45,6 +45,7 @@ def crea_tablas():
              ', favorite_count numeric'
              ', retweet_count numeric'
              ', possibly_sensitive boolean'
+             ', media_url varchar(100)'
              ');'
              'CREATE UNIQUE INDEX tweets_idx ON Tweets (id_twitter);'
              'CREATE INDEX tweets_tu_idx ON Tweets (tuser);'

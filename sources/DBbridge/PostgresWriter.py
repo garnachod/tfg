@@ -65,6 +65,8 @@ class PostgresWriter():
         favorite_count = retweet_count = 0
         user_id = 0
         id_str = data['id_str']
+        media_url = ''
+
         if 'text' in data:
             texto = data['text']
         else:
@@ -92,14 +94,19 @@ class PostgresWriter():
             retweet_count = data['retweet_count']
         if 'possibly_sensitive' in data:
             possibly_sensitive = data['possibly_sensitive']
+        if 'entities' in data:
+            if 'media' in data['entities']:
+                #print data['entities']['media']
+                if 'media_url' in data['entities']['media'][0]:
+                    media_url = data['entities']['media'][0]['media_url']
         try:
             self.cur.execute("INSERT INTO Tweets (id_twitter, status, coordinates, created_at, lang, is_retweet, " \
                          "orig_tweet, place_id, place_name, favorite_count, retweet_count, "
-                         "possibly_sensitive, tuser)  " \
-                         "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id;",
+                         "possibly_sensitive, tuser, media_url)  " \
+                         "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id;",
                          (id_str, texto, coordinates, created_at, lang, is_retweet,
                           orig_id, place, place_name, favorite_count, retweet_count,
-                          possibly_sensitive, user_id))
+                          possibly_sensitive, user_id, media_url))
             tweet_id = self.cur.fetchone()[0]
         except psycopg2.Error as e:
             write_log("error_tweet_record", "Tweet: " + data['text'], e.pgerror)
