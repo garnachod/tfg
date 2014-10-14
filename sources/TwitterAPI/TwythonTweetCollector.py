@@ -46,6 +46,9 @@ class TwythonTweetCollector():
 
 
         try:
+            #LIMITE DE API, si se da en este momento todas las apik están llenas
+            if self.authorizator.is_limit_api():
+                return 0
             user_timeline = self.twitter.get_user_timeline(screen_name=screen_name, min_id=last_tweet_collected)
             self.authorizator.add_query_to_key()
         except TwythonAuthError as e:
@@ -86,6 +89,10 @@ class TwythonTweetCollector():
                 print last_tweet_collected
 
                 if user_timeline[len(user_timeline)-1]['id'] > last_tweet_collected:
+                    #LIMITE DE API
+                    if self.authorizator.is_limit_api():
+                        return len(user_timeline)
+
                     user_timeline = self.twitter.get_user_timeline(screen_name=screen_name,
                                                                max_id=user_timeline[len(user_timeline)-1]['id'],
                                                                min_id=last_tweet_collected)
@@ -152,13 +159,19 @@ class TwythonTweetCollector():
         self.newtweets_count = 0
         first_search = True
 
+
         while keyword_list:
             try:
                 next_min_id = max(last_tweet_ids)
                 query_string = keyword_list[0]
                 for keyword in keyword_list[1:]:
                     query_string += ' OR ' + keyword
-                number, new_last_tweet = self._int_search_keywords(query_string, next_min_id)
+                number, new_last_tweet, last_id = self._int_search_keywords(query_string, next_min_id)
+
+                #se ha llegado al limite de la api, no forzamos más
+                if number == 0:
+                    return self.newtweets_count
+
                 self.newtweets_count += number
                 if first_search and new_last_tweet > '0':
                     first_search = False
@@ -186,8 +199,12 @@ class TwythonTweetCollector():
         print_debug("lista=" + keywords_string)
         print_debug("since_id=" + str(since_id))
 
+        #LIMITE DE API, si se da en este momento todas las apik están llenas
+        if self.authorizator.is_limit_api():
+            return 0, 0, 0
 
         search = self.twitter.search(q=keywords_string, since_id=since_id, count='100')
+        self.authorizator.add_query_to_key()
         newtweets_count = len(search['statuses'])
         queries_count = 1
 
@@ -205,7 +222,13 @@ class TwythonTweetCollector():
             #TODO el problema es que pueden quedar tweets sin descargar que *NUNCA* serán descargados.
             #TODO dejar para proceso background (despues de 15mins?) intentar descargar mas tweets
             max_id2 = search['statuses'][len(search['statuses'])-1]['id']-1
+            #LIMITE DE API, si se da en este momento todas las apik están llenas
+            if self.authorizator.is_limit_api():
+                return 0, 0, 0
+            #no ha llegado al limite
             search = self.twitter.search(q=keywords_string, max_id=max_id2, since_id=since_id, count='100')
+            self.authorizator.add_query_to_key()
+
             queries_count += 1
             if 'statuses' not in search:
                 break

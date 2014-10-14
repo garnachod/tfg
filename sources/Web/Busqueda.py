@@ -19,6 +19,10 @@ class Busqueda():
 		if tipo == 'suser':
 			skynet = Skynet(session['user_id'])
 			skynet.research_user(texto);
+		elif tipo == 'topic':
+			skynet = Skynet(session['user_id'])
+			lista_keywords = texto.replace(" ", "").split(",")
+			skynet.research_keywords(lista_keywords);
 		else:
 			return 'ERR'
 
@@ -39,6 +43,9 @@ class Busqueda():
 		#cada tipo hace una busqueda a la base de datos y se imprime
 		if tipo == 'suser':
 			cadena += self.toStringSUser(texto)
+		elif tipo == 'topic':
+			lista_keywords = texto.replace(" ", "").split(",")
+			cadena += self.toStringSTopic(lista_keywords)
 		else:
 			return 'ERR'
 
@@ -57,6 +64,14 @@ class Busqueda():
 
 		return cadena
 
+	def toStringSTopic(self, topics):
+		arrayTweets = self.consultas.getTweetsTopics(topics)
+		cadena  = ''
+		for tweet in arrayTweets:
+			cadena += self.imprimeTweett(tweet)
+
+		return cadena
+
 	def imprimeTweett(self, tweet):
 		palabras = tweet[0].split(" ")
 		cadena = '<div class="delimitador"></div>'
@@ -69,7 +84,8 @@ class Busqueda():
 				cadena += '<a class="link" href="'+ palabra+'" target="_blank">'+palabra+'</a> '
 			#es un usuario de twitter
 			elif "@" in palabra:
-				cadena += '<a class="user" href="https://twitter.com/'+ palabra[1:]+'" target="_blank">'+palabra+'</a> '
+				user = self.limpiaTwitterUser(palabra)
+				cadena += '<a class="user" href="https://twitter.com/'+ user +'" target="_blank">'+palabra+'</a> '
 			#cualquier otra cosa			
 			else:
 				cadena += palabra + " "
@@ -124,5 +140,14 @@ class Busqueda():
 		
 			cadena += '</div>'
 			cadena += '</a>'
+
+		return cadena
+
+	def limpiaTwitterUser(self, user):
+		cadena = ''
+
+		for caracter in user:
+			if caracter != '@' and caracter != ':':
+				cadena += caracter
 
 		return cadena

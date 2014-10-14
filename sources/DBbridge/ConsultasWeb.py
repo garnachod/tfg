@@ -74,3 +74,30 @@ class ConsultasWeb():
 		except Exception, e:
 			print str(e)
 			return False
+
+	def getTweetsTopics(self, topics):
+		#SELECT * from tweets WHERE status LIKE '%beta%' or status LIKE '%@garnachod%'
+
+		query = "SELECT t.status, t.favorite_count, t.retweet_count, t.is_retweet, t.media_url, u.screen_name "
+		query += "FROM tweets as t, users as u "
+		query += "WHERE ("
+		i = 0
+		for topic in topics:
+			topics[i] = '%' + topic + '%'
+			if i == 0:
+				query += " status LIKE %s"
+			else:
+				query += " or status LIKE %s"
+			i = i + 1
+
+		query += "  ) and orig_tweet is null and (lang = 'es' or lang = 'en') and t.tuser = u.id order by t.created_at DESC LIMIT 2000;"
+		print query
+		print topics
+		try:
+			self.cur.execute(query, topics)
+			rows = self.cur.fetchall()
+			
+			return rows
+		except Exception, e:
+			print str(e)
+			return False

@@ -109,7 +109,7 @@ class PostgresWriter():
                           possibly_sensitive, user_id, media_url))
             tweet_id = self.cur.fetchone()[0]
         except psycopg2.Error as e:
-            write_log("error_tweet_record", "Tweet: " + data['text'], e.pgerror)
+            #write_log("error_tweet_record", "Tweet: " + data['text'], e.pgerror)
             return None
 
         if 'entities' in data:

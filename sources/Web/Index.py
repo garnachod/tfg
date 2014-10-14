@@ -41,6 +41,7 @@ class Index():
 								<form action="/busqueda" method="post">
 									<select name="tipoBusqueda">
   										<option value="suser">Usuario</option>
+  										<option value="topic">Topic</option>
   									</select>
   									<input type="text" name="search" placeholder="@username">
   									<p style="margin-bottom: 5px;"><input class="boton-general" type="submit" value="Buscar"></p>

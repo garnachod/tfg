@@ -2,9 +2,6 @@
 import tweepy
 import psycopg2
 
-twitter_tokens = None
-max_twitter_app = 2
-next_twitter_app = 0
 
 #queue = multiprocessing.Manager()
 #queue.start()
@@ -47,6 +44,17 @@ class GetAuthorizations():
         self.cur.execute("BEGIN")    
         self.cur.execute(query, (self.id,))
         self.cur.execute("COMMIT")
+
+    #mira a ver cuantas consultas se han realizado con ese apik
+    def is_limit_api(self):
+        query = "SELECT count(id_token) as cuenta from (select * from tokens_count  where id_token = %s and tiempo > current_timestamp - interval '15 minutes') as A  GROUP BY id_token"
+
+        self.cur.execute(query, (self.id,))
+        row = self.cur.fetchone()
+        if int(row[0]) >= 20:
+            return True
+        else:
+            return False
 
     def get_twitter_secret(self):
         API_key = self.api_key

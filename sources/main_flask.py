@@ -10,6 +10,7 @@ from Web.AdminNewUser import AdminNewUser
 from Web.AdminNewApiKey import AdminNewApiKey
 from DBbridge.ConsultasWeb import ConsultasWeb
 import os
+import time
 
 
 app = Flask(__name__)
@@ -67,8 +68,17 @@ def busqueda():
 			if request.form['tipoBusqueda'] is None or request.form['search'] is None:
 				return redirect('/err?code=2')
 			else:
+				inicio = time.time()
 				busqueda_web.doBusqueda(request.form['tipoBusqueda'], request.form['search'])
-				return busqueda_web.toString(request.form['tipoBusqueda'], request.form['search'])
+				fin = time.time()
+				print 'Tiempo de busqueda:'
+				print fin - inicio
+				inicio = time.time()
+				retorno = busqueda_web.toString(request.form['tipoBusqueda'], request.form['search'])
+				fin = time.time()
+				print 'Tiempo WEB:'
+				print fin - inicio
+				return retorno
 		else:
 			return 'err'
 	else:
