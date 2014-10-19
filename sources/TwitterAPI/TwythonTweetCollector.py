@@ -137,7 +137,7 @@ class TwythonTweetCollector():
         t.start()
         return t
 
-    def search_keywords(self, id_app_user, keyword_list):
+    def search_keywords(self, id_app_user, keyword_list, searchID):
         """
         Get all tweets containing at least one word of the list (keyword_list)
         Retorna tupla con código de resultado = {ok, rate_limit, private_user, other},
@@ -166,7 +166,7 @@ class TwythonTweetCollector():
                 query_string = keyword_list[0]
                 for keyword in keyword_list[1:]:
                     query_string += ' OR ' + keyword
-                number, new_last_tweet, last_id = self._int_search_keywords(query_string, next_min_id)
+                number, new_last_tweet, last_id = self._int_search_keywords(query_string, next_min_id, searchID)
 
                 #se ha llegado al limite de la api, no forzamos más
                 if number == 0:
@@ -189,7 +189,7 @@ class TwythonTweetCollector():
         self.logger.insert_log("Total tweets con lista de keywords %s: %s" % (keyword_list, self.newtweets_count))
         return self.newtweets_count
 
-    def _int_search_keywords(self, keywords_string, since_id):
+    def _int_search_keywords(self, keywords_string, since_id, searchID):
         """
 
         :param keywords_string: string con los términos de búsqueda

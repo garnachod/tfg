@@ -48,7 +48,7 @@ class Skynet():
         if place == 'Spain':
             return self.spain_trend_collector.get_trend_topics()
 
-    def research_keywords_between_dates(self, list_of_keywords, start_date, end_date):
+    def research_keywords_between_dates(self, list_of_keywords,searchID, start_date, end_date):
         """
         Buscar y elaborar estadísticas sobre un tema, representado como lista de términos.
         :param list_of_keywords:lista de palabras claves a buscar. Si no tiene valor usar función con menos parámetros
@@ -60,7 +60,7 @@ class Skynet():
         resultado = dict()
         # Primer paso, actualizamos la info que tenemos en la base de datos
         self.status = 'Consultando a Twitter'
-        resultado['number_new_tweets'] = self.tweet_collector.search_keywords(self.id_app_user, list_of_keywords)
+        resultado['number_new_tweets'] = self.tweet_collector.search_keywords(self.id_app_user, list_of_keywords, searchID)
         # Segundo paso: contar en la BD todos los tweets sobre los temas
 
         self.status = 'Analizando Base de Datos'
@@ -75,8 +75,8 @@ class Skynet():
         self.status = 'Esperando consultas'
         return resultado
 
-    def advanced_research_keywords_dates(self, list_of_keywords, start_date, end_date):
-        resultado = self.research_keywords_between_dates(list_of_keywords, start_date, end_date)
+    def advanced_research_keywords_dates(self, list_of_keywords,searchID, start_date, end_date):
+        resultado = self.research_keywords_between_dates(list_of_keywords,searchID,start_date, end_date)
         self.status = 'Analizando Base de Datos'
         for word in list_of_keywords:
             resultado[word]['cloud_tag'] = self.data_base_reader.word_frequency_topic(word, start_date, end_date, 20)
@@ -90,22 +90,22 @@ class Skynet():
         self.status = 'Esperando consultas'
         return resultado
 
-    def advanced_research_keywords(self, list_of_keywords):
+    def advanced_research_keywords(self, list_of_keywords, searchID):
         """
         Método accesorio para facilitar parámetros default. La búsqueda se hará en los últimos 30 días
         :param list_of_keywords: lista de palabras claves a buscar
         :return:
         """
-        return self.advanced_research_keywords_dates(list_of_keywords, (date.today() - timedelta(30)).isoformat(),
+        return self.advanced_research_keywords_dates(list_of_keywords, searchID,(date.today() - timedelta(30)).isoformat(),
                                                      date.today().isoformat())
 
-    def research_keywords(self, list_of_keywords):
+    def research_keywords(self, list_of_keywords, searchID):
         """
         Método accesorio para facilitar parámetros default. La búsqueda se hará en los últimos 30 días
         :param list_of_keywords: lista de palabras claves a buscar
         :return:
         """
-        return self.research_keywords_between_dates(list_of_keywords, (date.today() - timedelta(30)).isoformat(),
+        return self.research_keywords_between_dates(list_of_keywords,searchID, (date.today() - timedelta(30)).isoformat(),
                                                     date.today().isoformat())
 
     #########################

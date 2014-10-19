@@ -12,7 +12,7 @@ class BusquedaAsinc():
 		self.consultas = ConsultasWeb()
 
 	def toJsonSearch(self):
-		if session['searchID'] != 0:
+		if 'searchID' in session or session['searchID'] != 0:
 			#records = []
 			#record1 = {"name":"Bob", "email":"bob@email.com"}
 			#records.append(record1)    
@@ -31,7 +31,8 @@ class BusquedaAsinc():
 			#t.status, t.favorite_count, t.retweet_count, t.is_retweet, t.media_url, u.screen_name, t.id
 			rows = self.consultas.getTweetsAsincSearc(search_id, last_id, limit)
 			if rows == False:
-				return '{"status" : "false"}'
+				retorno = {"status":"false"}
+				return json.dumps(retorno)
 
 
 			#puede ser que aun no se hayan recibido los tweets o que no queden tweets por mostrar
@@ -41,6 +42,7 @@ class BusquedaAsinc():
 				if self.consultas.isFinishedAsincSearch(search_id) == True:
 					retorno = {"status":"false", "tweets" : []}
 					session.pop('last_id', None)
+					session.pop('searchID', None)
 				else:
 					retorno = {"status":"true", "tweets" : []}
 			else:
@@ -62,4 +64,5 @@ class BusquedaAsinc():
 			
 			return json.dumps(retorno)
 		else:
-			return '{"status" : "false"}'
+			retorno = {"status":"false"}
+			return json.dumps(retorno)
