@@ -39,7 +39,7 @@ class PostgresWriter():
     #
     ###############################
 
-    def process_tweet(self, data):
+    def process_tweet(self, data, searchID):
         """
         data = tweet representado como un diccionario
         devuelve el id (interno) del tweet insertado en la base de datos
@@ -54,10 +54,21 @@ class PostgresWriter():
         self.cur.execute("SELECT id, favorite_count, retweet_count FROM Tweets where id_twitter = %s; ", (id_str,))
         row = self.cur.fetchone()
         if row is not None: #ya existia
-            return self._update_tweet(data, row)
-        return self._process_new_tweet(data)
+            
+            identificador = self._update_tweet(data, row)
+            #no inserto searchID en la jointable, porque ya estaban en la base de datos por los que he debido mostrarlos
+            return identificador
+        else:
+            identificador = self._process_new_tweet(data, searchID)
+            #inserto searchID en la jointable
+            query = "INSERT INTO join_search_tweet (id_search, id_tweet) VALUES (%s,%s);"
+            self.cur.execute(query, [searchID, identificador])
+            self.conn.commit()
 
-    def _process_new_tweet(self, data):
+            #fin de insercion
+            return identificador
+
+    def _process_new_tweet(self, data, searchID):
         coordinates = created_at = lang = place = place_name = ""
         is_retweet = False
         possibly_sensitive = False
@@ -82,7 +93,7 @@ class PostgresWriter():
         if 'lang' in data:
             lang = data['lang']
         if 'retweeted_status' in data: #es un retweet
-            orig_id = self._store_retweet(data['retweeted_status'])
+            orig_id = self._store_retweet(data['retweeted_status'], searchID)
             is_retweet = True
         if 'place' in data and data['place'] is not None:
             place = data['place']['id']
@@ -136,14 +147,14 @@ class PostgresWriter():
                     (favorite_count, retweet_count, orig_id))
         return orig_id
 
-    def _store_retweet(self, orig_tweet):
+    def _store_retweet(self, orig_tweet, searchID):
         """
         """
         self.cur.execute("SELECT id, favorite_count, retweet_count FROM Tweets where id_twitter = %s; ",
                          (orig_tweet['id_str'],))
         row = self.cur.fetchone()
         if row is None:
-            return self.process_tweet(orig_tweet)
+            return self.process_tweet(orig_tweet, searchID)
 
         return self._update_tweet(orig_tweet, row)
 

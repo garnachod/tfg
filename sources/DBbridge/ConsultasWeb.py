@@ -101,3 +101,65 @@ class ConsultasWeb():
 		except Exception, e:
 			print str(e)
 			return False
+
+	def getTweetsAsincSearc(self, searchID, last_id, limit):
+		query = "SELECT t.status, t.favorite_count, t.retweet_count, t.is_retweet, t.media_url, u.screen_name, t.id "
+		query+= "FROM tweets as t, users as u, join_search_tweet as j "
+		query+= "WHERE t.id = j.id_tweet and t.tuser = u.id and j.id_search = %s "
+		if last_id == 0:
+			query+= "order by t.created_at DESC LIMIT %s;"
+		else:
+			query+= "and t.id > %s order by t.created_at DESC LIMIT %s;"
+
+		try:
+			if last_id == 0:
+				self.cur.execute(query, [searchID, limit])
+			else:
+				self.cur.execute(query, [searchID, last_id, limit])
+
+			rows = self.cur.fetchall()
+			return rows
+
+		except Exception, e:
+			print str(e)
+			return False
+
+	def isFinishedAsincSearch(self, searchID):
+		query = "SELECT search_time FROM app_searches WHERE id = %s LIMIT 1"
+		try:
+			print searchID
+			self.cur.execute(query, [searchID, ])
+			row = self.cur.fetchone()
+
+			if row[0] is None:
+				return False
+			else:
+				return True
+
+		except Exception, e:
+			print str(e)
+			return False
+
+	def setAppSearchAndGetId(self, search_string, user_id):
+		query = "INSERT INTO app_searches (search_string, id_user) VALUES (%s,%s) RETURNING id;"
+		try:
+			self.cur.execute(query, [search_string, user_id])
+			searchId = self.cur.fetchone()[0]
+			self.conn.commit()
+
+			return searchId
+			
+		except Exception, e:
+			print str(e)
+			return -1
+
+	def setAppSearchTime(self, searchID, time):
+		query = "UPDATE app_searches SET search_time=%s WHERE id=%s;"
+		try:
+			self.cur.execute(query, [time, searchID])
+			self.conn.commit()
+
+			return True
+		except Exception, e:
+			print str(e)
+			return False

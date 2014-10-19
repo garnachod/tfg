@@ -165,9 +165,17 @@ def temp_crea_tablas():
              ', id_user integer REFERENCES app_users(id)'
              ', number_new_tweets integer'
              ', number_recalled_tweets integer'
-             ', search_time timestamp'
+             ', search_time double precision'
              ');'
              )
+    cur.execute(query)
+
+    query = ('DROP TABLE IF EXISTS join_search_tweet CASCADE;'
+             'CREATE TABLE join_search_tweet ( '
+             'id_search int references app_searches(id), '
+             'id_tweet int references tweets(id), '
+             'primary key (id_search, id_tweet)'
+             ');')
     cur.execute(query)
 
     conn.commit()

@@ -3,7 +3,9 @@ from flask import Flask, session, request, redirect
 from Head import Head
 from DBbridge.ConsultasWeb import ConsultasWeb
 from Skynet import Skynet
+import threading
 import hashlib
+import time
 
 class Busqueda():
 	def __init__(self):
@@ -14,15 +16,18 @@ class Busqueda():
 	def generaHead(self):
 		self.head.add_css("static/css/general.css")
 		self.head.add_css("static/css/busqueda.css")
+		self.head.add_js("static/js/jquery.js")
+		self.head.add_js("static/js/busqueda_asincrona.js")
+		
 
 	def doBusqueda(self, tipo, texto):
-		if tipo == 'suser':
-			skynet = Skynet(session['user_id'])
-			skynet.research_user(texto);
-		elif tipo == 'topic':
-			skynet = Skynet(session['user_id'])
-			lista_keywords = texto.replace(" ", "").split(",")
-			skynet.research_keywords(lista_keywords);
+		if tipo == 'suser' or tipo == 'topic':
+			#print session['user_id']
+			searchID = self.consultas.setAppSearchAndGetId(texto, session['user_id'])
+			t = AsincSearch(tipo, texto, session['user_id'], searchID)
+			t.start()
+
+			return searchID
 		else:
 			return 'ERR'
 
@@ -37,7 +42,15 @@ class Busqueda():
 					</div>
 					<div class="mid">
 						<div class="mid-cont">'''
+		cadena += '<div class="busqueda-cont" id="asincData">'
+		cadena += '<div id="status_asinc">'
+		cadena += '</div>'
+		cadena += '<div id="asinc_tweets">'
+		cadena += '</div>'
+		cadena += '</div>'
+
 		cadena += '<div class="busqueda-cont">'
+		cadena += '<h3>Datos Cargados en la base de datos</h3>'
 						
 		
 		#cada tipo hace una busqueda a la base de datos y se imprime
@@ -151,3 +164,31 @@ class Busqueda():
 				cadena += caracter
 
 		return cadena
+
+class AsincSearch(threading.Thread):  
+	def __init__(self, tipo, texto, user_id, searchID):
+		threading.Thread.__init__(self)  
+		self.tipo = tipo
+		self.texto = texto
+		self.user_id = user_id
+		self.consultas = ConsultasWeb()
+		self.searchID = searchID
+  
+	def run(self):
+		inicio = time.time()
+		if self.tipo == 'suser':
+			skynet = Skynet(self.user_id)
+			skynet.research_user(self.texto, self.searchID);
+			fin = time.time()
+
+			self.consultas.setAppSearchTime(self.searchID, fin - inicio)
+		elif self.tipo == 'topic':
+			skynet = Skynet(self.user_id)
+			lista_keywords = self.texto.replace(" ", "").split(",")
+			skynet.research_keywords(lista_keywords, self.searchID);
+			fin = time.time()
+
+			self.consultas.setAppSearchTime(self.searchID, fin - inicio)
+		else:
+			return 'ERR'
+         

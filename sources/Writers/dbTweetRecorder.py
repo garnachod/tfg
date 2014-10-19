@@ -9,11 +9,11 @@ class DbTweetRecorder():
         #db instance of a subclass of DBConnection
         self.db = PostgresWriter()
 
-    def record_tweet(self, tweet):
+    def record_tweet(self, tweet, searchID):
         # if not isinstance(tweet, dict):
         #     tweet = self.as_dict(tweet)
 
-        self.db.process_tweet(tweet)
+        self.db.process_tweet(tweet, searchID)
 
     def record_json_tweet(self, tweet):
         try:

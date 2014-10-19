@@ -32,8 +32,8 @@ class Skynet():
         self.status = 'Esperando consultas'
         self.id_app_user = id_app_user
 
-    def research_user(self, screen_name):
-        return self.tweet_collector.get_tweets_user(screen_name, self.id_app_user)
+    def research_user(self, screen_name, searchID):
+        return self.tweet_collector.get_tweets_user(screen_name, self.id_app_user, searchID)
 
     def init_trending_collection(self):
         self.spain_trend_collector = TweetTrendCollector('Spain')

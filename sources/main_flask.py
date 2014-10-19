@@ -6,6 +6,7 @@ from Web.Error import Error
 from Web.Admin import Admin
 from Web.Success import Success
 from Web.Busqueda import Busqueda
+from Web.BusquedaAsinc import BusquedaAsinc
 from Web.AdminNewUser import AdminNewUser
 from Web.AdminNewApiKey import AdminNewApiKey
 from DBbridge.ConsultasWeb import ConsultasWeb
@@ -23,6 +24,7 @@ busqueda_web = Busqueda()
 consultasWeb = ConsultasWeb()
 admin_new_usr = AdminNewUser()
 admin_new_apik = AdminNewApiKey()
+busquedaAsinc_web = BusquedaAsinc()
 
 
 #simulacion de index
@@ -68,22 +70,25 @@ def busqueda():
 			if request.form['tipoBusqueda'] is None or request.form['search'] is None:
 				return redirect('/err?code=2')
 			else:
-				inicio = time.time()
-				busqueda_web.doBusqueda(request.form['tipoBusqueda'], request.form['search'])
-				fin = time.time()
-				print 'Tiempo de busqueda:'
-				print fin - inicio
-				inicio = time.time()
+				searchID = busqueda_web.doBusqueda(request.form['tipoBusqueda'], request.form['search'])
+				session['searchID'] = searchID
+
 				retorno = busqueda_web.toString(request.form['tipoBusqueda'], request.form['search'])
-				fin = time.time()
-				print 'Tiempo WEB:'
-				print fin - inicio
+				
 				return retorno
 		else:
 			return 'err'
 	else:
 		#si no se ha iniciado sesion redirige a la pagina principal
 		return redirect('/')
+
+
+@app.route('/busqueda_asinc', methods=['GET', 'POST'])
+def busquedaAsinc():
+	if request.method == 'POST':
+		return busquedaAsinc_web.toJsonSearch()
+	else:
+		return redirect('/err?code=2')
 
 #*****rutas de aministrador*************************************
 @app.route('/admin')
@@ -131,6 +136,7 @@ def admin_new_apikey():
 if __name__ == '__main__':
 	#app.secret_key = '\xe8ysa\xfaAI\x0629\xd4\x11\x0e\xd2\xae\xcf+y2\xeed\x1a\xe1?'
 	app.secret_key = os.urandom(24)
-	app.run(debug=True)
+	#app.run(host='0.0.0.0')
+	app.run(host='0.0.0.0',debug=True)
    
     #app.url_for('static', filename='/css/general.css')

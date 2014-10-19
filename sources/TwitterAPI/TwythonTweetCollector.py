@@ -34,7 +34,7 @@ class TwythonTweetCollector():
         #self.twitter.verify_credentials()
 
 
-    def get_tweets_user(self, screen_name, id_app_user):
+    def get_tweets_user(self, screen_name, id_app_user, searchID):
         """
         Get all tweets from a given user. It records the search on the DB (so it does not duplicate searches)
         Retorna tupla con código de resultado = {ok, rate_limit, private_user, other},
@@ -72,7 +72,7 @@ class TwythonTweetCollector():
         queries_count = 1
 
         for tweet in user_timeline:
-            self.recorder.record_tweet(tweet)
+            self.recorder.record_tweet(tweet, searchID)
 
         # Count could be less than 200, see: https://dev.twitter.com/discussions/7513
         ultimo_tweet_recolectado = user_timeline[len(user_timeline)-1]['id']
@@ -125,7 +125,7 @@ class TwythonTweetCollector():
                 return ["other", queries_count, newtweets_count]
 
             for tweet in user_timeline:
-                self.recorder.record_tweet(tweet)
+                self.recorder.record_tweet(tweet, searchID)
                 newtweets_count += 1
         #fuera del while
         self.logger.insert_log(id_app_user, "search_user_result",
@@ -215,7 +215,7 @@ class TwythonTweetCollector():
             return newtweets_count, queries_count, '0'
 
         for result in search['statuses']:
-            self.recorder.record_tweet(result)
+            self.recorder.record_tweet(result, searchID)
 
         while len(search['statuses']) != 0 and queries_count < self.queries_for_window:
             #es obvio que no se debe dejar que de una sola consulta se agoten los queries
@@ -233,7 +233,7 @@ class TwythonTweetCollector():
             if 'statuses' not in search:
                 break
             for tweet in search['statuses']:
-                self.recorder.record_tweet(tweet)
+                self.recorder.record_tweet(tweet, searchID)
                 newtweets_count += 1
 
             # if newtweets_count > 200:

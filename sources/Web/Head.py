@@ -17,7 +17,10 @@ class Head():
 		cadena += '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />'
 		cadena += '<title>'+ self.titulo +'</title>'
 		for css in self.lista_css:
-			cadena += '<LINK href="'+css+'" rel="stylesheet" type="text/css">';
+			cadena += '<LINK href="'+css+'" rel="stylesheet" type="text/css">'
+
+		for js in self.lista_js:
+			cadena += '<script src="'+js+'" language="JavaScript"> </script>'
 
 		cadena += '</head>'
 		return cadena
