@@ -65,7 +65,7 @@ class ConsultasWeb():
 		if twitterUser[0] == '@':
 			twitterUser = twitterUser[1:]
 
-		query = "SELECT t.status, t.favorite_count, t.retweet_count, t.is_retweet, t.media_url FROM tweets as t, users as u WHERE u.screen_name = %s and u.id = t.tuser order by t.created_at DESC;"
+		query = "SELECT t.status, t.favorite_count, t.retweet_count, t.is_retweet, t.media_url, u.screen_name FROM tweets as t, users as u WHERE u.screen_name = %s and u.id = t.tuser order by t.created_at DESC;"
 		try:
 			self.cur.execute(query, [twitterUser, ])
 			row = self.cur.fetchall()

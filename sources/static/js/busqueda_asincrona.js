@@ -36,9 +36,11 @@ var Tweet = {
 	},
 
 	toHTML:function(){
-		cadena = '<div class="delimitador"></div>';
+		var cadena = '<div class="delimitador"></div>';
 		cadena += Tweet.relevanciaToHTML();
-		cadena += '<div>';
+		cadena += Tweet.usrImgToHTML();
+		cadena += '<div class="cont-tweet">';
+		cadena += Tweet.tweetUsrToHTML();
 		cadena += '<div class="tweet-text">';
 		cadena += Tweet.textoToHTML();
 		cadena += '</div>';
@@ -50,12 +52,13 @@ var Tweet = {
 		cadena += Tweet.rt;
 		cadena += '</span>';
 		cadena += '</div>';
-		cadena += '</div>';
-
 		//#tiene algún tipo de objeto multimedia
 		if (Tweet.media_url != ''){
 			cadena += Tweet.multimediaToHTML();
 		}
+		cadena += '</div>';
+
+		
 
 		cadena += '</div>';
 		return cadena;
@@ -63,6 +66,18 @@ var Tweet = {
 
 	relevanciaToHTML : function(){
 		return '<div class="tweet">';
+	},
+	usrImgToHTML:function(){
+		var cadena = '<div class="cont-user-img">';
+		cadena += '<img src="static/img/tweetuser.png">';
+		cadena += '</div>';
+		return cadena;
+	},
+	tweetUsrToHTML :function(){
+		var cadena = '<div class="cont-usr">';
+		cadena += '<a href="https://twitter.com/'+Tweet.twitter_user+'" target="_blank">@'+Tweet.twitter_user+ '</a>';
+		cadena += '</div>';
+		return cadena;
 	},
 
 	textoToHTML : function(){
@@ -92,6 +107,7 @@ var Tweet = {
 		var cadena = '';
 
 		if((Tweet.media_url.indexOf(".jpg") > -1) || (Tweet.media_url.indexOf(".png") > -1)){
+			cadena += '<div class="cont-multi">';
 			cadena += '<a href="'+ Tweet.media_url +'" target="_blank">';
 			cadena += '<div class="img_busqueda" style="background-image: url(\'';
 			//#http://pbs.twimg.com/media/BziK-yaIIAA1uW2.jpg
@@ -100,6 +116,7 @@ var Tweet = {
 		
 			cadena += '</div>';
 			cadena += '</a>';
+			cadena += '</div>';
 		}
 		return cadena;
 	},

@@ -89,7 +89,10 @@ class Busqueda():
 		palabras = tweet[0].split(" ")
 		cadena = '<div class="delimitador"></div>'
 		cadena += self.imprimeTweettRelevancia(tweet)
-		cadena += '<div>'
+		cadena += self.imprimeTweettUsrIMG()
+
+		cadena += '<div class="cont-tweet">'
+		cadena += self.imprimeTweetUsr(tweet)
 		cadena += '<div class="tweet-text">'
 		for palabra in palabras:
 			#es un link
@@ -112,14 +115,29 @@ class Busqueda():
 		cadena += str(tweet[2])
 		cadena += '</span>'
 		cadena += '</div>'
-		cadena += '</div>'
-
 		#tiene algún tipo de objeto multimedia
 		if tweet[4] != '':
 			cadena += self.imprimeTweettMedia(tweet[4])
+			
+		cadena += '</div>'
+
+		
 
 		cadena += '</div>'
 		return cadena
+
+	def imprimeTweettUsrIMG(self):
+		cadena = '<div class="cont-user-img">'
+		cadena += '<img src="static/img/tweetuser.png">'
+		cadena += '</div>'
+		return cadena
+
+	def imprimeTweetUsr(self, tweet):
+		cadena = '<div class="cont-usr">'
+		cadena += '<a href="https://twitter.com/'+tweet[5]+'" target="_blank">@'+tweet[5]+ '</a>'
+		cadena += '</div>'
+		return cadena
+
 
 	def imprimeTweettRelevancia(self, tweet):
 		imOrRt = ""
@@ -145,6 +163,7 @@ class Busqueda():
 		cadena = ''
 
 		if '.jpg' in media or '.png' in media:
+			cadena += '<div class="cont-multi">'
 			cadena += '<a href="'+ media +'" target="_blank">'
 			cadena += '<div class="img_busqueda" style="background-image: url(\''
 			#http://pbs.twimg.com/media/BziK-yaIIAA1uW2.jpg
@@ -153,6 +172,7 @@ class Busqueda():
 		
 			cadena += '</div>'
 			cadena += '</a>'
+			cadena += '</div>'
 
 		return cadena
 
