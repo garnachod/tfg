@@ -1,14 +1,16 @@
 # -*- coding: iso-8859-15 -*-
 import tweepy
 import psycopg2
+from ConexionSQL import ConexionSQL
 
 
 #queue = multiprocessing.Manager()
 #queue.start()
 class GetAuthorizations():
     def __init__(self):
-        self.conn = psycopg2.connect(database="twitter", user="superDB", password="postgres_tfg", host="localhost")
-        self.cur = self.conn.cursor()
+        conSql = ConexionSQL()
+        self.conn = conSql.getConexion()
+        self.cur = conSql.getCursor()
 
     def load_twitter_token(self):
         query = "SELECT id FROM twitter_tokens"
