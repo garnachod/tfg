@@ -2,15 +2,16 @@
 __author__ = 'Alvaro Ortigosa <alvaro.ortigosa@uam.es>'
 
 #version para PostgreSQL
-import psycopg2
-import os
+from ConexionSQL import ConexionSQL
+import os 
 
 
 class GraphMLGenerator():
     def __init__(self):
         filtro = ''
-        self.conn = psycopg2.connect("dbname=tweetCollection user=twitterCollector")
-        self.cur = self.conn.cursor()
+        conSql = ConexionSQL()
+        self.conn = conSql.getConexion()
+        self.cur = conSql.getCursor()
 
     def generate_file(self, filename):
         #genera header

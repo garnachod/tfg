@@ -1,14 +1,15 @@
 # -*- coding: iso-8859-15 -*-
 __author__ = 'Alvaro Ortigosa <alvaro.ortigosa@uam.es>'
 
-import psycopg2
+from ConexionSQL import ConexionSQL
 
 from TextProcessors import WordLists
 
 class PostgresReader():
     def __init__(self):
-        self.conn = psycopg2.connect(database="twitter", user="superDB", password="postgres_tfg", host="localhost")
-        self.cur = self.conn.cursor()
+        conSql = ConexionSQL()
+        self.conn = conSql.getConexion()
+        self.cur = conSql.getCursor()
 
     def num_tweets_hashtag(self, hashtag, start_date, end_date):
         """

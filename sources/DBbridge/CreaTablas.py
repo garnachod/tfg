@@ -1,11 +1,14 @@
 # -*- coding: iso-8859-15 -*-
 __author__ = 'Alvaro Ortigosa <alvaro.ortigosa@uam.es>'
 
-import psycopg2
+from ConexionSQL import ConexionSQL
 
 def crea_tablas():
-    conn = psycopg2.connect(database="twitter", user="superDB", password="postgres_tfg", host="localhost")
-    cur = conn.cursor()
+    conSql = ConexionSQL()
+    conn = conSql.getConexion()
+    cur = conSql.getCursor()
+    #conn = psycopg2.connect(database="twitter", user="superDB", password="postgres_tfg", host="localhost")
+    #cur = conn.cursor()
 
     query = ('DROP TABLE IF EXISTS Users CASCADE;'
              'CREATE TABLE Users ('

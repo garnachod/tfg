@@ -1,9 +1,9 @@
 import psycopg2
 
-class ConexionSQL():
+class ConexionSQL(): 
 	"""docstring for ConexionSQL"""
 	def __init__(self):
-		self.conn = psycopg2.connect(database="twitter", user="superDB", password="postgres_tfg", host="localhost")
+		self.conn = psycopg2.connect(database="twitter", user="usrtwitter", host="localhost")
 	def getConexion(self):
 		return self.conn
 	def getCursor(self):

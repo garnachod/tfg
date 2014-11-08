@@ -1,7 +1,7 @@
 # -*- coding: iso-8859-15 -*-
 __author__ = 'Alvaro Ortigosa <alvaro.ortigosa@uam.es>'
 
-import psycopg2
+from ConexionSQL import ConexionSQL
 from datetime import datetime
 
 from Utiles.debug import print_debug
@@ -9,8 +9,9 @@ from Utiles.debug import print_debug
 
 class PostgresLogWriter():
     def __init__(self):
-        self.con = psycopg2.connect(database="twitter", user="superDB", password="postgres_tfg", host="localhost")
-        self.cur = self.con.cursor()
+        conSql = ConexionSQL()
+        self.conn = conSql.getConexion()
+        self.cur = conSql.getCursor()
         try:
             self.cur.execute("INSERT INTO Logs (event_time, event_type, message) VALUES (%s, %s, %s) RETURNING id;",
                                  (datetime.now().isoformat(), "init_logger", ""))

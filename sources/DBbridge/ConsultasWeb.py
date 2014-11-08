@@ -1,6 +1,6 @@
 from ConexionSQL import ConexionSQL
 
-class ConsultasWeb():
+class ConsultasWeb(): 
 	"""docstring for ConsultasWeb"""
 	def __init__(self):
 		conSql = ConexionSQL()

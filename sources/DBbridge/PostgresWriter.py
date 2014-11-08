@@ -1,6 +1,6 @@
 # -*- coding: iso-8859-15 -*-
 
-import psycopg2
+from ConexionSQL import ConexionSQL
 
 from Utiles.debug import print_debug
 #, write_log
@@ -23,8 +23,9 @@ class PostgresWriter():
         self.location = self.created_at = self.description = self.name = self.protected = ""
         self.screen_name = self.url = self.utc_offset = ""
 
-        self.conn = psycopg2.connect(database="twitter", user="superDB", password="postgres_tfg", host="localhost")
-        self.cur = self.conn.cursor()
+        conSql = ConexionSQL()
+        self.conn = conSql.getConexion()
+        self.cur = conSql.getCursor()
 
     ###############################
     #
