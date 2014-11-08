@@ -125,7 +125,7 @@ def crea_tablas():
              'api_key_secret varchar(100), '
              'access_token varchar(100), '
              'access_token_secret varchar(100), '
-             'oauth varchar(200), '
+             'oauth varchar(200)'
             ');'
              )
     cur.execute(query)
@@ -162,6 +162,7 @@ def temp_crea_tablas():
              ');'
              )
     cur.execute(query)
+    
     query = ('DROP TABLE IF EXISTS app_searches CASCADE;'
              'CREATE TABLE app_searches ('
              'id serial PRIMARY KEY'
@@ -173,7 +174,7 @@ def temp_crea_tablas():
              ');'
              )
     cur.execute(query)
-
+   
     query = ('DROP TABLE IF EXISTS join_search_tweet CASCADE;'
              'CREATE TABLE join_search_tweet ( '
              'id_search int references app_searches(id), '
@@ -181,11 +182,24 @@ def temp_crea_tablas():
              'primary key (id_search, id_tweet)'
              ');')
     cur.execute(query)
+    
+    conn.commit()
+    cur.close()
+    conn.close()
 
+def crea_def_user():
+    conSql = ConexionSQL()
+    conn = conSql.getConexion()
+    cur = conSql.getCursor()
+    
+    query = "INSERT INTO app_users (name,mail,institution,role,username,pasw) VALUES ('dani','garnachod@gmail.com','uam','admin','garnachod','58a543c86d0af40db318dec6c8b47e8a48dac9ea576ed5b944f07ec589e13fc5');"
+
+    cur.execute(query)
     conn.commit()
     cur.close()
     conn.close()
 
 if __name__ == "__main__":
-    crea_tablas()
-    temp_crea_tablas()
+    #crea_tablas()
+    #temp_crea_tablas()
+    crea_def_user()
