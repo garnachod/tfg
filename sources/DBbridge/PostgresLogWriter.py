@@ -11,7 +11,7 @@ from Utiles.debug import print_debug
 class PostgresLogWriter():
     def __init__(self):
         conSql = ConexionSQL()
-        self.conn = conSql.getConexion()
+        self.con = conSql.getConexion()
         self.cur = conSql.getCursor()
         try:
             self.cur.execute("INSERT INTO Logs (event_time, event_type, message) VALUES (%s, %s, %s) RETURNING id;",
