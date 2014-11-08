@@ -1,5 +1,6 @@
 # -*- coding: iso-8859-15 -*-
 
+import psycopg2
 from ConexionSQL import ConexionSQL
 
 from Utiles.debug import print_debug

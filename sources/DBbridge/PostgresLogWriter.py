@@ -1,6 +1,7 @@
 # -*- coding: iso-8859-15 -*-
 __author__ = 'Alvaro Ortigosa <alvaro.ortigosa@uam.es>'
 
+import psycopg2
 from ConexionSQL import ConexionSQL
 from datetime import datetime
 
