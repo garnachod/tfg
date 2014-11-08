@@ -1,7 +1,7 @@
 # -*- coding: iso-8859-15 -*-
 import tweepy
 import psycopg2
-from ConexionSQL import ConexionSQL
+from DBbridge.ConexionSQL import ConexionSQL
 
 
 #queue = multiprocessing.Manager()
