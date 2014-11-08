@@ -146,8 +146,9 @@ def crea_tablas():
 
 
 def temp_crea_tablas():
-    conn = psycopg2.connect(database="twitter", user="superDB", password="postgres_tfg", host="localhost")
-    cur = conn.cursor()
+    conSql = ConexionSQL()
+    conn = conSql.getConexion()
+    cur = conSql.getCursor()
 
     query = ('DROP TABLE IF EXISTS app_users CASCADE;'
              'CREATE TABLE app_users ('
@@ -186,5 +187,5 @@ def temp_crea_tablas():
     conn.close()
 
 if __name__ == "__main__":
-    #crea_tablas()
+    crea_tablas()
     temp_crea_tablas()
