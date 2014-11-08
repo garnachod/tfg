@@ -38,7 +38,6 @@ class GetAuthorizations():
             self.access_token = row[3]
             self.access_token_secret = row[4]
             self.oauth = row[5]
-            self.n_consultas = row[6]
 
     def add_query_to_key(self):
         query = "INSERT INTO tokens_count (id_token) VALUES (%s)"
