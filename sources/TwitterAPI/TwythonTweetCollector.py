@@ -10,7 +10,7 @@ from threading import Thread
 
 class TwythonTweetCollector():
 
-    queries_for_window = 450
+    queries_for_window = 40
 
     def __init__(self, recorder, logger):
         self.recorder = recorder
@@ -79,7 +79,7 @@ class TwythonTweetCollector():
         while len(user_timeline) != 0: #TODO: tal vez evitar que se itere demasiado? Cortar antes de que de error?
             try:
                 queries_count += 1
-                if queries_count > 50:
+                if queries_count > 20:
                     return newtweets_count
 
                 print 'max_id = '
@@ -186,7 +186,7 @@ class TwythonTweetCollector():
                 self.logger.insert_log(id_app_user, "other", "TwythonError error({0}): {1}".format(e.message, e.args))
                 return "other"
 
-        self.logger.insert_log("Total tweets con lista de keywords %s: %s" % (keyword_list, self.newtweets_count))
+        #self.logger.insert_log("Total tweets con lista de keywords %s: %s" % (keyword_list, self.newtweets_count))
         return self.newtweets_count
 
     def _int_search_keywords(self, keywords_string, since_id, searchID):
@@ -217,7 +217,7 @@ class TwythonTweetCollector():
         for result in search['statuses']:
             self.recorder.record_tweet(result, searchID)
 
-        while len(search['statuses']) != 0 and queries_count < self.queries_for_window:
+        while len(search['statuses']) != 0 and queries_count < 20:
             #es obvio que no se debe dejar que de una sola consulta se agoten los queries
             #TODO el problema es que pueden quedar tweets sin descargar que *NUNCA* serán descargados.
             #TODO dejar para proceso background (despues de 15mins?) intentar descargar mas tweets
@@ -228,8 +228,8 @@ class TwythonTweetCollector():
             #no ha llegado al limite
             search = self.twitter.search(q=keywords_string, max_id=max_id2, since_id=since_id, count='100')
             self.authorizator.add_query_to_key()
-
             queries_count += 1
+            
             if 'statuses' not in search:
                 break
             for tweet in search['statuses']:

@@ -52,7 +52,7 @@ class GetAuthorizations():
 
         self.cur.execute(query, (self.id,))
         row = self.cur.fetchone()
-        if int(row[0]) >= 20:
+        if int(row[0]) >= 120:
             return True
         else:
             return False
