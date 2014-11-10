@@ -140,6 +140,7 @@ var Tweet = {
 var busqueda = {
 	urlApi : '',
 	urlSearch: '',
+	progressBar:null,
 
 
 	inicializa: function(){
@@ -150,9 +151,24 @@ var busqueda = {
 
 		*/
 		busqueda.urlSearch = busqueda.urlApi + 'busqueda_asinc';
-	
+		busqueda.progressBar = new ProgressBar.Circle('#progress_bar', {
+    		strokeWidth: 3,
+    	
+		});
 	},
 	doSearch:function(){
+		busqueda.progressBar.set(0);
+		busqueda.progressBar.animate(1, {
+			from: { color: '#2DCCD3' },
+	    	to: { color: '#0085AD' },
+	    	step: function(state, circle) {
+	        	circle.path.setAttribute('stroke', state.color);
+	    	},
+	    	duration: 10000
+		}, function() {
+	    	
+		});	
+		
 		var consulta = $.post(busqueda.urlSearch, {}, busqueda.onSucces, "json");
 		consulta.fail(busqueda.onFail);
 	},
@@ -176,6 +192,8 @@ var busqueda = {
 			setTimeout(busqueda.doSearch, 10000);
 			$('#status_asinc').html('<h3>Busqueda en marcha</h3>');
 			
+			
+			
 		}else{
 			busqueda.onFail(null);
 		}
@@ -184,6 +202,6 @@ var busqueda = {
 
 	onFail:function(data){
 		$('#status_asinc').html('<h3>Se ha terminado la busqueda</h3>');
-		
+		busqueda.progressBar.set(1);
 	}
 };

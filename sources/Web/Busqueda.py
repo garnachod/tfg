@@ -17,6 +17,7 @@ class Busqueda():
 		self.head.add_css("static/css/general.css")
 		self.head.add_css("static/css/busqueda.css")
 		self.head.add_js("static/js/jquery.js")
+		self.head.add_js("static/js/progressbar.min.js")
 		self.head.add_js("static/js/busqueda_asincrona.js")
 		
 
@@ -44,6 +45,8 @@ class Busqueda():
 						<div class="mid-cont">'''
 		cadena += '<div class="busqueda-cont" id="asincData">'
 		cadena += '<div id="status_asinc">'
+		cadena += '</div>'
+		cadena += '<div id="progress_bar">'
 		cadena += '</div>'
 		cadena += '<div id="asinc_tweets">'
 		cadena += '</div>'
