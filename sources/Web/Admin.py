@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask import Flask, session, request, redirect
+from DBbridge.ConsultasWeb import ConsultasWeb
+from UserHeader import UserHeader
 from Head import Head
 #from DBbridge.ConsultasWeb import ConsultasWeb
 import hashlib
@@ -17,18 +19,11 @@ class Admin():
 		cadena = '<!DOCTYPE html>\n<html>'
 		cadena += self.head.toString()
 		cadena += '<body>'
-		cadena += '''<div class="header">
-						<div class="header-cont">
-				  '''
-		cadena += '''<div class="user-header-cont">
-						<img src="static/img/usrIcon.png">
-				  		<h4>'''
-		cadena += session["username"]
-		cadena +='''</h4></div>'''
 
-		cadena += '''	
-						</div>
-					</div>'''
+		consultasWeb = ConsultasWeb()
+		userHeader = UserHeader(session["username"], 'static/img/usrIcon.png', consultasWeb.isAdministrator(session['user_id']))
+		userHeader.setBotonInicio(True)
+		cadena += userHeader.toString()
 
 		cadena += '''<div class="mid">
 						<div class="mid-cont">'''

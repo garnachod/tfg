@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
+from DBbridge.ConsultasWeb import ConsultasWeb
+from UserHeader import UserHeader
 from flask import Flask, session
 from Head import Head
+
 
 
 class Index():
@@ -25,16 +28,12 @@ class Index():
 		#session['username']
 	def toStringRegistrado(self, usuario):
 		cadena = '<body>'
-		cadena += '''<div class="header">
-						<div class="header-cont">'''
-		cadena += '''<div class="user-header-cont">
-						<img src="static/img/usrIcon.png">
-				  		<h4>'''
-		cadena += usuario
-		cadena +='''</h4></div>'''
-		cadena += '''</div>
-					</div>
-					<div class="mid">
+		
+		consultasWeb = ConsultasWeb()
+		userHeader = UserHeader(usuario, 'static/img/usrIcon.png', consultasWeb.isAdministrator(session['user_id']))
+		cadena += userHeader.toString()
+
+		cadena += '''<div class="mid">
 						<div class="mid-cont">
 							<div class="cont-busqueda">
 								<h3 style="text-align:  left;">Búsqueda:</h3>
@@ -46,9 +45,6 @@ class Index():
   									<input type="text" name="search" placeholder="@username">
   									<p style="margin-bottom: 5px;"><input class="boton-general" type="submit" value="Buscar"></p>
 								</form>
-							</div>
-							<div class="cont-resultados">
-								<h3>Aquí los resultados</h3>
 							</div>
 						</div>
 					</div>'''
@@ -78,5 +74,5 @@ class Index():
 						</div>
 					</div>'''
 
-		cadena += '</body>'
+		cadena += '</body></html>'
 		return cadena

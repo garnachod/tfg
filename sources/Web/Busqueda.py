@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask import Flask, session, request, redirect
 from Head import Head
+from UserHeader import UserHeader
 from DBbridge.ConsultasWeb import ConsultasWeb
 from Skynet import Skynet
 import threading
@@ -36,13 +37,13 @@ class Busqueda():
 		cadena =  '<!DOCTYPE html>\n<html>'
 		cadena += self.head.toString()
 		cadena += '<body>'
-		cadena += '''<div class="header">
-						<div class="header-cont">
-							
-						</div>
-					</div>
-					<div class="mid">
-						<div class="mid-cont">'''
+	
+		consultasWeb = ConsultasWeb()
+		userHeader = UserHeader(session["username"], 'static/img/usrIcon.png', consultasWeb.isAdministrator(session['user_id']))
+		userHeader.setBotonInicio(True)
+		cadena += userHeader.toString()
+
+		cadena += '<div class="mid"><div class="mid-cont">'
 		cadena += '<div class="busqueda-cont" id="asincData">'
 		cadena += '<div id="status_asinc">'
 		cadena += '</div>'

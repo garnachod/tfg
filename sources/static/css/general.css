@@ -40,6 +40,7 @@ html, body, h3{
 				width: 100%;
 				height: 80px;
 				background-color: #183641;
+				margin-top: 0px;
 			}
 			.header-cont, .mid-cont{
 				width: 100%;
@@ -47,8 +48,95 @@ html, body, h3{
 				max-width: 1200px;
 				margin-left: auto; 
 				margin-right: auto;
+				margin-top: 0px;
+			}
+			.header-cont{
+				list-style: none;
+
+			}
+			/*menu header*/
+			.user-header-cont{
+				float: left;
+				margin-top: 12px;
+				margin-left: 25px;
+			}
+			.user-header-cont a{
+				text-decoration: none;
+				color: #94cfc9;
+			}
+			.user-header-cont a:hover{
+				color: #6db3bf;
+			}
+			.user-header-cont img {
+				float: left;
+				width: 40px;
+				height: auto;
+				margin-top: 10px;
+				margin-right: 15px;
+				-webkit-box-shadow: 0px 3px 3px 0px rgba(0,0,0,0.3);
+				-moz-box-shadow: 0px 3px 3px 0px rgba(0,0,0,0.3);
+				box-shadow: 0px 3px 3px 0px rgba(0,0,0,0.3); 
+				-webkit-border-radius: 50%;
+				-moz-border-radius: 50%;
+				border-radius: 50%;
+			}
+			.user-header-cont h4{
+				float: left;
+				color: #94cfc9;
+			}
+			
+			nav ul{
+				list-style: none;
+				position: relative;
+				/*display: inline-table;*/
+			}
+				nav ul:after {
+					content: ""; clear: both; display: block;
+				}
+			nav ul li {
+				float: left;
+			}	
+			nav ul ul {
+				display: none;
 			}
 
+				nav ul li:hover > ul {
+					display: block;
+				}
+				nav ul:after {
+					content: ""; 
+					clear: both; 
+					display: block;
+				}
+
+				nav ul ul {
+					background-color: rgba(236, 236, 236, 1);
+					border-radius: 0px; 
+					padding: 0;
+					position: absolute; top: 80%;
+					-webkit-border-radius: 10px;
+					-moz-border-radius: 10px;
+					border-radius: 10px;
+					-webkit-box-shadow: 0px 3px 3px 0px rgba(0,0,0,0.3);
+					-moz-box-shadow: 0px 3px 3px 0px rgba(0,0,0,0.3);
+					box-shadow: 0px 3px 3px 0px rgba(0,0,0,0.3);
+					padding: 7px;
+				}
+					nav ul ul li {
+						float: none; 
+						border-bottom: 1px solid rgba(0,0,0,0.06);
+						position: relative;
+
+					}
+						nav ul ul li a {
+							text-decoration: none;
+							color: #183641 !important;
+						}	
+							nav ul ul li a:hover {
+								color: #20566e !important;
+							}
+
+			/*content*/
 			.mid{
 				background-color: rgba(236, 236, 236, 1);
 				-webkit-box-shadow: inset 0px 3px 3px 0px rgba(0,0,0,0.3);
@@ -90,25 +178,4 @@ html, body, h3{
 			.boton-general:hover{
 				background-color: #4699b7;
 				text-decoration: underline;
-			}
-			.user-header-cont{
-				float: left;
-				margin-top: 12px;
-			}
-			.user-header-cont img {
-				float: left;
-				width: 40px;
-				height: auto;
-				margin-top: 10px;
-				margin-right: 15px;
-				-webkit-box-shadow: 0px 3px 3px 0px rgba(0,0,0,0.3);
-				-moz-box-shadow: 0px 3px 3px 0px rgba(0,0,0,0.3);
-				box-shadow: 0px 3px 3px 0px rgba(0,0,0,0.3); 
-				-webkit-border-radius: 50%;
-				-moz-border-radius: 50%;
-				border-radius: 50%;
-			}
-			.user-header-cont h4{
-				float: left;
-				color: #94cfc9;
 			}
