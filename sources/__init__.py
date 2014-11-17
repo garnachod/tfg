@@ -47,6 +47,13 @@ def login():
 	else:
 		return login_web.toString()
 
+#cerrar sesion
+@app.route('/cerrar_sesion')
+def cerrar_sesion():
+	session.clear()
+	return redirect('/')
+	
+
 #ruta generica de error con diferentes codigos de error
 @app.route('/err')
 def error():
