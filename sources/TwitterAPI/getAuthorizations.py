@@ -20,7 +20,7 @@ class GetAuthorizations():
             query = "INSERT INTO tokens_count (id_token, simulado) VALUES (%s, true)"
             self.cur.execute(query, (row[0],))
 
-        query = "SELECT id_token, count(id_token) as cuenta from (select * from tokens_count  where tiempo > current_timestamp - interval '15 minutes') as A  GROUP BY id_token order by cuenta DESC Limit 1"
+        query = "SELECT id_token, count(id_token) as cuenta from (select * from tokens_count  where tiempo > current_timestamp - interval '15 minutes') as A  GROUP BY id_token order by cuenta Limit 1"
         self.cur.execute(query)
         rows = self.cur.fetchall()
         for row in rows:

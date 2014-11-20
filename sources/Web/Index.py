@@ -14,6 +14,8 @@ class Index():
 	def generaHead(self):
 		self.head.add_css("static/css/general.css")
 		self.head.add_css("static/css/index.css")
+		self.head.add_js("static/js/jquery.js")
+		self.head.add_js("static/js/opciones_index.js")
 
 	def toString(self,usuario='none'):
 		cadena = '<!DOCTYPE html>\n<html>'
@@ -38,11 +40,11 @@ class Index():
 							<div class="cont-busqueda">
 								<h3 style="text-align:  left;">Búsqueda:</h3>
 								<form action="/busqueda" method="post">
-									<select name="tipoBusqueda">
+									<select name="tipoBusqueda" id="tipoBusqueda">
   										<option value="suser">Usuario</option>
-  										<option value="topic">Topic</option>
+  										<option value="topic">Contenido</option>
   									</select>
-  									<input type="text" name="search" placeholder="@username">
+  									<input id="input_search" type="text" name="search" placeholder="@username">
   									<p style="margin-bottom: 5px;"><input class="boton-general" type="submit" value="Buscar"></p>
 								</form>
 							</div>
