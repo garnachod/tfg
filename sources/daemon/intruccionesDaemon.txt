@@ -1,0 +1,21 @@
+#mkdir -p /var/log/demonioTareasTwitter
+#mkdir -p /var/run/demonioTareasTwitter
+
+
+/////////
+dentro de demonioTareasTwitter.sh que se copiará a init.d
+actualizar el nombre de servicio python
+/////////
+
+Se le cambia el permiso al script:
+chmod u+x /etc/init.d/demonioTareasTwitter.sh
+
+Se habilita el script para la ejecución automática:
+sudo insserv /etc/init.d/demonioTareasTwitter.sh
+
+//test del demonio 
+ Se puede ver la bitacora al ejecutar:
+tail -f /var/log/demonioTareasTwitter/demonioTareasTwitter.log
+
+//ver si está arrancado el servicio
+ps aux | grep demonio
