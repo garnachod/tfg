@@ -199,7 +199,28 @@ def crea_def_user():
     cur.close()
     conn.close()
 
+def crea_tareas():
+    conSql = ConexionSQL()
+    conn = conSql.getConexion()
+    cur = conSql.getCursor()
+
+    query = ('DROP TABLE IF EXISTS tareas_programadas CASCADE;'
+             'CREATE TABLE tareas_programadas ('
+             'id serial PRIMARY KEY'
+             ', tipo varchar(30)'
+             ', id_search integer REFERENCES app_searches(id)'
+             ', tiempo_inicio timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP '
+             ', tiempo_fin timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP '
+             ');'
+             )
+    cur.execute(query)
+    
+    conn.commit()
+    cur.close()
+    conn.close()
+
 if __name__ == "__main__":
     #crea_tablas()
     #temp_crea_tablas()
-    crea_def_user()
+    #crea_def_user()
+    crea_tareas()

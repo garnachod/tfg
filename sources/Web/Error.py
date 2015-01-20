@@ -26,9 +26,10 @@ class Error():
 						<h3>Se ha detectado un error</h3>
 						<p>'''	
 		cadena += self.getValueCodigo(codigo)
-		cadena += '''</p>
+		if codigo == '4' or codigo == '5':
+			cadena += '''</p>
 						<div class="cont-boton" style="width: 160px; margin-bottom: 20px;">
-							<a href="javascript:window.history.back()" class="boton-general">
+							<a href="/" class="boton-general">
 								Volver atrás
 							</a>
 						</div>
@@ -36,7 +37,19 @@ class Error():
 						
 					 </div>
 				 '''
-		cadena +='</div></div>'
+			cadena +='</div></div>'
+		else:
+			cadena += '''</p>
+							<div class="cont-boton" style="width: 160px; margin-bottom: 20px;">
+								<a href="javascript:window.history.back()" class="boton-general">
+									Volver atrás
+								</a>
+							</div>
+							<img src="static/img/error.png">
+							
+						 </div>
+					 '''
+			cadena +='</div></div>'
 
 		cadena += '</body>'
 		return cadena

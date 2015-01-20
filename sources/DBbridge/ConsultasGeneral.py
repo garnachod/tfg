@@ -28,3 +28,16 @@ class ConsultasGeneral(object):
 		except Exception, e:
 			print str(e)
 			return False
+
+	def getBusquedaFromIdBusqueda(self, idbusqueda):
+		query = "SELECT search_string, id_user FROM app_searches where id = %s;"
+		try:
+			self.cur.execute(query, [idbusqueda, ])
+			row = self.cur.fetchone()
+			print row[0]
+			print row[1]
+
+			return row[0], row[1]
+		except Exception, e:
+			print str(e)
+			return False

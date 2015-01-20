@@ -3,6 +3,7 @@ from DBbridge.ConsultasWeb import ConsultasWeb
 from UserHeader import UserHeader
 from flask import Flask, session
 from Head import Head
+from MenuSlide import MenuSlide
 
 
 
@@ -16,6 +17,7 @@ class Index():
 		self.head.add_css("static/css/index.css")
 		self.head.add_js("static/js/jquery.js")
 		self.head.add_js("static/js/opciones_index.js")
+		self.head.activaMenu()
 
 	def toString(self,usuario='none'):
 		cadena = '<!DOCTYPE html>\n<html>'
@@ -32,7 +34,7 @@ class Index():
 		cadena = '<body>'
 		
 		consultasWeb = ConsultasWeb()
-		userHeader = UserHeader(usuario, 'static/img/usrIcon.png', consultasWeb.isAdministrator(session['user_id']))
+		userHeader = UserHeader(usuario, 'static/img/usrIcon.png', consultasWeb.isAdministrator(session['user_id']), True)
 		cadena += userHeader.toString()
 
 		cadena += '''<div class="mid">
@@ -50,7 +52,8 @@ class Index():
 							</div>
 						</div>
 					</div>'''
-
+		menu = self.head.getMenuInstance()
+		cadena += menu.toStringContenido()
 		cadena += '</body>'
 		return cadena
 

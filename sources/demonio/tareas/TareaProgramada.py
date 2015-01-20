@@ -1,5 +1,5 @@
 
-class TareaProgramada():
+class TareaProgramada(object):
 	#clase abstracta que define la funcionalidad posible de un tipo de tarea
 	def __init__(self):
 		self.identificador = 0

@@ -5,7 +5,7 @@ class TareaProgramadaFactory():
 	"""docstring for TareaProgramadaFactory"""
 	@staticmethod
 	def generaTarea(tipo):
-		if tipo == "BusquedaSencilla":
+		if tipo == "BusquedaSencillaUser":
 			return TareaProgramadaBusqueda()
 		else:
 			return None

@@ -1,16 +1,20 @@
 # -*- coding: utf-8 -*-
 class UserHeader(object):
 	"""docstring for UserHeader"""
-	def __init__(self, username, img, admin):
+	def __init__(self, username, img, admin, menu=False):
 		self.username = username
 		self.img = img
 		self.admin = admin
 		self.botonInicio = False
+		self.menu = menu
 
 	def toString(self):
 		cadena = ''
-		cadena += '<nav class="header"><ul class="header-cont">'
-
+		cadena += '<nav class="header">'
+		if self.menu == True:
+			cadena += '<a class="boton-menu" href="#menu"></a>'
+			
+		cadena += '<ul class="header-cont">'
 		cadena += '<li class="user-header-cont">'
 		cadena += '<img src="' + self.img + '">'				
 		cadena += '<h4>'

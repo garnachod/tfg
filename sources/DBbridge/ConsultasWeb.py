@@ -1,11 +1,10 @@
 from ConexionSQL import ConexionSQL
+from ConsultasGeneral import ConsultasGeneral
 
-class ConsultasWeb(): 
+class ConsultasWeb(ConsultasGeneral): 
 	"""docstring for ConsultasWeb"""
 	def __init__(self):
-		conSql = ConexionSQL()
-		self.conn = conSql.getConexion()
-		self.cur = conSql.getCursor()
+		super(self.__class__, self).__init__()
 		
 	def getUserConexionData(self, username):
 		query = "SELECT username, pasw, id FROM app_users WHERE username = %s"
@@ -153,13 +152,15 @@ class ConsultasWeb():
 			print str(e)
 			return -1
 
-	def setAppSearchTime(self, searchID, time):
-		query = "UPDATE app_searches SET search_time=%s WHERE id=%s;"
+	def altaTarea(self, tipo, id_search, tiempo):
+		query = "INSERT INTO tareas_programadas (tipo, id_search, tiempo_fin) VALUES (%s,%s,(CURRENT_TIMESTAMP + \'" + str(tiempo) + " days\'))"
 		try:
-			self.cur.execute(query, [time, searchID])
+			self.cur.execute(query, [tipo, id_search])
 			self.conn.commit()
 
 			return True
+			
 		except Exception, e:
 			print str(e)
 			return False
+

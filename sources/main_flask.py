@@ -9,6 +9,9 @@ from Web.Busqueda import Busqueda
 from Web.BusquedaAsinc import BusquedaAsinc
 from Web.AdminNewUser import AdminNewUser
 from Web.AdminNewApiKey import AdminNewApiKey
+from Web.Contacto import Contacto
+from Web.PlanificarTareas import PlanificarTareas
+from Web.AltaTarea import AltaTarea
 from DBbridge.ConsultasWeb import ConsultasWeb
 import os
 import time
@@ -24,7 +27,10 @@ busqueda_web = Busqueda()
 consultasWeb = ConsultasWeb()
 admin_new_usr = AdminNewUser()
 admin_new_apik = AdminNewApiKey()
+planificartarea_web = PlanificarTareas()
 busquedaAsinc_web = BusquedaAsinc()
+altaTarea_web = AltaTarea()
+contacto_web = Contacto()
 
 
 #simulacion de index
@@ -51,7 +57,7 @@ def login():
 @app.route('/cerrar_sesion')
 def cerrar_sesion():
 	session.clear()
-	return redirect('/')
+	return redirect('/') 
 	
 
 #ruta generica de error con diferentes codigos de error
@@ -135,6 +141,31 @@ def admin_new_apikey():
 		return redirect('/err?code=5')
 
 #*****fin de rutas de aministrador********************************
+@app.route('/contacto')
+def contacto():
+	if 'username' in session:
+		return contacto_web.toString(session['username'])
+	else:
+		return redirect('/err?code=5')
+
+@app.route('/planificartarea')
+def planificartarea():
+	if 'username' in session:
+		return planificartarea_web.toString(session['username'])
+	else:
+		return redirect('/err?code=5')
+
+@app.route('/alta_tarea', methods=['GET', 'POST'])
+def altatarea():
+	if 'username' in session:
+		if request.method == 'POST':
+			altaTarea_web.alta()
+			return redirect('/success?code=2')
+		else:
+			return redirect('/err?code=2')
+	else:
+		#si no se ha iniciado sesion redirige a la pagina principal
+		return redirect('/')
 
 #@app.route('/login')
 #def login():

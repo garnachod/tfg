@@ -8,6 +8,8 @@ import time
 #de python-daemon import runner
 
 from daemon import runner
+from demonio.tareas.GeneraTareasDesdeDB import GeneraTareasDesdeDB
+from demonio.tareas.TareaProgramada import TareaProgramada
 
 
 class App():
@@ -38,19 +40,33 @@ class App():
 
         while True:
 
-            #El código principal va acá
+            #codigo principal
+            generador = GeneraTareasDesdeDB()
+            tareas = generador.genera()
+            if tareas is None:
+                pass
+            else:
+                for tarea in tareas:
+                    tarea.doSearch()
+
+                time.sleep(150)
+
+                for tarea in tareas:
+                    tarea.doPostProc()
+
+            #fin de codigo principal
 
             i += 1
 
             #Diferentes niveles de registro de bitacora
 
-            logger.debug("Debug message %s" %i)
+            #logger.debug("Debug message %s" %i)
 
-            logger.info("Info message %s" %i)
+            logger.info("Iteraciones desde arrancado %s" %i)
+            logger.info("Numero de tareas %s" %len(tareas))
+            #logger.warn("Warning message %s" %i)
 
-            logger.warn("Warning message %s" %i)
-
-            logger.error("Error message %s" %i)
+            #logger.error("Error message %s" %i)
 
             time.sleep(300)
 

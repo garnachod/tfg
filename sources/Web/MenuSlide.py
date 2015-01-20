@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 class MenuSlide(object):
 	"""docstring for MenuSlide"""
 	def __init__(self):
@@ -24,9 +25,9 @@ class MenuSlide(object):
 	def toStringContenido(self):
 		cadena = '<nav id="menu">'
 		cadena += '<ul>'
-		cadena += '<li><a href="/">Home</a></li>'
-		cadena += '<li><a href="/about/">About us</a></li>'
-		cadena += '<li><a href="/contact/">Contact</a></li>'
+		cadena += '<li><a href="/">Búsqueda</a></li>'
+		cadena += '<li><a href="/planificartarea">Planificar Tareas</a></li>'
+		cadena += '<li><a href="/contacto">Contacto</a></li>'
 		cadena += '</ul>'
 		cadena += '</nav>'
 
