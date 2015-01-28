@@ -21,6 +21,8 @@ class FiltroPalabras(object):
 		for palabra in listaPalabras:
 			if self.estaPalabraEnDiccionario(palabra):
 				pass
+			elif palabra == '':
+				pass
 			else:
 				listaRetorno.append(palabra)
 

@@ -219,8 +219,29 @@ def crea_tareas():
     cur.close()
     conn.close()
 
+def crea_tabla_MLT():
+    conSql = ConexionSQL()
+    conn = conSql.getConexion()
+    cur = conSql.getCursor()
+
+    query = ('DROP TABLE IF EXISTS tweets_entrenamiento CASCADE;'
+             'CREATE TABLE tweets_entrenamiento ('
+             'id serial PRIMARY KEY'
+             ', id_tweet integer REFERENCES tweets(id) UNIQUE'
+             ', fecha_creacion timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP '
+             ', clase varchar(30)'
+             ');'
+             )
+    cur.execute(query)
+    
+    conn.commit()
+    cur.close()
+    conn.close()
+
 if __name__ == "__main__":
     #crea_tablas()
     #temp_crea_tablas()
     #crea_def_user()
-    crea_tareas()
+    #db universidad
+    #crea_tareas()
+    crea_tabla_MLT()

@@ -13,4 +13,20 @@
 	text-align: center;
 	margin-bottom: 20px;
 	color: #183641;
+	overflow: hidden;
+}
+
+.fragmento-tarea{
+	width: 25%;
+	float: left;
+}
+.tarea{
+	border-bottom: 1px solid rgba(0,0,0,0.1);
+	overflow: hidden;
+}
+.claro{
+
+}
+.oscuro{
+	background-color: rgba(0,0,0,0.05);
 }

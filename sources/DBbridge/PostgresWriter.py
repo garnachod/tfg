@@ -257,10 +257,13 @@ class PostgresWriter():
             try:
                 self.cur.execute("INSERT INTO users (id_twitter, name, screen_name) VALUES (%s, %s, %s) RETURNING id;",
                                  (id_str, name, screen_name))
+                self.conn.commit()
+                id_user = self.cur.fetchone()[0]
+                
             except psycopg2.Error, e:
                 print_debug("Error en invocación a Insert into Users " + e.pgerror, True)
 
-            id_user = self.cur.fetchone()[0]
+            
         else:
             id_user = row[0]
         try:

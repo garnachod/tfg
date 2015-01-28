@@ -10,7 +10,7 @@ from MenuSlide import MenuSlide
 class Index():
 	def __init__(self):
 		self.head = Head('index') 
-		self.generaHead()
+		self.generaHead() 
 
 	def generaHead(self):
 		self.head.add_css("static/css/general.css")

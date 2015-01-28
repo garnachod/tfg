@@ -29,6 +29,18 @@ class ConsultasGeneral(object):
 			print str(e)
 			return False
 
+	def getTareasTerminadasTotal(self):
+		query = "SELECT * from tareas_programadas where tiempo_fin < CURRENT_TIMESTAMP"
+		try:
+			self.cur.execute(query)
+			rows = self.cur.fetchall()
+			
+			return rows
+		except Exception, e:
+			print str(e)
+			return False
+
+
 	def getBusquedaFromIdBusqueda(self, idbusqueda):
 		query = "SELECT search_string, id_user FROM app_searches where id = %s;"
 		try:
@@ -39,5 +51,119 @@ class ConsultasGeneral(object):
 
 			return row[0], row[1]
 		except Exception, e:
+			print str(e)
+			return False
+
+	def getTweetDebugMachineLearning(self, identificador):
+		query = "SELECT status FROM tweets WHERE id = %s;"
+		try:
+			self.cur.execute(query, [identificador, ])
+			row = self.cur.fetchone()
+
+			return row[0]
+		except Exception, e:
+			print str(e)
+			return False
+
+	def getTweetStatus(self, identificador):
+		query = "SELECT status FROM tweets as t WHERE t.id = %s;"
+		try:
+			self.cur.execute(query, [identificador, ])
+			row = self.cur.fetchone()
+
+			return row[0]
+		except Exception, e:
+			print str(e)
+			return False
+
+	def getIDTweetsTrainList(self):
+		query = "SELECT id_tweet FROM tweets_entrenamiento as tw WHERE tw.clase != 'no_usar'"
+		try:
+			self.cur.execute(query)
+			rows = self.cur.fetchall()
+			lista = []
+			for row in rows:
+				lista.append(row[0])
+
+			return lista
+		except Exception, e:
+			print str(e)
+			return False
+
+	def getTweetsAndClassTrain(self):
+		query = "SELECT status, clase FROM tweets as t, tweets_entrenamiento as tw WHERE t.id = tw.id_tweet and tw.clase != 'no_usar'"
+		try:
+			self.cur.execute(query)
+			rows = self.cur.fetchall()
+
+			return rows
+		except Exception, e:
+			print str(e)
+			return False
+
+
+	def getTweetIDLarge(self, identificador):
+		query = """SELECT t.status, t.favorite_count, t.retweet_count, t.is_retweet, t.media_url, u.screen_name 
+				   FROM tweets as t, users as u 
+				   WHERE t.id = %s and t.tuser = u.id LIMIT 1;"""
+		try:
+			self.cur.execute(query, [identificador, ])
+			row = self.cur.fetchone()
+
+			return row
+		except Exception, e:
+			print str(e)
+			return False
+
+	def getIDsTweetsTrain(self, topics, limit):
+		query = "SELECT t.id "
+		query += "FROM tweets as t "
+		query += "WHERE ("
+		i = 0
+		for topic in topics:
+			if " " in topic:
+				subtopics = topic.split(" ")
+				topics[i] = '%'
+				for subtopic in subtopics:
+					topics[i] += subtopic + '%'
+			else:
+				topics[i] = '%' + topic + '%'
+
+
+			if i == 0:
+				query += " status LIKE %s"
+			else:
+				query += " or status LIKE %s"
+			i = i + 1
+
+		query += "  ) and is_retweet = False and id not in (SELECT id_tweet FROM tweets_entrenamiento) and (lang = 'es' or lang = 'en') order by t.created_at DESC LIMIT %s;"
+
+		parameters = list(topics)
+		parameters.append(limit)
+		try:
+			self.cur.execute(query, parameters)
+			rows = self.cur.fetchall()
+			
+			return rows
+		except Exception, e:
+			print str(e)
+			return False
+
+	def setTweetTrainID(self, identificador, clase):
+		query = """INSERT INTO tweets_entrenamiento (id_tweet, clase)
+       				SELECT %s, %s 
+       				WHERE NOT EXISTS (SELECT id FROM tweets_entrenamiento WHERE id_tweet=%s);"""
+
+
+
+		#query = "INSERT INTO tweets_entrenamiento (id_tweet,clase) VALUES (%s,%s);"
+
+		try:
+			self.cur.execute(query, [identificador, clase, identificador])
+			self.conn.commit()
+
+			return True
+		except Exception, e:
+			print "error en setTweetTrainID"
 			print str(e)
 			return False

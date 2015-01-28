@@ -58,7 +58,11 @@ class PostgresReader():
         query = "SELECT sum(retweet_count) FROM Tweets where not is_retweet AND status ILIKE '%%' || %s || '%%' " \
                 "AND created_at >= %s AND created_at <= %s"
         self.cur.execute(query, [word, start_date, end_date])
-        informado = int(self.cur.fetchone()[0])
+        row = self.cur.fetchone()
+        if row is None or row[0] is None:
+            return [0, calculado]
+        
+        informado = int(row[0])
         return [informado, calculado]
 
     def autores_topic(self, word, start_date, end_date, min_tweets=1, max_usuarios=100):

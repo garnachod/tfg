@@ -12,12 +12,15 @@ class APIGetTweetTrain(object):
 	def toString(self):
 
 		isAleat = request.form['aleat']
+		search = request.form['search']
+		if isAleat is None or search is None:
+			retorno = {"status":"false"}
+			return json.dumps(retorno)
+
 		if isAleat == "true":
 			isAleat = True
 		else:
 			isAleat = False
-		search = request.form['search']
-
 
 		lista_keywords = search.replace(", ", ",").split(",")
 
@@ -34,11 +37,13 @@ class APIGetTweetTrain(object):
 		if isAleat == True:
 			identificador = randint(0,len(rows)-1)
 
-		session['tweet_train_id'] = rows[identificador][0]
+		
 		tweetRow = self.consultas.getTweetIDLarge(rows[identificador][0])
 		if tweetRow == False:
 				retorno = {"status":"false"}
 				return json.dumps(retorno)
+
+		session['tweet_train_id'] = rows[identificador][0]
 
 		retorno = {"status":"true", "tweets" : []}
 

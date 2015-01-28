@@ -1,32 +1,40 @@
 jQuery( document ).ready(function( $ ) {
 	$("#form1").submit(function(e) {
 		e.preventDefault();
-		var valueSearch = $("#input_search").val();
-		var valueAleat = $("#input_aleat").is(':checked');
-		
-		var dataEnvio = { search: valueSearch, aleat: valueAleat };
-
-		busqueda.doSearch(dataEnvio);
+		getSearchAndSend();
 	});
 	$("#bot_no_usar").click(function(e){
 		e.preventDefault();
-		alert('no usar');
+		var dataEnvio = {vote: "no_usar"};
+		votar.doSend(dataEnvio);
 	});
 	$("#bot_no_relevante").click(function(e){
 		e.preventDefault();
-		alert('no relevante');
+		var dataEnvio = {vote: "no_relevante"};
+		votar.doSend(dataEnvio);
 	});
 	$("#bot_relevante").click(function(e){
 		e.preventDefault();
-		alert('relevante');
+		var dataEnvio = {vote: "relevante"};
+		votar.doSend(dataEnvio);
 	});
 
 
 	//inicializacion
 	busqueda.inicializa();
+	votar.inicializa();
 	//
 	$("#cont_tweet_bot").hide();
 });
+
+function getSearchAndSend(){
+	var valueSearch = $("#input_search").val();
+	var valueAleat = $("#input_aleat").is(':checked');
+		
+	var dataEnvio = { search: valueSearch, aleat: valueAleat };
+
+	busqueda.doSearch(dataEnvio);
+}
 
 var busqueda = {
 	urlApi : '',
@@ -94,3 +102,26 @@ var busqueda = {
 	}
 };
 
+var votar = {
+	urlApi : '',
+	urlSearch: '',
+	inicializa: function(){
+		votar.urlSearch = votar.urlApi + 'set_tweet_train';
+	},
+	doSend:function(dataEnvio){
+		var consulta = $.post(votar.urlSearch, dataEnvio, votar.onSucces, "json");
+		consulta.fail(votar.onFail);
+	},
+	onSucces: function(data){
+
+		if(data.status == "true"){
+			getSearchAndSend();	
+		}else{
+			busqueda.onFail(null);
+		}
+		
+	},
+	onFail:function(data){
+		$("#cont_tweet_bot").hide();
+	}
+}

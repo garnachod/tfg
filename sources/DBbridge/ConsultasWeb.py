@@ -29,7 +29,7 @@ class ConsultasWeb(ConsultasGeneral):
 			row = self.cur.fetchone()
 
 			role = row[0]
-			print role
+			#print role
 			if role == "admin":
 				return True
 			else:
@@ -82,7 +82,14 @@ class ConsultasWeb(ConsultasGeneral):
 		query += "WHERE ("
 		i = 0
 		for topic in topics:
-			topics[i] = '%' + topic + '%'
+			if " " in topic:
+				subtopics = topic.split(" ")
+				topics[i] = '%'
+				for subtopic in subtopics:
+					topics[i] += subtopic + '%'
+			else:
+				topics[i] = '%' + topic + '%'
+
 			if i == 0:
 				query += " status LIKE %s"
 			else:
@@ -122,6 +129,8 @@ class ConsultasWeb(ConsultasGeneral):
 		except Exception, e:
 			print str(e)
 			return False
+
+	
 
 	def isFinishedAsincSearch(self, searchID):
 		query = "SELECT search_time FROM app_searches WHERE id = %s LIMIT 1"
@@ -164,3 +173,73 @@ class ConsultasWeb(ConsultasGeneral):
 			print str(e)
 			return False
 
+	def getTareasTerminadasListado(self):
+		query = "SELECT t.id, tipo, tiempo_inicio, tiempo_fin, search_string from tareas_programadas as t, app_searches as a where t.tiempo_fin < CURRENT_TIMESTAMP and t.id_search = a.id;"
+		try:
+			self.cur.execute(query)
+			rows = self.cur.fetchall()
+			
+			return rows
+		except Exception, e:
+			print str(e)
+			return False
+
+
+	def getTareasPendientesListado(self):
+		query = "SELECT t.id, tipo, tiempo_inicio, tiempo_fin, search_string from tareas_programadas as t, app_searches as a where t.tiempo_fin > CURRENT_TIMESTAMP and t.id_search = a.id;"
+		try:
+			self.cur.execute(query)
+			rows = self.cur.fetchall()
+			
+			return rows
+		except Exception, e:
+			print str(e)
+			return False
+
+	#seccion de estadisticas
+
+	def getNumTweetsNoRT(self):
+		query ="SELECT count(id) FROM tweets WHERE is_retweet = FALSE;"
+		try:
+			self.cur.execute(query)
+			num = self.cur.fetchone()[0]
+			
+			return num
+		except Exception, e:
+			print str(e)
+			return False
+
+	def getNumTweetsSiRT(self):
+		query ="SELECT count(id) FROM tweets WHERE is_retweet = TRUE;"
+		try:
+			self.cur.execute(query)
+			num = self.cur.fetchone()[0]
+			
+			return num
+		except Exception, e:
+			print str(e)
+			return False
+
+	def getNumTweetsNoMedia(self):
+		query ="SELECT count(id) FROM tweets WHERE media_url = '' and is_retweet = FALSE;"
+		try:
+			self.cur.execute(query)
+			num = self.cur.fetchone()[0]
+			
+			return num
+		except Exception, e:
+			print str(e)
+			return False
+
+	def getNumTweetsSiMedia(self):
+		query ="SELECT count(id) FROM tweets WHERE media_url != '' and is_retweet = FALSE;"
+		try:
+			self.cur.execute(query)
+			num = self.cur.fetchone()[0]
+			
+			return num
+		except Exception, e:
+			print str(e)
+			return False
+
+	#fin seccion de estadisticas

@@ -18,6 +18,7 @@ class Busqueda():
 		self.head.add_css("static/css/busqueda.css")
 		self.head.add_js("static/js/jquery.js")
 		self.head.add_js("static/js/progressbar.min.js")
+		self.head.add_js("static/js/tweet.js")
 		self.head.add_js("static/js/busqueda_asincrona.js")
 		
 
@@ -60,7 +61,7 @@ class Busqueda():
 		if tipo == 'suser':
 			cadena += self.toStringSUser(texto)
 		elif tipo == 'topic':
-			lista_keywords = texto.replace(" ", "").split(",")
+			lista_keywords = texto.replace(", ", ",").split(",")
 			cadena += self.toStringSTopic(lista_keywords)
 		else:
 			return 'ERR'

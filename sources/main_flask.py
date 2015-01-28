@@ -12,6 +12,11 @@ from Web.AdminNewApiKey import AdminNewApiKey
 from Web.Contacto import Contacto
 from Web.PlanificarTareas import PlanificarTareas
 from Web.AltaTarea import AltaTarea
+from Web.VisualizarListaTareas import VisualizarListaTareas
+from Web.Estadisticas import Estadisticas
+from Web.EntrenamientoTweets import EntrenamientoTweets
+from Web.APIGetTweetTrain import APIGetTweetTrain 
+from Web.APISetTweetTrain import APISetTweetTrain
 from DBbridge.ConsultasWeb import ConsultasWeb
 import os
 import time
@@ -31,7 +36,11 @@ planificartarea_web = PlanificarTareas()
 busquedaAsinc_web = BusquedaAsinc()
 altaTarea_web = AltaTarea()
 contacto_web = Contacto()
-
+entrena_tweets_web = EntrenamientoTweets()
+listaTareas_web = VisualizarListaTareas()
+estadisticas_web = Estadisticas()
+getTweetTrain_web = APIGetTweetTrain()
+setTweetTrain_web = APISetTweetTrain()
 
 #simulacion de index
 @app.route('/')
@@ -147,7 +156,7 @@ def contacto():
 		return contacto_web.toString(session['username'])
 	else:
 		return redirect('/err?code=5')
-
+#************************Tareas***********************************
 @app.route('/planificartarea')
 def planificartarea():
 	if 'username' in session:
@@ -160,12 +169,70 @@ def altatarea():
 	if 'username' in session:
 		if request.method == 'POST':
 			altaTarea_web.alta()
-			return redirect('/success?code=2')
+			return redirect('/success?code=3')
 		else:
 			return redirect('/err?code=2')
 	else:
 		#si no se ha iniciado sesion redirige a la pagina principal
 		return redirect('/')
+
+@app.route('/ver_tareas_pendientes')
+def verTareasPendientes():
+	if 'username' in session:
+		return listaTareas_web.toString(False)
+	else:
+		#si no se ha iniciado sesion redirige a la pagina principal
+		return redirect('/')
+
+@app.route('/ver_tareas_finalizadas')
+def verTareasFinalizadas():
+	if 'username' in session:
+		return listaTareas_web.toString(True)
+	else:
+		#si no se ha iniciado sesion redirige a la pagina principal
+		return redirect('/')
+
+#******************fin de tareas*************************************
+#************************Estadisticas********************************
+@app.route('/estadisticas')
+def estadisticas():
+	if 'username' in session:
+		return estadisticas_web.toString()
+	else:
+		#si no se ha iniciado sesion redirige a la pagina principal
+		return redirect('/')
+
+#******************fin de Estadisticas*******************************
+
+#************************entrenamiento********************************
+@app.route('/entrena_tweets')
+def entrenamientoTweets():
+	if 'username' in session:
+		return entrena_tweets_web.toString()
+	else:
+		#si no se ha iniciado sesion redirige a la pagina principal
+		return redirect('/')
+@app.route('/busqueda_tweet_train' , methods=['GET', 'POST'])
+def buscaTweetTrain():
+	if 'username' in session:
+		if request.method == 'POST':
+			return getTweetTrain_web.toString()
+		else:
+			return redirect('/err?code=2')
+	else:
+		return 'err'
+@app.route('/set_tweet_train' , methods=['GET', 'POST'])
+def setTweetTrain():
+	if 'username' in session:
+		if request.method == 'POST':
+			return setTweetTrain_web.toString()
+		else:
+			return redirect('/err?code=2')
+	else:
+		return 'err'
+
+
+#******************fin de entrenamiento*******************************
 
 #@app.route('/login')
 #def login():

@@ -25,24 +25,27 @@ class ListaPalabrasEntrenamiento(object):
 
 		filtro = FiltroPalabras()
 		return filtro.eliminaDeListaPalabras(conjunto.getListaPalabrasRepMayorQue(2))
-	'''
+
 	def getTweetsAndTransform(self):
 		separador = PalabrasDeTweet()
 		conjunto = ConjuntoPalabras()
-		for identificador in range(7922,10000):
-			cadena = self.consultas.getTweetDebugMachineLearning(identificador)
+		listaIDS = self.consultas.getIDTweetsTrainList()
+
+		for identificador in listaIDS:
+			cadena = self.consultas.getTweetStatus(identificador)
 			cadena = separador.removeLinks(cadena)
 			cadena = separador.removeTwitterUsers(cadena)
 			cadena = separador.removeNumbers(cadena)
 			conjunto.addListaPalabras(separador.getPalabrasFromStringNormalized(cadena))
 
 		filtro = FiltroPalabras()
-		return filtro.eliminaDeListaPalabras(conjunto.getListaPalabrasRepMayorQue(2))
-	'''
+		return filtro.eliminaDeListaPalabras(conjunto.getListaPalabrasRepMayorQue(0))
+	
 """pruebas unitarias"""
 if __name__ == '__main__':
 	debug = ListaPalabrasEntrenamiento()
-	lista =  debug.getDebugTweetAndTransform();
+	#lista =  debug.getDebugTweetAndTransform();
+	lista = debug.getTweetsAndTransform()
 	print lista
 	print "tamanyo"
 	print len(lista)
