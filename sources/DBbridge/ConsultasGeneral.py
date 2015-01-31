@@ -167,3 +167,31 @@ class ConsultasGeneral(object):
 			print "error en setTweetTrainID"
 			print str(e)
 			return False
+
+	def getClaseTrainID(self, identificador):
+		query = """SELECT clase FROM tweets_entrenamiento WHERE id_tweet = %s;"""
+
+		try:
+			self.cur.execute(query, [identificador, ])
+			row = self.cur.fetchone()
+			if row is None:
+				return False
+
+			return row
+		except Exception, e:
+			print "error en getClaseTrainID"
+			print str(e)
+			return False
+
+	def changeClaseTweet(self, identificador, clase):
+		query = """UPDATE tweets_entrenamiento SET clase = %s WHERE id_tweet = %s;"""
+
+		try:
+			self.cur.execute(query, [clase, identificador])
+			self.conn.commit()
+
+			return True
+		except Exception, e:
+			print "error en changeClaseTweet"
+			print str(e)
+			return False

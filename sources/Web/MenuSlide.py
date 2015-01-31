@@ -30,6 +30,7 @@ class MenuSlide(object):
 		cadena += '<li><a href="/ver_tareas_pendientes">Ver Tareas pendientes</a></li>'
 		cadena += '<li><a href="/ver_tareas_finalizadas">Ver Tareas finalizadas</a></li>'
 		cadena += '<li><a href="/entrena_tweets">Entrenar usando tweets</a></li>'
+		cadena += '<li><a href="/lista_entrena_tweets">Lista Tweets entrenamiento</a></li>'
 		cadena += '<li><a href="/estadisticas">Estadísticas</a></li>'
 		cadena += '<li><a href="/contacto">Contacto</a></li>'
 		cadena += '</ul>'

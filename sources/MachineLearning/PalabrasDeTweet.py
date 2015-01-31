@@ -32,6 +32,9 @@ class PalabrasDeTweet(object):
 
 		listaPalabras = []
 		for palabra in listaPalabrasAux:
+			if len(palabra) < 3:
+				continue
+
 			palabra = palabra.lower()
 			palabra = palabra.replace("á", "a")
 			palabra = palabra.replace("é", "e")

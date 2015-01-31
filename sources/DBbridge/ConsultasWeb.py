@@ -74,6 +74,17 @@ class ConsultasWeb(ConsultasGeneral):
 			print str(e)
 			return False
 
+	def getTweetsEntrenamientoListar(self):
+		query = "SELECT t.status, t.favorite_count, t.retweet_count, t.is_retweet, t.media_url, u.screen_name, t.id, te.clase FROM tweets as t, users as u, tweets_entrenamiento as te WHERE te.clase != 'no_usar' and te.id_tweet = t.id and u.id = t.tuser order by te.id DESC;"
+		try:
+			self.cur.execute(query)
+			rows = self.cur.fetchall()
+			
+			return rows
+		except Exception, e:
+			print str(e)
+			return False
+
 	def getTweetsTopics(self, topics):
 		#SELECT * from tweets WHERE status LIKE '%beta%' or status LIKE '%@garnachod%'
 

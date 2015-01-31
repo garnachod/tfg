@@ -17,6 +17,7 @@ from Web.Estadisticas import Estadisticas
 from Web.EntrenamientoTweets import EntrenamientoTweets
 from Web.APIGetTweetTrain import APIGetTweetTrain 
 from Web.APISetTweetTrain import APISetTweetTrain
+from Web.ListarTweetsEntrenamiento import ListarTweetsEntrenamiento
 from DBbridge.ConsultasWeb import ConsultasWeb
 import os
 import time
@@ -41,6 +42,7 @@ listaTareas_web = VisualizarListaTareas()
 estadisticas_web = Estadisticas()
 getTweetTrain_web = APIGetTweetTrain()
 setTweetTrain_web = APISetTweetTrain()
+listaTweetTrain_web = ListarTweetsEntrenamiento()
 
 #simulacion de index
 @app.route('/')
@@ -231,6 +233,22 @@ def setTweetTrain():
 	else:
 		return 'err'
 
+@app.route('/lista_entrena_tweets')
+def listaEntrenamientoTweets():
+	if 'username' in session:
+		return listaTweetTrain_web.toString()
+	else:
+		#si no se ha iniciado sesion redirige a la pagina principal
+		return redirect('/')
+@app.route('/change_tweet_train' , methods=['GET', 'POST'])
+def changeTweetTrain():
+	if 'username' in session:
+		if request.method == 'POST':
+			return setTweetTrain_web.toStringChange()
+		else:
+			return redirect('/err?code=2')
+	else:
+		return 'err'
 
 #******************fin de entrenamiento*******************************
 

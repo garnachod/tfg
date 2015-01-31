@@ -28,3 +28,26 @@ class APISetTweetTrain(object):
 
 		retorno = {"status":"true"}
 		return json.dumps(retorno)
+
+	def toStringChange(self):
+		identificador = request.form['change']
+
+
+		if identificador is None:
+			retorno = {"status":"false"}
+			return json.dumps(retorno)
+
+		clase = self.consultas.getClaseTrainID(identificador)
+		if clase == False:
+			retorno = {"status":"false"}
+			return json.dumps(retorno)
+
+		clase = clase[0]
+		if clase == "no_relevante":
+			print identificador
+			self.consultas.changeClaseTweet(identificador, "relevante")
+		else:
+			self.consultas.changeClaseTweet(identificador, "no_relevante")
+
+		retorno = {"status":"true", "identificador":identificador}
+		return json.dumps(retorno)
