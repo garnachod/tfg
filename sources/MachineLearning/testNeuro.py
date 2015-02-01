@@ -1,4 +1,5 @@
 from Clasificadores.NaiveBayes import NaiveBayes
+from Clasificadores.RedNeuronal import RedNeuronal
 from Particionado.DivisionPorcentual import DivisionPorcentual
 from Particionado.Particion import Particion
 from RW.LectorARFF import LectorARFF
@@ -16,7 +17,7 @@ if __name__ == '__main__':
 	particion = particionado.generaParticionesProporcional(instances)
 
 
-	clasificador = NaiveBayes()
+	clasificador = RedNeuronal()
 	clasificador.buildClassifier(particion.getTrain())
 
 	error = 0
@@ -38,5 +39,6 @@ if __name__ == '__main__':
 	print 'Error: ' + str(procentajeError)
 	for clase in instances.getClases():
 		print 'Error '+ clase + ': ' + str(erroresPorClase[clase] ) + ' aciertos: ' + str(aciertosPorClase[clase])
+
 	#print clasificador.classifyInstance(instances.getListInstances()[4])
 	#print (instances.getListInstances()[4]).getClase()

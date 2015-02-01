@@ -21,6 +21,9 @@ class Clasificador(object):
 	def saveClassifierToJSON(self):
 		raise NotImplementedError( "Should have implemented this" )
 
+	def restoreClassifierFromJSON(self, jsonObj):
+		raise NotImplementedError( "Should have implemented this" )
+
 	"""retorna un string con el funcionamiento del Clasificador"""
 	def getCapabilities(self):
 		raise NotImplementedError( "Should have implemented this" )
