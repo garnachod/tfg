@@ -238,10 +238,32 @@ def crea_tabla_MLT():
     cur.close()
     conn.close()
 
+def crea_tabla_entrenamientos():
+    conSql = ConexionSQL()
+    conn = conSql.getConexion()
+    cur = conSql.getCursor()
+
+    query = ('DROP TABLE IF EXISTS entrenamientos CASCADE;'
+             'CREATE TABLE entrenamientos ('
+             'id serial PRIMARY KEY'
+             ', fecha timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP '
+             ', tipo varchar(30)'
+             ', fichero_arff varchar(200)'
+             ', fichero_json varchar(200)'
+             ', porcentaje_fallo double precision'
+             ');'
+             )
+    cur.execute(query)
+    
+    conn.commit()
+    cur.close()
+    conn.close()
+
 if __name__ == "__main__":
     #crea_tablas()
     #temp_crea_tablas()
     #crea_def_user()
     #db universidad
     #crea_tareas()
-    crea_tabla_MLT()
+    #crea_tabla_MLT()
+    crea_tabla_entrenamientos()

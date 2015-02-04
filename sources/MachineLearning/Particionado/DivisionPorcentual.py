@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from Particion import Particion
 from Particionado import Particionado
-from Instances import Instances
+from MachineLearning.Instances import Instances
 import random
 
 

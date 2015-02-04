@@ -64,12 +64,12 @@ class VisualizarListaTareas(object):
 		return cadena
 
 	def generaTareaDeTupla(self, tupla):
-		cadena = ''
+		cadena = '<a href="/resumen_tarea?identificador=' + str(tupla[0]) + '">'
 		cadena += '<div class="tarea">'
 		cadena += '<div class="fragmento-tarea claro">' + tupla[4] + '</div>'
 		cadena += '<div class="fragmento-tarea oscuro">' + tupla[1] + '</div>'
 		cadena += '<div class="fragmento-tarea claro">' + str(tupla[2]) + '</div>'
 		cadena += '<div class="fragmento-tarea oscuro">' + str(tupla[3]) + '</div>'
-		cadena += '</div>'
+		cadena += '</div></a>'
 
 		return cadena

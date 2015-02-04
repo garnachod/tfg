@@ -1,3 +1,7 @@
+import os, sys
+lib_path = os.path.abspath('../')
+sys.path.append(lib_path)
+
 from Clasificadores.NaiveBayes import NaiveBayes
 from Clasificadores.RedNeuronal import RedNeuronal
 from Particionado.DivisionPorcentual import DivisionPorcentual
@@ -10,11 +14,11 @@ import json
 """pruebas unitarias"""
 if __name__ == '__main__':
 	lector = LectorARFF()
-	instances = lector.leerFichero('test.arff');
+	instances = lector.leerFichero('test.arff')
 	
 
 	particionado = DivisionPorcentual()
-	particionado.setPortcentajeTrain(0.66)
+	particionado.setPortcentajeTrain(0.7)
 	particion = particionado.generaParticionesProporcional(instances)
 
 

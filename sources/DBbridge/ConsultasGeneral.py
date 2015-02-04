@@ -195,3 +195,29 @@ class ConsultasGeneral(object):
 			print "error en changeClaseTweet"
 			print str(e)
 			return False
+
+	def creaEntrenamientoRetID(self, tipo):
+		query = """INSERT INTO entrenamientos (tipo) VALUES (%s) RETURNING id;"""
+		try:
+			self.cur.execute(query, [tipo,])
+			Id = self.cur.fetchone()[0]
+			self.conn.commit()
+
+			return Id
+			
+		except Exception, e:
+			print str(e)
+			return -1
+
+	def editEntrenamiento(self, identificador, ficheroARFF, ficheroJSON, error):
+		query = """UPDATE entrenamientos SET fichero_arff = %s, fichero_json = %s, porcentaje_fallo = %s WHERE id = %s;"""
+
+		try:
+			self.cur.execute(query, [ficheroARFF, ficheroJSON, error, identificador])
+			self.conn.commit()
+
+			return True
+		except Exception, e:
+			print "error en editEntrenamiento"
+			print str(e)
+			return False

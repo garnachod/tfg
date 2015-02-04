@@ -18,6 +18,8 @@ from Web.EntrenamientoTweets import EntrenamientoTweets
 from Web.APIGetTweetTrain import APIGetTweetTrain 
 from Web.APISetTweetTrain import APISetTweetTrain
 from Web.ListarTweetsEntrenamiento import ListarTweetsEntrenamiento
+from Web.LanzarEntrenamiento import LanzarEntrenamiento
+from Web.ResumenTarea import ResumenTarea
 from DBbridge.ConsultasWeb import ConsultasWeb
 import os
 import time
@@ -43,6 +45,8 @@ estadisticas_web = Estadisticas()
 getTweetTrain_web = APIGetTweetTrain()
 setTweetTrain_web = APISetTweetTrain()
 listaTweetTrain_web = ListarTweetsEntrenamiento()
+lanzarEntrenamiento_web = LanzarEntrenamiento()
+resumenTarea_web = ResumenTarea()
 
 #simulacion de index
 @app.route('/')
@@ -194,6 +198,19 @@ def verTareasFinalizadas():
 		#si no se ha iniciado sesion redirige a la pagina principal
 		return redirect('/')
 
+@app.route('/resumen_tarea', methods=['GET'])
+def resumenTarea():
+	if 'username' in session:
+		try:
+			identificadorTarea = request.args['identificador']
+			return resumenTarea_web.toString(identificadorTarea)
+		except Exception, e:
+			print e
+			return redirect('/')
+	else:
+		#si no se ha iniciado sesion redirige a la pagina principal
+		return redirect('/')
+
 #******************fin de tareas*************************************
 #************************Estadisticas********************************
 @app.route('/estadisticas')
@@ -249,6 +266,22 @@ def changeTweetTrain():
 			return redirect('/err?code=2')
 	else:
 		return 'err'
+
+@app.route('/lanzar_entrenamientos', methods=['GET'])
+def lanzarEntrenamientos():
+	if 'username' in session:
+		try:
+			if request.args['id_entr'] is None:
+				return lanzarEntrenamiento_web.toString()
+			else:
+				lanzarEntrenamiento_web.generaEntrenamientoTweets()
+				return redirect('/success?code=3')
+		except Exception, e:
+			return lanzarEntrenamiento_web.toString()
+	else:
+		#si no se ha iniciado sesion redirige a la pagina principal
+		return redirect('/')
+
 
 #******************fin de entrenamiento*******************************
 

@@ -21,6 +21,24 @@
 .color6{
 	color: #cee9f4;
 }
+.cont-general{
+	margin-left: auto;
+	margin-right: auto;
+	width: 100%;
+	background-color: #ffffff;
+	padding: 25px 20px;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	-webkit-box-shadow: 0px 3px 3px 0px rgba(0,0,0,0.3);
+	-moz-box-shadow: 0px 3px 3px 0px rgba(0,0,0,0.3);
+	box-shadow: 0px 3px 3px 0px rgba(0,0,0,0.3); 
+	text-align: center;
+	margin-bottom: 20px;
+	color: #183641;
+	overflow: hidden;
+}
+
 body{
 	/*font-family: "Times New Roman", Times, serif;*/
 	font-family: Helvetica;
@@ -32,6 +50,10 @@ a, img{  border-style: none;
 	  	border:0;
 	  	outline:none;
 	  }
+a {
+  text-decoration:none;
+  color: inherit;
+}
 
 html, body, h3{
 	margin: 0px;

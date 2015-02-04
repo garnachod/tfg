@@ -56,6 +56,18 @@ class Estadisticas(object):
 					</div>
 				  '''
 
+		cadena += '<div style="overflow:hidden; width: 100%;">'
+		cadena += '<h3 style="text-align: left;" >Estadísticas del entrenamiento</h3>'
+
+		cadena += '''
+					<div class="contenedor-estadistica">	
+						<p class="titulo-estadistica">Fallo entrenamiento</p>
+						<div id="canvas-holder">
+							<canvas id="chart-porcentajeFalloT" width="300" height="300"/>
+						</div>
+					</div>
+				  '''
+		cadena += '</div>'
 		cadena +='''</div>
 						</div>
 					</div>'''
@@ -69,6 +81,9 @@ class Estadisticas(object):
 		cadena += '</script>'
 		cadena += '<script>'
 		cadena += self.generaCodigoNumeroTweetsMedia()
+		cadena += '</script>'
+		cadena += '<script>'
+		cadena += self.generaCodigoPorcentajeErrorT()
 		cadena += '</script>'
 		cadena += '<script>'
 		cadena += self.generaOnLoad()
@@ -130,6 +145,26 @@ class Estadisticas(object):
 		cadena = "var numTweetsMedia = " + json.JSONEncoder().encode(objJson)
 
 		return cadena
+
+	def generaCodigoPorcentajeErrorT(self):
+
+		objJson = []
+		objJson.append({})
+		fallo = int(self.consultas.getPorcentajeFalloTrainTweets() *100)
+		objJson[0]["value"] = fallo
+		objJson[0]["color"] = '#949FB1'
+		objJson[0]["highlight"] = '#A8B3C5'
+		objJson[0]["label"] = 'Porcentaje de fallo'
+
+		objJson.append({})
+		objJson[1]["value"] = 100 - fallo
+		objJson[1]["color"] = '#46BFBD'
+		objJson[1]["highlight"] = '#5AD3D1'
+		objJson[1]["label"] = 'Porcentaje de acierto'
+
+		cadena = "var numProcentajeFalloT = " + json.JSONEncoder().encode(objJson)
+
+		return cadena
 	
 	def generaOnLoad(self):
 		cadena = '''
@@ -138,6 +173,8 @@ class Estadisticas(object):
 						window.myPieNumTweetsRT = new Chart(ctx).Pie(numTweetsRT);
 						var ctx2 = document.getElementById("chart-numTweetsMedia").getContext("2d");
 						window.myPieNumTweetsMedia = new Chart(ctx2).Pie(numTweetsMedia);
+						var ctx3 = document.getElementById("chart-porcentajeFalloT").getContext("2d");
+						window.myPieNumProcentajeFalloT = new Chart(ctx3).Pie(numProcentajeFalloT);
 					};
 				  '''
 		return cadena

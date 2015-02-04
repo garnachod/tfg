@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-import os, sys
-lib_path = os.path.abspath('../')
-sys.path.append(lib_path)
+#import os, sys
+#lib_path = os.path.abspath('../')
+#sys.path.append(lib_path)
 
 from DBbridge.ConsultasGeneral import ConsultasGeneral
-from ListaPalabrasEntrenamiento import ListaPalabrasEntrenamiento
-from ConjuntoPalabras import ConjuntoPalabras
-from FiltroPalabras import FiltroPalabras
-from PalabrasDeTweet import PalabrasDeTweet
+from MachineLearning.ListaPalabrasEntrenamiento import ListaPalabrasEntrenamiento
+from MachineLearning.ConjuntoPalabras import ConjuntoPalabras
+from MachineLearning.FiltroPalabras import FiltroPalabras
+from MachineLearning.PalabrasDeTweet import PalabrasDeTweet
 
 class GeneradorARFF(object):
 	"""docstring for GeneradorARFF"""
@@ -92,5 +92,5 @@ class GeneradorARFF(object):
 """pruebas unitarias"""
 if __name__ == '__main__':
 	deb = GeneradorARFF()
-	deb.entrenamientoTweets('test')
+	deb.entrenamientoTweets('test.arff')
 		

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from Instance import Instance
-from Instances import Instances
+from MachineLearning.Instance import Instance
+from MachineLearning.Instances import Instances
 from Clasificador import Clasificador
 import random
 import math   # This will import math module
@@ -59,7 +59,7 @@ class RedNeuronal(Clasificador):
 		instancias = data.getListInstances()
 		#paso1
 		for epoca in range(0, self.nEpocas):
-			print epoca
+			#print epoca
 			#paso2 por cada instancia en train
 			for instancia in instancias:
 				#***********inicio de Feedforward**********************************

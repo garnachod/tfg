@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-import os, sys
-lib_path = os.path.abspath('../')
-sys.path.append(lib_path)
+#import os, sys
+#lib_path = os.path.abspath('../')
+#sys.path.append(lib_path)
 
 import re
-from Instances import Instances
-from Instance import Instance
+from MachineLearning.Instances import Instances
+from MachineLearning.Instance import Instance
 
 class LectorARFF(object):
 	"""docstring for LectorARFF"""
@@ -18,7 +18,7 @@ class LectorARFF(object):
 		instances = Instances()
 		#espera @RELATION nombre
 		#espera tambien @ATTRIBUTE
-		#espera tambien @dara
+		#espera tambien @data
 		i = 0
 		while True:
 			linea = f.readline()
@@ -72,6 +72,43 @@ class LectorARFF(object):
 				lista.append(token)
 
 		return lista
+
+	def soloLeerCabecera(self, nombre_fichero):
+		f = open(nombre_fichero,'r')
+		instances = Instances()
+		#espera @RELATION nombre
+		#espera tambien @ATTRIBUTE
+		#espera tambien @data
+		i = 0
+		while True:
+			linea = f.readline()
+			tokens = re.split(self.delimiters, linea)
+
+			if len(tokens) > 1:
+				if tokens[0] == '@RELATION':
+					continue
+				elif tokens[0] == '@ATTRIBUTE':
+					if tokens[1] == 'class':
+						for indice in range(2, len(tokens)):
+							if tokens[indice] != '':
+								instances.addClase(tokens[indice])
+					elif tokens[2] == 'REAL':
+						instances.addColumna(tokens[1], tokens[2])
+						continue
+					else:
+						instances.addColumna(tokens[1], 'NOMINAL')
+						continue
+
+				elif tokens[0] == '@DATA':
+					print '@DATA'
+					break
+
+			i = i+1
+			if i > 100:
+				print 'Error de fichero'
+				return None
+
+		return instances
 
 
 #pruebas unitarias
