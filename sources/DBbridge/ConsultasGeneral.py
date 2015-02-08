@@ -221,3 +221,38 @@ class ConsultasGeneral(object):
 			print "error en editEntrenamiento"
 			print str(e)
 			return False
+
+	def getFilesLastTrainTweet(self):
+		query = "SELECT fichero_arff, fichero_json FROM entrenamientos WHERE tipo = 'tweet' and fichero_arff != '' ORDER BY id DESC LIMIT 1;"
+		try:
+			self.cur.execute(query)
+			row = self.cur.fetchone()
+
+			return row
+		except Exception, e:
+			print "error en getFilesLastTrainTweet"
+			print str(e)
+			return False
+
+	def getTweetsIdBusquedaNoAnalizada(self, searchID):
+		query = "SELECT j.id_tweet FROM join_search_tweet as j WHERE j.id_search = %s AND j.id_tweet NOT IN (SELECT c.id_tweet from clasificaciontweets as c)"
+		try:
+			self.cur.execute(query, [searchID, ])
+			rows = self.cur.fetchall()
+
+			return rows
+		except Exception, e:
+			print "error en getFilesLastTrainTweet"
+			print str(e)
+			return False
+	def insertTweetAnalizado(self, id_tweet, clase):
+		query = """INSERT INTO clasificaciontweets (id_tweet, clase) VALUES (%s, %s)"""
+		try:
+			self.cur.execute(query, [id_tweet, clase])
+			self.conn.commit()
+
+			return True
+		except Exception, e:
+			print "error en setTweetTrainID"
+			print str(e)
+			return False

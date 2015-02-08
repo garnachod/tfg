@@ -60,7 +60,7 @@ class LectorARFF(object):
 				instance.addElement(tokens[longitud - 1])
 				instances.addInstance(instance)
 
-
+		f.close()
 		return instances
 
 	def privateLimpiaVacioTokens(self, tokens):
@@ -108,6 +108,7 @@ class LectorARFF(object):
 				print 'Error de fichero'
 				return None
 
+		f.close()
 		return instances
 
 

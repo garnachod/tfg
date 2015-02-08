@@ -28,9 +28,14 @@ class AltaTarea():
 					tipoDB = 'BusquedaSencillaUser'
 				else:
 					#BusquedaSencillaTopic
-					tipoDB = 'BusquedaSencillaTopic'
-			else:
-				#no implementado
+					tipoDB = 'BusquedaSencillaKeywords'
+			elif tipoTarea == 'bp':
+				if tipoBusqueda == 'suser':
+					#BusquedaSencillaUser
+					tipoDB = 'BusquedaSencillaUser'
+				else:
+					#AnalisisPalabrasKeywords
+					tipoDB = 'AnalisisPalabrasKeywords'
 				return False
 
 			searchID = self.consultas.setAppSearchAndGetId(search, session['user_id'])

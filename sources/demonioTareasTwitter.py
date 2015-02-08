@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
-
+import os
 import time
 
 
@@ -49,7 +49,7 @@ class App():
                 for tarea in tareas:
                     tarea.doSearch()
 
-                time.sleep(150)
+                time.sleep(100)
 
                 for tarea in tareas:
                     tarea.doPostProc()

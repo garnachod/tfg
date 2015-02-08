@@ -259,6 +259,23 @@ def crea_tabla_entrenamientos():
     cur.close()
     conn.close()
 
+def crea_tabla_clasificacion():
+    conSql = ConexionSQL()
+    conn = conSql.getConexion()
+    cur = conSql.getCursor()
+
+    query = ('DROP TABLE IF EXISTS clasificacionTweets CASCADE;'
+             'CREATE TABLE clasificacionTweets ('
+             'id_tweet integer PRIMARY KEY'
+             ', clase varchar(30)'
+             ');'
+             )
+    cur.execute(query)
+    
+    conn.commit()
+    cur.close()
+    conn.close()
+
 if __name__ == "__main__":
     #crea_tablas()
     #temp_crea_tablas()
@@ -266,4 +283,5 @@ if __name__ == "__main__":
     #db universidad
     #crea_tareas()
     #crea_tabla_MLT()
-    crea_tabla_entrenamientos()
+    #crea_tabla_entrenamientos()
+    crea_tabla_clasificacion()

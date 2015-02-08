@@ -57,6 +57,8 @@ class ResumenTarea(object):
 		tipo = self.consultas.getTipoTarea(identificador)
 		if "BusquedaSencilla" in tipo:
 			cadena += self.toStringBusquedaSencilla(identificador)
+		if "AnalisisPalabras" in tipo:
+			cadena += self.toStringTweetsAnalisisPalabras(identificador)
 		
 
 		
@@ -80,14 +82,24 @@ class ResumenTarea(object):
 
 	def toStringBusquedaSencilla(self, identificador):
 		cadena = '<h3 style="text-align: left;" >Tweets</h3>'
-		cadena += '<div style="text-align: left;">'
 		tweets = self.consultas.getTweetsRecuperadosTareaID(identificador)
+		return cadena + self.toStringListaTweets(tweets)
+
+	def toStringTweetsAnalisisPalabras(self, identificador):
+		cadena = '<h3 style="text-align: left;" >Tweets relevantes</h3>'
+		tweets = self.consultas.getTweetsRecuperadosTareaAnalisisID(identificador)
+		return cadena + self.toStringListaTweets(tweets)
+
+	def toStringListaTweets(self, tweets):
+		cadena = '<div style="text-align: left;">'
 
 		for tweet in tweets:
 			cadena += Tweet.imprimeTweett(tweet, False)
 		cadena += '</div>'
 
 		return cadena
+
+
 
 	def generaGraficaFrecuenciasDiarias(self, identificador):
 		rows = self.consultas.getTweetsAlDiaTarea(identificador)
