@@ -90,8 +90,32 @@ class ConsultasGeneral(object):
 			print str(e)
 			return False
 
-	def getTweetsAndClassTrain(self):
-		query = "SELECT status, clase FROM tweets as t, tweets_entrenamiento as tw WHERE t.id = tw.id_tweet and tw.clase != 'no_usar'"
+	def getTweetsAndClassTrain(self, id_lista):
+		query = "SELECT status, clase FROM tweets as t, tweets_entrenamiento as tw WHERE t.id = tw.id_tweet and tw.id_lista = %s and tw.clase != 'no_usar'"
+		try:
+			self.cur.execute(query, [id_lista, ])
+			rows = self.cur.fetchall()
+
+			return rows
+		except Exception, e:
+			print str(e)
+			return False
+
+	def creaListaEntrenamiento(self, nombre):
+		query = """INSERT INTO listas_entrenamiento (nombre) VALUES (%s)"""
+		#query = "INSERT INTO tweets_entrenamiento (id_tweet,clase) VALUES (%s,%s);"
+		try:
+			self.cur.execute(query, [nombre, ])
+			self.conn.commit()
+
+			return True
+		except Exception, e:
+			print "error en creaListaEntrenamiento"
+			print str(e)
+			return False
+
+	def getListasEntrenamiento(self):
+		query = "SELECT id, nombre FROM listas_entrenamiento"
 		try:
 			self.cur.execute(query)
 			rows = self.cur.fetchall()
@@ -100,7 +124,18 @@ class ConsultasGeneral(object):
 		except Exception, e:
 			print str(e)
 			return False
+	
+	def deleteListaEntrenamiento(self, identificador):
+		query = 'DELETE FROM listas_entrenamiento WHERE id=%s;'
+		try:
+			self.cur.execute(query, [identificador, ])
+			self.conn.commit()
 
+			return True
+		except Exception, e:
+			print "error en deleteListaEntrenamiento"
+			print str(e)
+			return False
 
 	def getTweetIDLarge(self, identificador):
 		query = """SELECT t.status, t.favorite_count, t.retweet_count, t.is_retweet, t.media_url, u.screen_name 
@@ -196,10 +231,10 @@ class ConsultasGeneral(object):
 			print str(e)
 			return False
 
-	def creaEntrenamientoRetID(self, tipo):
-		query = """INSERT INTO entrenamientos (tipo) VALUES (%s) RETURNING id;"""
+	def creaEntrenamientoRetID(self, tipo, id_lista_entrenamiento):
+		query = """INSERT INTO entrenamientos (tipo, id_lista_entrenamiento) VALUES (%s, %s) RETURNING id;"""
 		try:
-			self.cur.execute(query, [tipo,])
+			self.cur.execute(query, [tipo, id_lista_entrenamiento])
 			Id = self.cur.fetchone()[0]
 			self.conn.commit()
 
@@ -222,10 +257,10 @@ class ConsultasGeneral(object):
 			print str(e)
 			return False
 
-	def getFilesLastTrainTweet(self):
-		query = "SELECT fichero_arff, fichero_json FROM entrenamientos WHERE tipo = 'tweet' and fichero_arff != '' ORDER BY id DESC LIMIT 1;"
+	def getFilesLastTrainTweet(self, id_lista):
+		query = "SELECT fichero_arff, fichero_json FROM entrenamientos WHERE tipo = 'tweet' and id_lista_entrenamiento = %s and fichero_arff != '' ORDER BY id DESC LIMIT 1;"
 		try:
-			self.cur.execute(query)
+			self.cur.execute(query, [id_lista, ])
 			row = self.cur.fetchone()
 
 			return row
@@ -242,7 +277,7 @@ class ConsultasGeneral(object):
 
 			return rows
 		except Exception, e:
-			print "error en getFilesLastTrainTweet"
+			print "error en getTweetsIdBusquedaNoAnalizada"
 			print str(e)
 			return False
 	def insertTweetAnalizado(self, id_tweet, clase):
@@ -252,6 +287,18 @@ class ConsultasGeneral(object):
 			self.conn.commit()
 
 			return True
+		except Exception, e:
+			print "error en setTweetTrainID"
+			print str(e)
+			return False
+
+	def getIdListaEntrenamientoByIDSearch(self, id_search):
+		query = """SELECT id_lista_entrenamiento FROM tareas_programadas WHERE id_search = %s"""
+		try:
+			self.cur.execute(query, [id_search, ])
+			row = self.cur.fetchone()
+
+			return row[0]
 		except Exception, e:
 			print "error en setTweetTrainID"
 			print str(e)

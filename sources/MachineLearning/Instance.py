@@ -14,6 +14,9 @@ class Instance(object):
 	def getElementAtPos(self, pos):
 		return self.listaDatos[pos]
 
+	def setElementAtPos(self, elem, pos):
+		self.listaDatos[pos] = elem
+
 	def getAllElements(self):
 		return self.listaDatos
 

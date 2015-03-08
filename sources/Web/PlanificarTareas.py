@@ -8,6 +8,7 @@ from DBbridge.ConsultasWeb import ConsultasWeb
 class PlanificarTareas():
 	def __init__(self):
 		self.head = Head('Planificar tarea') 
+		self.consultas = ConsultasWeb()
 		self.generaHead()
 
 	def generaHead(self):
@@ -15,6 +16,7 @@ class PlanificarTareas():
 		self.head.add_css("static/css/tareas.css")
 		self.head.add_js("static/js/jquery.js")
 		self.head.add_js("static/js/opciones_index.js")
+		self.head.add_js("static/js/opciones_generar_tarea.js")
 		self.head.activaMenu()
 
 	def toString(self, usuario):
@@ -23,8 +25,7 @@ class PlanificarTareas():
 
 		cadena += '<body>'
 		
-		consultasWeb = ConsultasWeb()
-		userHeader = UserHeader(usuario, 'static/img/usrIcon.png', consultasWeb.isAdministrator(session['user_id']), True)
+		userHeader = UserHeader(usuario, 'static/img/usrIcon.png', self.consultas.isAdministrator(session['user_id']), True)
 		userHeader.setBotonInicio(True)
 		cadena += userHeader.toString()
 
@@ -37,9 +38,9 @@ class PlanificarTareas():
 									<p style="text-align: left;">
 									<select name="tipoTarea" id="tipoTarea" style="width:339px; margin-left: 70px;">
   										<option value="sb">Solo búsqueda</option>
-  										<option value="bp">Busqueda y análisis de palabras</option>
-  										<option value="bf">Busqueda y análisis de frecuencia</option>
-  									</select>
+  										<option value="bp">Busqueda y análisis de palabras</option>'''
+  		#<option value="bf">Busqueda y análisis de frecuencia</option>
+  		cadena +=	'''				</select>
   									</p>
   									<p style="text-align: left;">
   										Búsqueda:
@@ -61,6 +62,24 @@ class PlanificarTareas():
 	  										<option value="mes">30 días</option> 
 	  									</select>
   									</p>
+  					'''
+  		cadena +=   '''				<div id="cont_lista_entrenamiento">
+  									<p style="text-align: left;">
+  										Lista de tweets usada para el análisis:
+  									</p>			
+  									<p style="text-align: left;">
+	  									<select name="lista_entrenamiento" id="lista_entrenamiento" style="width:339px; margin-left: 70px;">
+  					'''
+  		rows = self.consultas.getListasEntrenamiento()
+		for row in rows:
+			cadena += '<option value="'+str(row[0])+'">' + row[1] +'</option>'
+
+		cadena +=   '''
+										</select>
+  									</p>
+  									</div>
+					'''
+  		cadena +=   '''
   									<p style="margin-bottom: 5px;"><input class="boton-general" type="submit" value="Enviar"></p>
 								</form>
 							</div>

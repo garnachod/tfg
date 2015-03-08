@@ -39,8 +39,17 @@ class EntrenamientoTweets(object):
 								<h3 style="text-align:  left;">Búsqueda:</h3>
 								<form id="form1" action="" method="post">
   									<input id="input_search" type="text" name="search" placeholder="#hashtag,palabra1,p1 p2">
-  									<input id="input_aleat" type="checkbox" name="aleat">Aleatorio
-  									<p style="margin-bottom: 5px;"><input class="boton-general" type="submit" value="Buscar"></p>
+  									<input id="input_aleat" type="checkbox" name="aleat">Aleatorio'''
+  		#array 0 id, 1 nombre
+  		#lista de entrenamientos
+  		listas = self.consultas.getListasEntrenamiento()
+  		cadena += '<p><select name="lista_entrenamiento" id="lista_entrenamiento" style="width: 325px;text-align: center;">'
+  		for lista in listas:
+  			cadena += '<option value="'+str(lista[0])+'">'+str(lista[1])+'</option>'
+
+  		cadena += '</select></p>'
+
+  		cadena += '''				<p style="margin-bottom: 5px;"><input class="boton-general" type="submit" value="Buscar"></p>
 								</form>
 							</div>
 							<div class="cont-busqueda" style="text-align: left;">

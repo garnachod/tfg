@@ -202,6 +202,30 @@ nav ul ul {
 	-moz-border-radius: 5px;
 	border-radius: 5px;
 }
+.boton-eliminar{
+	background-color: #FF6248;
+	color: #FFF;
+	padding: 10px 17px;
+	display: inline-block;
+	text-decoration: none;
+	border-radius: 50%;
+}
+.boton-eliminar:hover{
+	background-color: #F92300;
+	text-decoration: underline;
+}
+
+.elemento-listado-sencillo{
+	background-color: #ECECEC;
+	padding: 10px 30px;
+	display:inline-block;
+	text-decoration: none;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	margin: 0px 20px;
+}
+
 .boton-general:hover{
 	background-color: #4699b7;
 	text-decoration: underline;

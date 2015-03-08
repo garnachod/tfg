@@ -39,7 +39,9 @@ class LanzarEntrenamiento(object):
 							<div class="cont-general">
 							<h3 style="text-align: left;" >Lanzar entrenamiento Tweets</h3>'''
 
-		cadena += '<a class="boton-general" href="/lanzar_entrenamientos?id_entr=1">Lanzar entrenamiento</a>'
+		rows = self.consultas.getListasEntrenamiento()
+		for row in rows:
+			cadena += '<a class="boton-general" href="/lanzar_entrenamientos?id_entr='+str(row[0])+'">' + row[1] +'</a>'
 
 		
 		cadena +='''</div>
@@ -53,7 +55,9 @@ class LanzarEntrenamiento(object):
 
 		return cadena
 
-	def generaEntrenamientoTweets(self):
-		asinc = EntrenamientoTweets_ASINC()
+	def generaEntrenamientoTweets(self, identificador):
+		asinc = EntrenamientoTweets_ASINC(identificador)
 		asinc.start()
+		#entre = EntrenamientoTweets()
+		#entre.lanzar(identificador)
 		return 'OK'

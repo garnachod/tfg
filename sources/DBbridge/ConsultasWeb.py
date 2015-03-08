@@ -74,10 +74,14 @@ class ConsultasWeb(ConsultasGeneral):
 			print str(e)
 			return False
 
-	def getTweetsEntrenamientoListar(self):
-		query = "SELECT t.status, t.favorite_count, t.retweet_count, t.is_retweet, t.media_url, u.screen_name, t.id, te.clase FROM tweets as t, users as u, tweets_entrenamiento as te WHERE te.clase != 'no_usar' and te.id_tweet = t.id and u.id = t.tuser order by te.id DESC;"
+	def getTweetsEntrenamientoListar(self, identificador):
+		query = """SELECT t.status, t.favorite_count, t.retweet_count, t.is_retweet, t.media_url, u.screen_name, t.id, te.clase 
+				FROM tweets as t, users as u, tweets_entrenamiento as te , listas_entrenamiento as li
+				WHERE te.clase != 'no_usar' and li.id = id_lista and li.id = %s and te.id_tweet = t.id and u.id = t.tuser order by te.id DESC;
+				"""
+		
 		try:
-			self.cur.execute(query)
+			self.cur.execute(query, [identificador, ])
 			rows = self.cur.fetchall()
 			
 			return rows
@@ -172,10 +176,10 @@ class ConsultasWeb(ConsultasGeneral):
 			print str(e)
 			return -1
 
-	def altaTarea(self, tipo, id_search, tiempo):
-		query = "INSERT INTO tareas_programadas (tipo, id_search, tiempo_fin) VALUES (%s,%s,(CURRENT_TIMESTAMP + \'" + str(tiempo) + " days\'))"
+	def altaTarea(self, tipo, id_search, tiempo, id_lista):
+		query = "INSERT INTO tareas_programadas (tipo, id_search, tiempo_fin, id_lista_entrenamiento) VALUES (%s,%s,(CURRENT_TIMESTAMP + \'" + str(tiempo) + " days\'), %s)"
 		try:
-			self.cur.execute(query, [tipo, id_search])
+			self.cur.execute(query, [tipo, id_search, id_lista])
 			self.conn.commit()
 
 			return True

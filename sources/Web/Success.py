@@ -40,5 +40,5 @@ class Success():
 		return cadena
 
 	def getValueCodigo(self, identificador):
-		codigo = { '1': 'Dar de alta un nuevo usuario', '2': 'Clave creada', '3':'Tarea programada'}
+		codigo = { '1': 'Dar de alta un nuevo usuario', '2': 'Clave creada', '3':'Tarea programada', '4':'Entrenamiento lanzado'}
 		return codigo[identificador]

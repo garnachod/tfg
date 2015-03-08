@@ -23,7 +23,7 @@ class ListarTweetsEntrenamiento(object):
 		self.head.add_js("static/js/lista_tweets_entrenamiento.js")
 		self.head.activaMenu()
 
-	def toString(self):
+	def toString(self, identificador = -1):
 		cadena = '<!DOCTYPE html>\n<html>'
 		cadena += self.head.toString()
 
@@ -33,33 +33,47 @@ class ListarTweetsEntrenamiento(object):
 		userHeader.setBotonInicio(True)
 		cadena += userHeader.toString()
 
-		tweets = self.consultas.getTweetsEntrenamientoListar()
-		if tweets == False:
-			return 'ERR'
+		#tweets = self.consultas.getTweetsEntrenamientoListar()
+		#if tweets == False:
+		#	return 'ERR'
+		
 
 		cadena += '''<div class="mid">
 						<div class="mid-cont">
 							<div class="cont-busqueda">
-								<h3 style="text-align:  left;">Tweets:</h3>
-				   '''
+				'''
+		if identificador == -1:
+			rows = self.consultas.getListasEntrenamiento()
+			cadena += '<h3 style="text-align:  left;">Seleccionar lista de entrenamiento:</h3>'
+			if rows == False:
+				return 'ERR'
+			
+			for row in rows:
+				#insertar el link
+				link = '/ver_entrena_tweets?id_lista=' + str(row[0])
+				cadena += '<a href="'+link+'" class="boton-general">' + row[1] + '</a>'
+		else:
+			tweets = self.consultas.getTweetsEntrenamientoListar(identificador)
+			cadena += '<h3 style="text-align:  left;">tweets</h3>'
+			if tweets == False:
+				return 'ERR'
 
-		for tweet in tweets:
-			clase = self.privateTweetDBGetClass(tweet)
-			if clase == 'no_relevante':
-				cadena += '<div id="'+ str(self.privateTweetDBGetId(tweet))+ '" class="no_relevante">'
-				cadena += Tweet.imprimeTweett(tweet, False)
-				cadena += '<div style="text-align:center;">'
-				cadena += '<a href="javascript:votar.cambiarVotoID('+str(self.privateTweetDBGetId(tweet)) +')" class="boton-general" style="margin-bottom: 10px;">Cambiar voto</a>'
-				cadena += '</div>'
-				cadena += '</div>'
-			else:
-				cadena += '<div id="'+ str(self.privateTweetDBGetId(tweet)) + '" class="relevante">'
-				cadena += Tweet.imprimeTweett(tweet, False)
-				cadena += '<div style="text-align:center;">'
-				cadena += '<a href="javascript:votar.cambiarVotoID('+str(self.privateTweetDBGetId(tweet)) +')" class="boton-general" style="margin-bottom: 10px;">Cambiar voto</a>'
-				cadena += '</div>'
-				cadena += '</div>'
-
+			for tweet in tweets:
+				clase = self.privateTweetDBGetClass(tweet)
+				if clase == 'no_relevante':
+					cadena += '<div id="'+ str(self.privateTweetDBGetId(tweet))+ '" class="no_relevante">'
+					cadena += Tweet.imprimeTweett(tweet, False)
+					cadena += '<div style="text-align:center;">'
+					cadena += '<a href="javascript:votar.cambiarVotoID('+str(self.privateTweetDBGetId(tweet)) +')" class="boton-general" style="margin-bottom: 10px;">Cambiar voto</a>'
+					cadena += '</div>'
+					cadena += '</div>'
+				else:
+					cadena += '<div id="'+ str(self.privateTweetDBGetId(tweet)) + '" class="relevante">'
+					cadena += Tweet.imprimeTweett(tweet, False)
+					cadena += '<div style="text-align:center;">'
+					cadena += '<a href="javascript:votar.cambiarVotoID('+str(self.privateTweetDBGetId(tweet)) +')" class="boton-general" style="margin-bottom: 10px;">Cambiar voto</a>'
+					cadena += '</div>'
+					cadena += '</div>'
 
 
 		cadena +=  '''
@@ -79,3 +93,5 @@ class ListarTweetsEntrenamiento(object):
 	def privateTweetDBGetId(self, tweet):
 		longitud = len(tweet)
 		return tweet[longitud-2]
+
+		

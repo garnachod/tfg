@@ -14,7 +14,7 @@ import json
 
 class ClasificadorTweets(object):
 	"""docstring for ClasificadorTweets"""
-	def __init__(self):
+	def __init__(self, id_lista_entrenamiento):
 		super(ClasificadorTweets, self).__init__()
 		self.clasificador = None
 		self.instances = None
@@ -22,11 +22,12 @@ class ClasificadorTweets(object):
 		self.columnas = []
 		self.diccionarioPalabras = {}
 		self.separador = PalabrasDeTweet()
+		self.id_lista_entrenamiento = id_lista_entrenamiento
 		self.inicializa()
 
 
 	def inicializa(self):
-		row = self.consultas.getFilesLastTrainTweet()
+		row = self.consultas.getFilesLastTrainTweet(self.id_lista_entrenamiento)
 	
 		if str(os.path.abspath('')) != '/':
 			fJSON = open(row[1],'r')

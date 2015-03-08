@@ -11,7 +11,8 @@ class TareaAnalisisPalabrasK(TareaProgramadaBusquedaKeywords):
 		
 	def doPostProc(self):
 		tweets_id = self.consultas.getTweetsIdBusquedaNoAnalizada(self.search_id)
-		clasificaTweet = ClasificadorTweets()
+		id_lista = self.consultas.getIdListaEntrenamientoByIDSearch(self.search_id)
+		clasificaTweet = ClasificadorTweets(id_lista)
 
 		for row in tweets_id:
 

@@ -211,6 +211,7 @@ def crea_tareas():
              ', id_search integer REFERENCES app_searches(id)'
              ', tiempo_inicio timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP '
              ', tiempo_fin timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP '
+             ', id_lista_entrenamiento int'
              ');'
              )
     cur.execute(query)
@@ -227,7 +228,8 @@ def crea_tabla_MLT():
     query = ('DROP TABLE IF EXISTS tweets_entrenamiento CASCADE;'
              'CREATE TABLE tweets_entrenamiento ('
              'id serial PRIMARY KEY'
-             ', id_tweet integer REFERENCES tweets(id) UNIQUE'
+             ', id_tweet integer REFERENCES tweets(id)'
+             ', id_lista integer REFERENCES listas_entrenamiento(id) ON DELETE CASCADE'
              ', fecha_creacion timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP '
              ', clase varchar(30)'
              ');'
@@ -251,6 +253,7 @@ def crea_tabla_entrenamientos():
              ', fichero_arff varchar(200)'
              ', fichero_json varchar(200)'
              ', porcentaje_fallo double precision'
+             ', id_lista_entrenamiento int'
              ');'
              )
     cur.execute(query)
@@ -276,12 +279,30 @@ def crea_tabla_clasificacion():
     cur.close()
     conn.close()
 
+def crea_tabla_lista_entrenamiento():
+    conSql = ConexionSQL()
+    conn = conSql.getConexion()
+    cur = conSql.getCursor()
+
+    query = ('DROP TABLE IF EXISTS listas_entrenamiento CASCADE;'
+             'CREATE TABLE listas_entrenamiento ('
+             'id serial PRIMARY KEY'
+             ', nombre varchar(140)'
+             ');'
+             )
+    cur.execute(query)
+    
+    conn.commit()
+    cur.close()
+    conn.close()
+
 if __name__ == "__main__":
     #crea_tablas()
     #temp_crea_tablas()
     #crea_def_user()
     #db universidad
-    #crea_tareas()
+    crea_tareas()
     #crea_tabla_MLT()
     #crea_tabla_entrenamientos()
-    crea_tabla_clasificacion()
+    #crea_tabla_clasificacion()
+    #crea_tabla_lista_entrenamiento()

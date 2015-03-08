@@ -13,7 +13,7 @@ class DivisionPorcentual(Particionado):
 		super(DivisionPorcentual, self).__init__()
 		self.porcentaje = 0.0
 
-	def setPortcentajeTrain(self, porcentaje):
+	def setPorcentajeTrain(self, porcentaje):
 		self.porcentaje = porcentaje
 
 	def generaParticiones(self, instances):
@@ -45,6 +45,7 @@ class DivisionPorcentual(Particionado):
 			instanceTest.addInstance(listInstances[i])
 
 		#añadir a la particion las instancias
+
 		particion.setTrain(instanceTrain)
 		particion.setTest(instanceTest)
 
@@ -87,6 +88,9 @@ class DivisionPorcentual(Particionado):
 			conteoClases[clase]['instaces_id'].append(i)
 			i+=1
 
+		for clase in listaClases:
+			print 'instancias de la clase ' + str(clase) + ': ' + str(conteoClases[clase]['cont']) + ' porcentaje: '+ str(conteoClases[clase]['cont']/float(len(listInstances)))
+
 		#instancias de train
 		#por cada clase busca se ha de introducir una instancia
 		for i in range(0, n_instances_train):
@@ -111,6 +115,8 @@ class DivisionPorcentual(Particionado):
 		#	instanceTest.addInstance(listInstances[i])
 
 		#añadir a la particion las instancias
+
+		instanceTrain.shuffle()
 		particion.setTrain(instanceTrain)
 		particion.setTest(instanceTest)
 

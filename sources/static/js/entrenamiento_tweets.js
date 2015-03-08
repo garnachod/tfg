@@ -5,17 +5,21 @@ jQuery( document ).ready(function( $ ) {
 	});
 	$("#bot_no_usar").click(function(e){
 		e.preventDefault();
-		var dataEnvio = {vote: "no_usar"};
+		var id_lista = $("#lista_entrenamiento").val();
+		var dataEnvio = {vote: "no_usar", lista:id_lista};
+
 		votar.doSend(dataEnvio);
 	});
 	$("#bot_no_relevante").click(function(e){
 		e.preventDefault();
-		var dataEnvio = {vote: "no_relevante"};
+		var id_lista = $("#lista_entrenamiento").val();
+		var dataEnvio = {vote: "no_relevante", lista:id_lista};
 		votar.doSend(dataEnvio);
 	});
 	$("#bot_relevante").click(function(e){
 		e.preventDefault();
-		var dataEnvio = {vote: "relevante"};
+		var id_lista = $("#lista_entrenamiento").val();
+		var dataEnvio = {vote: "relevante", lista:id_lista};
 		votar.doSend(dataEnvio);
 	});
 
@@ -30,8 +34,9 @@ jQuery( document ).ready(function( $ ) {
 function getSearchAndSend(){
 	var valueSearch = $("#input_search").val();
 	var valueAleat = $("#input_aleat").is(':checked');
-		
-	var dataEnvio = { search: valueSearch, aleat: valueAleat };
+	var id_lista = $("#lista_entrenamiento").val();
+	
+	var dataEnvio = { search: valueSearch, aleat: valueAleat, lista:id_lista};
 
 	busqueda.doSearch(dataEnvio);
 }

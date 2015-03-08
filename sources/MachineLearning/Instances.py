@@ -1,3 +1,5 @@
+import random
+import math
 class Instances(object):
 	"""docstring for Instances"""
 	def __init__(self):
@@ -48,3 +50,37 @@ class Instances(object):
 
 	def getTipoColumnaByNombre(self, nombre):
 		return self.columnaTipo[nombre]
+
+	def shuffle(self):
+		random.shuffle(self.instances)
+
+	def normaliza(self):
+		media = []
+		desv = []
+		nColumnas = self.getNumeroColumnas()
+
+		for i in range(0, nColumnas):
+			media.append(0.0)
+			desv.append(0.0)
+
+		for instance in self.instances:
+			for i in range(0, nColumnas):
+				media[i] += instance.getElementAtPos(i)
+
+		for i in range(0, nColumnas):
+			media[i] = media[i]/float(self.getNumeroInstances())
+
+		for instance in self.instances:
+			for i in range(0, nColumnas):
+				desv[i] += pow(instance.getElementAtPos(i) - media[i], 2)
+
+		for i in range(0, nColumnas):
+			desv[i] = desv[i]/float(self.getNumeroInstances())
+			desv[i] = math.sqrt(desv[i])
+
+		#normalizar
+		for instance in self.instances:
+			for i in range(0, nColumnas):
+				elemento = instance.getElementAtPos(i)
+				elemento = (elemento - media[i])/desv[i]
+				instance.setElementAtPos(elemento, i)

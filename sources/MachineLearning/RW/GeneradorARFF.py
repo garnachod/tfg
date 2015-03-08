@@ -18,7 +18,7 @@ class GeneradorARFF(object):
 		self.columnas = []
 		self.filas = []
 	
-	def entrenamientoTweets(self, nombreFichero):
+	def entrenamientoTweets(self, nombreFichero, id_lista_entrenamiento):
 		listaDePalabrasClass = ListaPalabrasEntrenamiento()
 		listaDePalabras = listaDePalabrasClass.getTweetsAndTransform()
 
@@ -30,7 +30,7 @@ class GeneradorARFF(object):
 
 		separador = PalabrasDeTweet()
 		conjunto = ConjuntoPalabras()
-		tweetsAndClass = self.consultas.getTweetsAndClassTrain()
+		tweetsAndClass = self.consultas.getTweetsAndClassTrain(id_lista_entrenamiento)
 
 		for tweet in tweetsAndClass:
 			cadena = tweet[0]

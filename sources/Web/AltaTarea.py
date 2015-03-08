@@ -29,6 +29,8 @@ class AltaTarea():
 				else:
 					#BusquedaSencillaTopic
 					tipoDB = 'BusquedaSencillaKeywords'
+
+				id_lista = -1
 			elif tipoTarea == 'bp':
 				if tipoBusqueda == 'suser':
 					#BusquedaSencillaUser
@@ -36,7 +38,9 @@ class AltaTarea():
 				else:
 					#AnalisisPalabrasKeywords
 					tipoDB = 'AnalisisPalabrasKeywords'
-				return False
+
+				id_lista = request.form['lista_entrenamiento']
+				#return False
 
 			searchID = self.consultas.setAppSearchAndGetId(search, session['user_id'])
 
@@ -49,5 +53,5 @@ class AltaTarea():
 			else:
 				tiempo = 30
 
-			self.consultas.altaTarea(tipoDB, searchID, tiempo)
+			self.consultas.altaTarea(tipoDB, searchID, tiempo, id_lista)
 			return True

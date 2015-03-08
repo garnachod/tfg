@@ -20,6 +20,7 @@ from Web.APISetTweetTrain import APISetTweetTrain
 from Web.ListarTweetsEntrenamiento import ListarTweetsEntrenamiento
 from Web.LanzarEntrenamiento import LanzarEntrenamiento
 from Web.ResumenTarea import ResumenTarea
+from Web.NuevaListaEntrenamiento import NuevaListaEntrenamiento
 from DBbridge.ConsultasWeb import ConsultasWeb
 import os
 import time
@@ -47,6 +48,7 @@ setTweetTrain_web = APISetTweetTrain()
 listaTweetTrain_web = ListarTweetsEntrenamiento()
 lanzarEntrenamiento_web = LanzarEntrenamiento()
 resumenTarea_web = ResumenTarea()
+nlistaEntrena_web = NuevaListaEntrenamiento()
 
 #simulacion de index
 @app.route('/')
@@ -250,13 +252,20 @@ def setTweetTrain():
 	else:
 		return 'err'
 
-@app.route('/lista_entrena_tweets')
+@app.route('/ver_entrena_tweets', methods=['GET'])
 def listaEntrenamientoTweets():
 	if 'username' in session:
-		return listaTweetTrain_web.toString()
+		try:
+			if request.args['id_lista'] is None:
+				return listaTweetTrain_web.toString()
+			else:
+				return listaTweetTrain_web.toString(int(request.args['id_lista']))
+		except Exception, e:
+			return listaTweetTrain_web.toString()
 	else:
 		#si no se ha iniciado sesion redirige a la pagina principal
 		return redirect('/')
+		
 @app.route('/change_tweet_train' , methods=['GET', 'POST'])
 def changeTweetTrain():
 	if 'username' in session:
@@ -274,13 +283,33 @@ def lanzarEntrenamientos():
 			if request.args['id_entr'] is None:
 				return lanzarEntrenamiento_web.toString()
 			else:
-				lanzarEntrenamiento_web.generaEntrenamientoTweets()
-				return redirect('/success?code=3')
+				lanzarEntrenamiento_web.generaEntrenamientoTweets(request.args['id_entr'])
+				return redirect('/success?code=4')
 		except Exception, e:
 			return lanzarEntrenamiento_web.toString()
 	else:
 		#si no se ha iniciado sesion redirige a la pagina principal
 		return redirect('/')
+
+@app.route('/lista_entrena_tweets' , methods=['GET', 'POST'])
+def listaTweetTrain():
+	if 'username' in session:
+		if request.method == 'POST':
+			nlistaEntrena_web.creaLista()
+			return redirect('/success?code=3')
+		else:
+			try:
+				if request.args['linkBorrado'] is None:
+					nlistaEntrena_web.borrar(int(request.args['linkBorrado']))
+					return redirect('/lista_entrena_tweets')
+				else:
+					return nlistaEntrena_web.toString()
+			except Exception, e:
+				return nlistaEntrena_web.toString()
+	else:
+		#si no se ha iniciado sesion redirige a la pagina principal
+		return redirect('/')
+		
 
 
 #******************fin de entrenamiento*******************************
