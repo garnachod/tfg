@@ -33,8 +33,8 @@ class AltaTarea():
 				id_lista = -1
 			elif tipoTarea == 'bp':
 				if tipoBusqueda == 'suser':
-					#BusquedaSencillaUser
-					tipoDB = 'BusquedaSencillaUser'
+					#AnalisisPalabrasUser
+					tipoDB = 'AnalisisPalabrasUser'
 				else:
 					#AnalisisPalabrasKeywords
 					tipoDB = 'AnalisisPalabrasKeywords'

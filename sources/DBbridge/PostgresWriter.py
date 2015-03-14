@@ -191,6 +191,8 @@ class PostgresWriter():
             return row[0]
 
         location = user['location']
+        if len(location) > 50:
+            location = location[:49]
         created_at = user['created_at']
         description = user['description']
         name = user['name']
