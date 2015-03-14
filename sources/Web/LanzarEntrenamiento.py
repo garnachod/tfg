@@ -41,7 +41,7 @@ class LanzarEntrenamiento(object):
 
 		rows = self.consultas.getListasEntrenamiento()
 		for row in rows:
-			cadena += '<a class="boton-general" href="/lanzar_entrenamientos?id_entr='+str(row[0])+'">' + row[1] +'</a>'
+			cadena += '<p><a class="boton-general" href="/lanzar_entrenamientos?id_entr='+str(row[0])+'">' + row[1] +'</a></p>'
 
 		
 		cadena +='''</div>

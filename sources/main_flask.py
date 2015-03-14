@@ -205,7 +205,15 @@ def resumenTarea():
 	if 'username' in session:
 		try:
 			identificadorTarea = request.args['identificador']
-			return resumenTarea_web.toString(identificadorTarea)
+			try:
+				analizar = request.args['analizar']
+				if analizar == 't':
+					return resumenTarea_web.volverAnalizarTweets(identificadorTarea)
+				else:
+					return resumenTarea_web.toString(identificadorTarea)
+			except Exception, e:
+				print e
+				return resumenTarea_web.toString(identificadorTarea)
 		except Exception, e:
 			print e
 			return redirect('/')

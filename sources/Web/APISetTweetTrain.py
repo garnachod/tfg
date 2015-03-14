@@ -11,17 +11,18 @@ class APISetTweetTrain(object):
 	def toString(self):
 		vote = request.form['vote']
 		t_id = session['tweet_train_id']
-
+		lista_id = request.form['lista']
+		
 		if vote is None or t_id is None:
 			retorno = {"status":"false"}
 			return json.dumps(retorno)
 
 		if vote == "relevante":
-			self.consultas.setTweetTrainID(t_id, "relevante");
+			self.consultas.setTweetTrainID(t_id, "relevante", lista_id);
 		elif vote == "no_relevante":
-			self.consultas.setTweetTrainID(t_id, "no_relevante");
+			self.consultas.setTweetTrainID(t_id, "no_relevante", lista_id);
 		elif vote == "no_usar":
-			self.consultas.setTweetTrainID(t_id, "no_usar");
+			self.consultas.setTweetTrainID(t_id, "no_usar", lista_id);
 		else:
 			retorno = {"status":"false"}
 			return json.dumps(retorno)

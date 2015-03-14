@@ -184,17 +184,15 @@ class ConsultasGeneral(object):
 			print str(e)
 			return False
 
-	def setTweetTrainID(self, identificador, clase):
-		query = """INSERT INTO tweets_entrenamiento (id_tweet, clase)
-       				SELECT %s, %s 
-       				WHERE NOT EXISTS (SELECT id FROM tweets_entrenamiento WHERE id_tweet=%s);"""
-
-
+	def setTweetTrainID(self, identificador, clase, id_lista):
+		query = """INSERT INTO tweets_entrenamiento (id_tweet, clase, id_lista)
+					SELECT %s, %s, %s
+					WHERE NOT EXISTS (SELECT id FROM tweets_entrenamiento WHERE id_tweet=%s AND id_lista=%s);"""
 
 		#query = "INSERT INTO tweets_entrenamiento (id_tweet,clase) VALUES (%s,%s);"
 
 		try:
-			self.cur.execute(query, [identificador, clase, identificador])
+			self.cur.execute(query, [identificador, clase, id_lista, identificador, id_lista])
 			self.conn.commit()
 
 			return True
@@ -280,6 +278,31 @@ class ConsultasGeneral(object):
 			print "error en getTweetsIdBusquedaNoAnalizada"
 			print str(e)
 			return False
+
+	def getTweetsIdBusquedaTodos(self, searchID):
+		query = "SELECT j.id_tweet FROM join_search_tweet as j WHERE j.id_search = %s"
+		try:
+			self.cur.execute(query, [searchID, ])
+			rows = self.cur.fetchall()
+
+			return rows
+		except Exception, e:
+			print "error en getTweetsIdBusquedaTodos"
+			print str(e)
+			return False
+
+	def getSearchIDFromIDTarea(self, idTarea):
+		query = """SELECT id_search FROM tareas_programadas WHERE id = %s"""
+		try:
+			self.cur.execute(query, [idTarea, ])
+			row = self.cur.fetchone()
+
+			return row[0]
+		except Exception, e:
+			print "error en getSearchIDFromIDTarea"
+			print str(e)
+			return False
+
 	def insertTweetAnalizado(self, id_tweet, clase):
 		query = """INSERT INTO clasificaciontweets (id_tweet, clase) VALUES (%s, %s)"""
 		try:
@@ -288,7 +311,19 @@ class ConsultasGeneral(object):
 
 			return True
 		except Exception, e:
-			print "error en setTweetTrainID"
+			print "error en insertTweetAnalizado"
+			print str(e)
+			return False
+
+	def editTweetAnalizado(self, id_tweet, clase):
+		query = """UPDATE clasificaciontweets set clase=%s WHERE id_tweet=%s;"""
+		try:
+			self.cur.execute(query, [clase, id_tweet])
+			self.conn.commit()
+
+			return True
+		except Exception, e:
+			print "error en editTweetAnalizado"
 			print str(e)
 			return False
 
@@ -300,6 +335,6 @@ class ConsultasGeneral(object):
 
 			return row[0]
 		except Exception, e:
-			print "error en setTweetTrainID"
+			print "error en getIdListaEntrenamientoByIDSearch"
 			print str(e)
 			return False

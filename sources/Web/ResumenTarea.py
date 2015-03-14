@@ -3,8 +3,7 @@ from Head import Head
 from MenuSlide import MenuSlide
 from UserHeader import UserHeader
 from DBbridge.ConsultasWeb import ConsultasWeb
-from MachineLearning.EntrenamientoTweets import EntrenamientoTweets
-from MachineLearning.EntrenamientoTweets import EntrenamientoTweets_ASINC
+from MachineLearning.ClasificadorTweets import ClasificadorTweets
 from flask import Flask, session
 from Tweet import Tweet
 import json
@@ -55,10 +54,16 @@ class ResumenTarea(object):
 
 		#información especifica
 		tipo = self.consultas.getTipoTarea(identificador)
+		analisisPalabras = False
 		if "BusquedaSencilla" in tipo:
 			cadena += self.toStringBusquedaSencilla(identificador)
+			analisisPalabras = False
 		if "AnalisisPalabras" in tipo:
+			cadena += "<div>"
+			cadena += '<a href="/resumen_tarea?identificador='+str(identificador)+'&analizar=t" class="boton-general">Volver a analizar</a>'
+			cadena += "</div>"
 			cadena += self.toStringTweetsAnalisisPalabras(identificador)
+			analisisPalabras = True
 		
 
 		
@@ -70,7 +75,7 @@ class ResumenTarea(object):
 		cadena += menu.toStringContenido()
 
 		cadena += '<script>'
-		cadena += self.generaGraficaFrecuenciasDiarias(identificador)
+		cadena += self.generaGraficaFrecuenciasDiarias(identificador, analisisPalabras)
 		cadena += '</script>'
 		cadena += '<script>'
 		cadena += self.generaOnLoad()
@@ -99,9 +104,22 @@ class ResumenTarea(object):
 
 		return cadena
 
+	def volverAnalizarTweets(self, identificador):
+		search_id = self.consultas.getSearchIDFromIDTarea(identificador)
+		tweets_id = self.consultas.getTweetsIdBusquedaTodos(search_id)
+		id_lista = self.consultas.getIdListaEntrenamientoByIDSearch(search_id)
+		clasificaTweet = ClasificadorTweets(id_lista)
+
+		for row in tweets_id:
+
+			clase = clasificaTweet.clasificaTweetById(row[0])
+			self.consultas.editTweetAnalizado(row[0], clase)
 
 
-	def generaGraficaFrecuenciasDiarias(self, identificador):
+		return self.toString(identificador)
+
+
+	def generaGraficaFrecuenciasDiarias(self, identificador, analisisPalabras):
 		rows = self.consultas.getTweetsAlDiaTarea(identificador)
 
 		'''
@@ -139,6 +157,23 @@ class ResumenTarea(object):
 
 
 		objJson['datasets'].append(objAux)
+
+		if analisisPalabras == True:
+			rows = self.consultas.getTweetsAlDiaTareaAnalisis(identificador)
+			objAux = {}
+			objAux['label'] = "Frecuencias diarias relevantes"
+			objAux['fillColor'] = "rgba(105,105,105,0.2)"
+			objAux['strokeColor'] = "rgba(105,105,105,1)"
+			objAux['pointColor'] = "rgba(105,105,105,1)"
+			objAux['pointStrokeColor'] = "#fff"
+			objAux['pointHighlightFill'] = "#fff"
+			objAux['pointHighlightStroke'] = "rgba(105,105,105,1)"
+			objAux['data'] = []
+
+			for row in rows:
+				objAux['data'].append(row[1])
+			
+			objJson['datasets'].append(objAux)
 
 		
 		cadena = "var numTweets = " + json.JSONEncoder().encode(objJson)

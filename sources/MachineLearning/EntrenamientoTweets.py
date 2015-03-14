@@ -30,10 +30,10 @@ class EntrenamientoTweets(object):
 
 		lector = LectorARFF()
 		instances = lector.leerFichero(ficheroARFF)
-		instances.normaliza()
+		#instances.normaliza()
 		
 		particionado = DivisionPorcentual()
-		particionado.setPorcentajeTrain(0.8)
+		particionado.setPorcentajeTrain(0.85)
 		particion = particionado.generaParticionesProporcional(instances)
 
 

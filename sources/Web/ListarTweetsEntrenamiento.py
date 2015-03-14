@@ -51,7 +51,7 @@ class ListarTweetsEntrenamiento(object):
 			for row in rows:
 				#insertar el link
 				link = '/ver_entrena_tweets?id_lista=' + str(row[0])
-				cadena += '<a href="'+link+'" class="boton-general">' + row[1] + '</a>'
+				cadena += '<p><a href="'+link+'" class="boton-general">' + row[1] + '</a></p>'
 		else:
 			tweets = self.consultas.getTweetsEntrenamientoListar(identificador)
 			cadena += '<h3 style="text-align:  left;">tweets</h3>'
