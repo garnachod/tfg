@@ -28,7 +28,10 @@ class Contacto():
 
 		cadena += '''<div class="mid">
 						<div class="mid-cont">
-							<p>Proyecto realizado por Daniel Garnacho</p>
+							<div class="cont-general">
+							<p>Proyecto realizado por Daniel Garnacho Martín</p>
+							<p><a href="https://twitter.com/garnachod" target="_blank"><img src="/static/img/twitter_logo.png"></a></p>
+							</div>
 						</div>
 					</div>'''
 

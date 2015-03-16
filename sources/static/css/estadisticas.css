@@ -17,8 +17,11 @@
 }
 
 .contenedor-estadistica{
-	width: 300px;
 	overflow: hidden;
+}
+
+.contenedor-pie{
+	width: 300px;
 	float: left;
 }
 

@@ -348,3 +348,17 @@ class ConsultasWeb(ConsultasGeneral):
 		except Exception, e:
 			print str(e)
 			return False
+
+	def getEstadisticaUsoAplicacionConsultas(self):
+		query = """SELECT tiempo::DATE , count(*) 
+				   from tokens_count 
+				   where simulado=TRUE AND tiempo > (current_timestamp -  interval '31 days') group by tiempo::DATE order by tiempo::DATE asc;"""
+
+		try:
+			self.cur.execute(query)
+			rows = self.cur.fetchall()
+			
+			return rows
+		except Exception, e:
+			print str(e)
+			return False

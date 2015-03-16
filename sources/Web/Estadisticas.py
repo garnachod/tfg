@@ -35,11 +35,11 @@ class Estadisticas(object):
 		cadena += '''<div class="mid">
 						<div class="mid-cont">
 							<div class="cont-estadisticas">
-							<h3 style="text-align: left;" >Estadísticas de la aplicación</h3>'''
+							<h3 style="text-align: left;" >Estadísticas de tweets</h3>'''
 
 
 		cadena += '''
-					<div class="contenedor-estadistica">	
+					<div class="contenedor-estadistica contenedor-pie">	
 					<p class="titulo-estadistica">Número de Tweets</p>
 						<div id="canvas-holder">
 							<canvas id="chart-numTweetsRT" width="300" height="300"/>
@@ -48,22 +48,22 @@ class Estadisticas(object):
 				  '''
 
 		cadena += '''
-					<div class="contenedor-estadistica">	
+					<div class="contenedor-estadistica contenedor-pie">	
 					<p class="titulo-estadistica">Número de Tweets únicos, multimedia</p>
 						<div id="canvas-holder">
 							<canvas id="chart-numTweetsMedia" width="300" height="300"/>
 						</div>
 					</div>
-				  '''
+				  ''' 
 
 		cadena += '<div style="overflow:hidden; width: 100%;">'
-		cadena += '<h3 style="text-align: left;" >Estadísticas del entrenamiento</h3>'
+		cadena += '<h3 style="text-align: left;" >Estadísticas de la aplicación</h3>'
 
 		cadena += '''
 					<div class="contenedor-estadistica">	
-						<p class="titulo-estadistica">Fallo entrenamiento</p>
+						<p class="titulo-estadistica">Frecuencia de consultas diarias</p>
 						<div id="canvas-holder">
-							<canvas id="chart-porcentajeFalloT" width="300" height="300"/>
+							<canvas id="chart-consultas" width="1000" height="300"/>
 						</div>
 					</div>
 				  '''
@@ -83,7 +83,8 @@ class Estadisticas(object):
 		cadena += self.generaCodigoNumeroTweetsMedia()
 		cadena += '</script>'
 		cadena += '<script>'
-		cadena += self.generaCodigoPorcentajeErrorT()
+		#cadena += self.generaCodigoPorcentajeErrorT()
+		cadena += self.generaCodigoFrecuenciaConsultas()
 		cadena += '</script>'
 		cadena += '<script>'
 		cadena += self.generaOnLoad()
@@ -165,6 +166,49 @@ class Estadisticas(object):
 		cadena = "var numProcentajeFalloT = " + json.JSONEncoder().encode(objJson)
 
 		return cadena
+
+	def generaCodigoFrecuenciaConsultas(self):
+		rows = self.consultas.getEstadisticaUsoAplicacionConsultas()
+
+		'''
+		{
+            label: "My Second dataset",
+            fillColor: "rgba(151,187,205,0.2)",
+            strokeColor: "rgba(151,187,205,1)",
+            pointColor: "rgba(151,187,205,1)",
+            pointStrokeColor: "#fff",
+            pointHighlightFill: "#fff",
+            pointHighlightStroke: "rgba(151,187,205,1)",
+            data: [28, 48, 40, 19, 86, 27, 90]
+        }
+
+		'''
+
+		objJson = {}
+		objJson['labels'] = []
+		for row in rows:
+			objJson['labels'].append(str(row[0]))
+
+		objJson['datasets'] = []
+		objAux = {}
+		objAux['label'] = "Frecuencias diarias"
+		objAux['fillColor'] = "rgba(151,187,205,0.2)"
+		objAux['strokeColor'] = "rgba(151,187,205,1)"
+		objAux['pointColor'] = "rgba(151,187,205,1)"
+		objAux['pointStrokeColor'] = "#fff"
+		objAux['pointHighlightFill'] = "#fff"
+		objAux['pointHighlightStroke'] = "rgba(151,187,205,1)"
+		objAux['data'] = []
+
+		for row in rows:
+			objAux['data'].append(row[1])
+
+
+		objJson['datasets'].append(objAux)
+
+		cadena = "var numConsultas = " + json.JSONEncoder().encode(objJson)
+
+		return cadena
 	
 	def generaOnLoad(self):
 		cadena = '''
@@ -173,8 +217,8 @@ class Estadisticas(object):
 						window.myPieNumTweetsRT = new Chart(ctx).Pie(numTweetsRT);
 						var ctx2 = document.getElementById("chart-numTweetsMedia").getContext("2d");
 						window.myPieNumTweetsMedia = new Chart(ctx2).Pie(numTweetsMedia);
-						var ctx3 = document.getElementById("chart-porcentajeFalloT").getContext("2d");
-						window.myPieNumProcentajeFalloT = new Chart(ctx3).Pie(numProcentajeFalloT);
+						var ctx3 = document.getElementById("chart-consultas").getContext("2d");
+						window.myPieConsultas = new Chart(ctx3).Line(numConsultas);
 					};
 				  '''
 		return cadena
