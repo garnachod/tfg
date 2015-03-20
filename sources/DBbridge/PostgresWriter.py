@@ -2,8 +2,6 @@
 
 import psycopg2
 from ConexionSQL import ConexionSQL
-
-from Utiles.debug import print_debug
 #, write_log
 
 
@@ -228,18 +226,13 @@ class PostgresWriter():
     #
     ###############################
     def process_entities(self, data, tweet_id):
-        print_debug("Entra al process_entities")
         if 'user_mentions' in data:
             user_mentions = data['user_mentions']
-            print_debug("antes del for de user_mentions")
             for um in user_mentions:
-                print_debug("User mention " + um['id_str'])
                 self.store_user_mentions(um, tweet_id)
-        print_debug("antes del if de hashtags")
         if 'hashtags' in data:
             for hashtag in data['hashtags']:
                 self.store_tag(hashtag['text'], tweet_id)
-        print_debug("antes del if de urls")
         if 'urls' in data:
             for url in data['urls']:
                 self.store_url(url['display_url'], tweet_id)
@@ -263,8 +256,7 @@ class PostgresWriter():
                 id_user = self.cur.fetchone()[0]
                 
             except psycopg2.Error, e:
-                print_debug("Error en invocación a Insert into Users " + e.pgerror, True)
-
+                pass
             
         else:
             id_user = row[0]
@@ -273,7 +265,7 @@ class PostgresWriter():
                              "select * from Uses_user WHERE id_tweet=%s AND id_user=%s);",
                             (tweet_id, id_user, tweet_id, id_user))
         except psycopg2.Error, e:
-            print_debug("Error en invocación a Insert into Uses_user " + e.pgerror, True)
+            pass
 
     def store_tag(self, tag, tweet_id):
         self.cur.execute("SELECT id FROM Hashtags where tag_text=%s;", (tag,))

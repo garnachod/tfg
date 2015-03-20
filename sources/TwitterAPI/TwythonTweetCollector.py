@@ -3,7 +3,6 @@ __author__ = 'Alvaro Ortigosa <alvaro.ortigosa@uam.es>'
 
 from twython import Twython, TwythonError, TwythonAuthError, TwythonRateLimitError
 from getAuthorizations import GetAuthorizations
-from Utiles.debug import print_debug
 
 from threading import Thread
 
@@ -52,18 +51,15 @@ class TwythonTweetCollector():
             user_timeline = self.twitter.get_user_timeline(screen_name=screen_name, min_id=last_tweet_collected)
             self.authorizator.add_query_to_key()
         except TwythonAuthError as e:
-            print_debug("El usuario %s requiere permisos para acceder a sus tweets" % (screen_name,))
             self.logger.insert_log(id_app_user, "private_user",
                                    "El usuario %s requiere permisos para acceder a sus tweets" %
                                    (screen_name,), e.message)
             return ["private_user", 1, 0]
         except TwythonRateLimitError as e:
-            print_debug("Límite app alcanzado. API KEY: %s" % (self.API_key,))
             self.logger.insert_log(id_app_user, "rate_limit", "Límite app alcanzado. API KEY: %s" % (self.API_key,),
                                    e.message)
             return ["rate_limit", 1, 0]
         except TwythonError as e:
-            print_debug("TwythonError error({0}): {1}".format(e.message, e.args), True)
             self.logger.insert_log(id_app_user, "other", "Error no definido", e.message)
             return ["other", 1, 0]
 
@@ -112,7 +108,6 @@ class TwythonTweetCollector():
             #                            (screen_name,), e.message)
             #     return "private_user"
             except TwythonRateLimitError as e:
-                print_debug("Límite alcanzado app. API KEY: %s" % (self.API_key,))
                 self.logger.insert_log(id_app_user, "rate_limit", "Límite alcanzado app. API KEY: %s" % (self.API_key,),
                                        e.message)
                 self.logger.insert_log(id_app_user, "search_user_result",
@@ -120,7 +115,6 @@ class TwythonTweetCollector():
                                        (screen_name, newtweets_count))
                 return ["rate_limit", queries_count, newtweets_count]
             except TwythonError as e:
-                print_debug("TwythonError error({0}): {1}".format(e.message, e.args), True)
                 self.logger.insert_log(id_app_user, "other", "Error no definido", e.message)
                 return ["other", queries_count, newtweets_count]
 
@@ -179,10 +173,8 @@ class TwythonTweetCollector():
                 keyword_list = [key for key in keyword_list if last_tweet_collected_list[key] < next_min_id]
                 last_tweet_ids = [id for id in last_tweet_ids if id < next_min_id]
             except TwythonRateLimitError as e:
-                print_debug("Límite alcanzado app")
                 return "rate_limit"
             except TwythonError as e:
-                print_debug("TwythonError error({0}): {1}".format(e.message, e.args), True)
                 self.logger.insert_log(id_app_user, "other", "TwythonError error({0}): {1}".format(e.message, e.args))
                 return "other"
 
@@ -196,8 +188,6 @@ class TwythonTweetCollector():
         :param since_id: índice del último tweet que debe ser leido (más viejo)
         :return: tupla con número de tweets recuperados, número de consultas a Twitter y último tweet accedido
         """
-        print_debug("lista=" + keywords_string)
-        print_debug("since_id=" + str(since_id))
 
         #LIMITE DE API, si se da en este momento todas las apik están llenas
         if self.authorizator.is_limit_api():

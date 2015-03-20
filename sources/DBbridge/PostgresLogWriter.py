@@ -5,7 +5,6 @@ import psycopg2
 from ConexionSQL import ConexionSQL
 from datetime import datetime
 
-from Utiles.debug import print_debug
 
 
 class PostgresLogWriter():
@@ -18,7 +17,7 @@ class PostgresLogWriter():
                                  (datetime.now().isoformat(), "init_logger", ""))
             self.con.commit()
         except psycopg2.Error, e:
-                print_debug("Error en invocación a Insert inicial into Logs " + e.pgerror, True)
+            pass
 
     def record_app_search(self, search_string, id_user, number_new_tweets, number_recalled_tweets):
         self.cur.execute("INSERT INTO app_searches "
@@ -35,7 +34,8 @@ class PostgresLogWriter():
 
             self.con.commit()
         except psycopg2.Error, e:
-                print_debug("Error en invocación a Insert into Logs " + e.pgerror, True)
+            pass
+
 
     def record_last_sequential_tweet_for_search(self, list_of_words, tweet_id):
 
