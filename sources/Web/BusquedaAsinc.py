@@ -2,7 +2,6 @@
 from flask import Flask, session, request, redirect
 from Head import Head
 from DBbridge.ConsultasWeb import ConsultasWeb
-from Skynet import Skynet
 import threading
 import hashlib
 import json

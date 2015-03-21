@@ -37,7 +37,9 @@ class Tweet(object):
 		cadena += '</span>'
 		cadena += '</div>'
 		#tiene algún tipo de objeto multimedia
-		if tweet[4] != '':
+		if tweet[4] is None:
+			pass
+		else:
 			cadena += Tweet.imprimeTweettMedia(tweet[4])
 			
 		cadena += '</div>'

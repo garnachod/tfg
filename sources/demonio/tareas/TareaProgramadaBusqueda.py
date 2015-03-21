@@ -1,5 +1,8 @@
-from Skynet import Skynet
 from DBbridge.ConsultasGeneral import ConsultasGeneral
+from DBbridge.EscritorTweets import EscritorTweets
+from DBbridge.ConexionSQL import ConexionSQL
+from SocialAPI.TwitterAPI.RecolectorTweetsUser import RecolectorTweetsUser
+from SocialAPI.TwitterAPI.RecolectorTweetsTags import RecolectorTweetsTags
 from TareaProgramada import TareaProgramada
 
 class TareaProgramadaBusqueda(TareaProgramada):
@@ -10,8 +13,12 @@ class TareaProgramadaBusqueda(TareaProgramada):
 
 	def doSearch(self):
 		cadenaBusqueda, user_id = self.consultas.getBusquedaFromIdBusqueda(self.search_id);
-		skynet = Skynet(user_id)
-		skynet.research_user(cadenaBusqueda, self.search_id);
+		#skynet = Skynet(user_id)
+		#skynet.research_user(cadenaBusqueda, self.search_id);
+		escritor = EscritorTweets(ConexionSQL(), self.search_id)
+		recolector = RecolectorTweetsUser(escritor)
+		recolector.recolecta(cadenaBusqueda)
+
 		return True
 
 	def doPostProc(self):
