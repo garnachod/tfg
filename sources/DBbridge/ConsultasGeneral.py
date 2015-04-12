@@ -76,11 +76,11 @@ class ConsultasGeneral(object):
 			print str(e)
 			return False
 
-	def getIDTweetsTrainList(self):
-		query = "SELECT id_tweet FROM tweets_entrenamiento as tw WHERE tw.clase != 'no_usar'"
+	def getIDTweetsTrainList(self, id_lista_entrenamiento):
+		query = "SELECT id_tweet FROM tweets_entrenamiento as tw WHERE tw.clase != 'no_usar' AND tw.id_lista = %s;"
 		try:
 			self.cur.execute(query)
-			rows = self.cur.fetchall()
+			rows = self.cur.fetchall([id_lista_entrenamiento, ])
 			lista = []
 			for row in rows:
 				lista.append(row[0])

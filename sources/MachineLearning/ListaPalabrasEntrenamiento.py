@@ -26,10 +26,10 @@ class ListaPalabrasEntrenamiento(object):
 		filtro = FiltroPalabras()
 		return filtro.eliminaDeListaPalabras(conjunto.getListaPalabrasRepMayorQue(2))
 
-	def getTweetsAndTransform(self):
+	def getTweetsAndTransform(self, id_lista_entrenamiento):
 		separador = PalabrasDeTweet()
 		conjunto = ConjuntoPalabras()
-		listaIDS = self.consultas.getIDTweetsTrainList()
+		listaIDS = self.consultas.getIDTweetsTrainList(id_lista_entrenamiento)
 
 		for identificador in listaIDS:
 			cadena = self.consultas.getTweetStatus(identificador)

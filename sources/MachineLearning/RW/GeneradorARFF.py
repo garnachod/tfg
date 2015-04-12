@@ -20,7 +20,7 @@ class GeneradorARFF(object):
 	
 	def entrenamientoTweets(self, nombreFichero, id_lista_entrenamiento):
 		listaDePalabrasClass = ListaPalabrasEntrenamiento()
-		listaDePalabras = listaDePalabrasClass.getTweetsAndTransform()
+		listaDePalabras = listaDePalabrasClass.getTweetsAndTransform(id_lista_entrenamiento)
 
 		diccionarioPalabras = {}
 		#inicialización diccionario
