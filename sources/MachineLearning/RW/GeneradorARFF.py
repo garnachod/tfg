@@ -92,5 +92,5 @@ class GeneradorARFF(object):
 """pruebas unitarias"""
 if __name__ == '__main__':
 	deb = GeneradorARFF()
-	deb.entrenamientoTweets('test.arff')
+	deb.entrenamientoTweets('test.arff', 1)
 		

@@ -177,10 +177,7 @@ class RedNeuronal(Clasificador):
 				deltaMinInj = [0 for x in range(0, self.neuronasCapaOculta)]
 				for indNeurona in range(0, self.nClases):
 					for indNeuronaOculta  in range(1, self.neuronasCapaOculta + 1):
-						deltaMinInj[indNeuronaOculta - 1] += self.pesosCapaSalida[indNeurona][indNeuronaOculta]
-
-				for indNeuronaOculta  in range(0, self.neuronasCapaOculta):
-						deltaMinInj[indNeuronaOculta] *= deltaMinusculaK[indNeurona]
+						deltaMinInj[indNeuronaOculta - 1] += self.pesosCapaSalida[indNeurona][indNeuronaOculta] * deltaMinusculaK[indNeurona]
 
 				deltaMinusculaJ = []
 				if self.bipolar == False:
