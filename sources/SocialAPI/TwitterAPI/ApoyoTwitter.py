@@ -14,13 +14,17 @@ class ApoyoTwitter(object):
 
 		query = "SELECT last_tweet_collected FROM users WHERE screen_name=%s;"
 		try:
+			print screen_name
 			self.cur.execute(query, [screen_name, ])
 			row = self.cur.fetchone()
 			if row is None:
 				return 0
 			if row[0] is None:
 				return 0
-			return row[0]
+
+			#print long(row[0])
+			return long(row[0])
+		
 		except Exception, e:
 			print str(e)
 			return 0

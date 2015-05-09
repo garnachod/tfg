@@ -8,7 +8,7 @@ class RecolectorTweetsTags(RecolectorTweetsUser):
 
 	def recolecta(self, query):
 		arrayFinal = []
-		maximo = 0
+		maximo = long(0)
 		cont = 0
 		while True:
 			statuses = self.privateRealizaConsulta(query, maxi=maximo)
@@ -28,10 +28,11 @@ class RecolectorTweetsTags(RecolectorTweetsUser):
 			maximo -= 1
 			if len(arrayFinal) > 50:
 				self.guarda(arrayFinal)
+				cont += len(arrayFinal)
 				arrayFinal = []
-				cont += 50
-
-			if cont > 300:
+				
+			#limite puesto por defecto
+			if cont > 2000:
 				break
 
 		#fin del while

@@ -24,7 +24,8 @@ class RecolectorTweetsUser(Recolector):
 			query = query[1:]
 		minimo = self.apoyo.getLastTweetCollected(query)
 		maximo = 0
-		maximoGlobal = long(minimo)
+		maximoGlobal = long(0)
+
 		cont = 0
 		while True:
 			statuses = self.privateRealizaConsulta(query, maxi=maximo, mini=minimo)
@@ -47,15 +48,19 @@ class RecolectorTweetsUser(Recolector):
 				auxMax = self.getMaxIDtweets(arrayFinal, query)
 				if auxMax > maximoGlobal:
 					maximoGlobal = auxMax
+					
+				cont += len(arrayFinal)
 				arrayFinal = []
-				cont += 50
+				
 
-			if cont > 1000:
+			#limite de la api
+			if cont > 3200:
 				break
 
 		#fin del while
 		self.guarda(arrayFinal)
-		self.apoyo.setLastUserTweet(query, maximoGlobal)
+		if maximoGlobal != 0:
+			self.apoyo.setLastUserTweet(query, maximoGlobal)
 
 	def guarda(self, arrayDatos):
 		self.escritor.escribe(arrayDatos)
@@ -90,13 +95,13 @@ class RecolectorTweetsUser(Recolector):
 
 		try:
 			if maxi == 0 and mini == 0: 
-				retorno = self.twitter.get_user_timeline(screen_name=query)
+				retorno = self.twitter.get_user_timeline(screen_name=query, count='200')
 			elif maxi == 0 and mini > 0:
-				retorno = self.twitter.get_user_timeline(screen_name=query, since_id=mini)
+				retorno = self.twitter.get_user_timeline(screen_name=query, since_id=mini, count='200')
 			elif maxi > 0 and mini == 0:
-				retorno = self.twitter.get_user_timeline(screen_name=query, max_id=maxi)
+				retorno = self.twitter.get_user_timeline(screen_name=query, max_id=maxi, count='200')
 			else:
-				retorno = self.twitter.get_user_timeline(screen_name=query, max_id=maxi, since_id=mini)
+				retorno = self.twitter.get_user_timeline(screen_name=query, max_id=maxi, since_id=mini, count='200')
 
 			return retorno
 		except Exception, e:

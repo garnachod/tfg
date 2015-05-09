@@ -12,7 +12,9 @@ class UserHeader(object):
 		cadena = ''
 		cadena += '<nav class="header">'
 		if self.menu == True:
+			cadena += '<div>'
 			cadena += '<a class="boton-menu" href="#menu"></a>'
+			cadena += "</div>"
 			
 		cadena += '<ul class="header-cont">'
 		cadena += '<li class="user-header-cont">'

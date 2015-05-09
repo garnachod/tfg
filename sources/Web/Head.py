@@ -26,6 +26,7 @@ class Head():
 	def toString(self):
 		cadena = '<head>'
 		cadena += '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />'
+		cadena += '<meta name="viewport" content="width=device-width, user-scalable=no">'
 		cadena += '<title>'+ self.titulo +'</title>'
 		for css in self.lista_css:
 			cadena += '<link href="'+css+'" rel="stylesheet" type="text/css">'
