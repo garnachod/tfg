@@ -44,8 +44,8 @@ class ListaPalabrasEntrenamiento(object):
 """pruebas unitarias"""
 if __name__ == '__main__':
 	debug = ListaPalabrasEntrenamiento()
-	#lista =  debug.getDebugTweetAndTransform();
-	lista = debug.getTweetsAndTransform()
+	lista =  debug.getDebugTweetAndTransform()
+	#lista = debug.getTweetsAndTransform()
 	print lista
 	print "tamanyo"
 	print len(lista)

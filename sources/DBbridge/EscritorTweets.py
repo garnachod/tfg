@@ -31,8 +31,9 @@ class EscritorTweets(Escritor):
 			self.actualizaTweet(tweet)
 		else:
 			db_id = self.insertaTweet(tweet, userid)
+			self.insertaJoinTable(self.searchID, db_id)
 
-		self.insertaJoinTable(self.searchID, db_id)
+		
 
 
 	def insertaJoinTable(self, id_search, id_tweet):
