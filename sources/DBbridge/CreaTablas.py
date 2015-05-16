@@ -218,6 +218,24 @@ def crea_tabla_lista_entrenamiento():
     cur.close()
     conn.close()
 
+def crea_tabla_seguidores():
+    conSql = ConexionSQL()
+    conn = conSql.getConexion()
+    cur = conSql.getCursor()
+
+    query = ('DROP TABLE IF EXISTS seguidores CASCADE;'
+             'CREATE TABLE seguidores ('
+             '  id_user int'
+             ', id_seguidor int'
+             ', primary key (id_user, id_seguidor)'
+             ');'
+             )
+    cur.execute(query)
+    
+    conn.commit()
+    cur.close()
+    conn.close()
+
 if __name__ == "__main__":
     crea_tablas()
     temp_crea_tablas()
