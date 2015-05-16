@@ -152,6 +152,7 @@ class ResumenTarea(object):
 		objAux['pointHighlightStroke'] = "rgba(151,187,205,1)"
 		objAux['data'] = []
 
+		numRows = len(rows)
 		for row in rows:
 			objAux['data'].append(row[1])
 
@@ -169,6 +170,10 @@ class ResumenTarea(object):
 			objAux['pointHighlightFill'] = "#fff"
 			objAux['pointHighlightStroke'] = "rgba(105,105,105,1)"
 			objAux['data'] = []
+
+			numRowsAux = len(rows)
+			for i in range(numRows - numRowsAux):
+				objAux['data'].append(0)
 
 			for row in rows:
 				objAux['data'].append(row[1])
