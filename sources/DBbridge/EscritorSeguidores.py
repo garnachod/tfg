@@ -1,6 +1,6 @@
 from Escritor import Escritor
 
-class EscritorSeguidores(object):
+class EscritorSeguidores(Escritor):
 	"""docstring for EscritorSeguidores"""
 	def __init__(self, conexionSQL, searchID):
 		super(EscritorSeguidores, self).__init__(conexionSQL, searchID)

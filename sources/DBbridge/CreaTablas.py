@@ -237,13 +237,14 @@ def crea_tabla_seguidores():
     conn.close()
 
 if __name__ == "__main__":
-    crea_tablas()
-    temp_crea_tablas()
-    crea_def_user()
+    #crea_tablas()
+    #temp_crea_tablas()
+    #crea_def_user()
     #db universidad
-    crea_tareas()
-    crea_tabla_lista_entrenamiento()
-    crea_tabla_MLT()
-    crea_tabla_entrenamientos()
-    crea_tabla_clasificacion()
+    #crea_tareas()
+    #crea_tabla_lista_entrenamiento()
+    #crea_tabla_MLT()
+    #crea_tabla_entrenamientos()
+    #crea_tabla_clasificacion()
+    crea_tabla_seguidores()
     

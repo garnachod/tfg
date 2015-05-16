@@ -6,12 +6,13 @@ import time
 
 if __name__ == '__main__':
 	consultas = ConsultasWeb()
-	searchID = consultas.setAppSearchAndGetId(texto, 1)
 	usuario = "@garnachod"
+	searchID = consultas.setAppSearchAndGetId(usuario, 1)
+	
 
 	inicio = time.time()
 
-	escritor = EscritorSeguidores(ConexionSQL(), self.searchID)
+	escritor = EscritorSeguidores(ConexionSQL(), searchID)
 	recolector = RecolectorSeguidores(escritor)
 	recolector.recolecta(usuario)
 
