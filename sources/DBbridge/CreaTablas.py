@@ -228,6 +228,7 @@ def crea_tabla_seguidores():
              '  id_user int'
              ', id_seguidor int'
              ', fecha timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP '
+             ', indice_captura int'
              ', primary key (id_user, id_seguidor)'
              ');'
              )
