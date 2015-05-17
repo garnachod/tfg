@@ -22,6 +22,7 @@ class RecolectorTweetsUser(Recolector):
 	def recolecta(self, query):
 		start_time = time()
 		tiempo_baseDatos = 0
+		tiempo_api = 0
 
 		arrayFinal = []
 		if query[0] == '@':
@@ -32,7 +33,10 @@ class RecolectorTweetsUser(Recolector):
 
 		cont = 0
 		while True:
+			tiempo_api_ini = time()
 			statuses = self.privateRealizaConsulta(query, maxi=maximo, mini=minimo)
+			tiempo_api_fin = time()
+			tiempo_api += tiempo_api_ini - tiempo_api_fin
 			self.authorizator.add_query_to_key()
 
 			if len(statuses) == 0:
@@ -72,6 +76,7 @@ class RecolectorTweetsUser(Recolector):
 		elapsed_time = time() - start_time
 		print("Elapsed time total: %0.10f seconds." % elapsed_time)
 		print("Elapsed time DB: %0.10f seconds." % tiempo_baseDatos)
+		print("Elapsed time API: %0.10f seconds." % tiempo_api)
 
 	def guarda(self, arrayDatos):
 		self.escritor.escribe(arrayDatos)
