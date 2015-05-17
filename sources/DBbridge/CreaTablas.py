@@ -227,6 +227,7 @@ def crea_tabla_seguidores():
              'CREATE TABLE seguidores ('
              '  id_user int'
              ', id_seguidor int'
+             ', fecha timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP '
              ', primary key (id_user, id_seguidor)'
              ');'
              )
