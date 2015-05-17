@@ -3,6 +3,7 @@ from SocialAPI.Recolector import Recolector
 from ApoyoTwitter import ApoyoTwitter
 from getAuthorizations import GetAuthorizations
 from twython import Twython
+from time import time
 
 class RecolectorTweetsUser(Recolector):
 	"""docstring for RecolectorTweetsUser"""
@@ -19,6 +20,9 @@ class RecolectorTweetsUser(Recolector):
 		self.twitter = Twython(api_key, access_token=access_token)
 
 	def recolecta(self, query):
+		start_time = time()
+		tiempo_baseDatos = 0
+
 		arrayFinal = []
 		if query[0] == '@':
 			query = query[1:]
@@ -44,7 +48,10 @@ class RecolectorTweetsUser(Recolector):
 			maximo = self.getMinIDtweets(arrayFinal, query)
 			maximo -= 1
 			if len(arrayFinal) > 50:
+				tiempo_baseDatos_ini = time()
 				self.guarda(arrayFinal)
+				tiempo_baseDatos_fin = time()
+				tiempo_baseDatos += tiempo_baseDatos_fin - tiempo_baseDatos_ini
 				auxMax = self.getMaxIDtweets(arrayFinal, query)
 				if auxMax > maximoGlobal:
 					maximoGlobal = auxMax
@@ -61,6 +68,10 @@ class RecolectorTweetsUser(Recolector):
 		self.guarda(arrayFinal)
 		if maximoGlobal != 0:
 			self.apoyo.setLastUserTweet(query, maximoGlobal)
+
+		elapsed_time = time() - start_time
+		print("Elapsed time total: %0.10f seconds." % elapsed_time)
+		print("Elapsed time DB: %0.10f seconds." % tiempo_baseDatos)
 
 	def guarda(self, arrayDatos):
 		self.escritor.escribe(arrayDatos)
