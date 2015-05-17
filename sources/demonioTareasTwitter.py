@@ -47,13 +47,19 @@ class App():
                 pass
             else:
                 for tarea in tareas:
-                    tarea.doSearch()
+                    try:
+                        tarea.doSearch()
+                    except Exception, e:
+                        logger.error("%s" %str(e))
 
                 time.sleep(100)
 
                 for tarea in tareas:
-                    tarea.doPostProc()
-
+                    try:
+                        tarea.doPostProc()
+                    except Exception, e:
+                        logger.error("%s" %str(e))
+                        
             #fin de codigo principal
 
             i += 1
@@ -68,7 +74,7 @@ class App():
 
             #logger.error("Error message %s" %i)
 
-            time.sleep(300)
+            time.sleep(100)
 
 
 #Se crea la instancia de la clase

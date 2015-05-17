@@ -111,7 +111,7 @@ class ConsultasWeb(ConsultasGeneral):
 				query += " or status LIKE %s"
 			i = i + 1
 
-		query += "  ) and orig_tweet is null and (lang = 'es' or lang = 'en') and t.tuser = u.id order by t.created_at DESC LIMIT 2000;"
+		query += "  ) and is_retweet is False and (lang = 'es' or lang = 'en') and t.tuser = u.id order by t.created_at DESC LIMIT 2000;"
 		print query
 		print topics
 		try:

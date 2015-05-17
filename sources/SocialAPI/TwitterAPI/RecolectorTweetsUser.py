@@ -20,9 +20,9 @@ class RecolectorTweetsUser(Recolector):
 		self.twitter = Twython(api_key, access_token=access_token)
 
 	def recolecta(self, query):
-		start_time = time()
-		tiempo_baseDatos = 0
-		tiempo_api = 0
+		#start_time = time()
+		#tiempo_baseDatos = 0
+		#tiempo_api = 0
 
 		arrayFinal = []
 		if query[0] == '@':
@@ -33,10 +33,10 @@ class RecolectorTweetsUser(Recolector):
 
 		cont = 0
 		while True:
-			tiempo_api_ini = time()
+			#tiempo_api_ini = time()
 			statuses = self.privateRealizaConsulta(query, maxi=maximo, mini=minimo)
-			tiempo_api_fin = time()
-			tiempo_api += tiempo_api_ini - tiempo_api_fin
+			#tiempo_api_fin = time()
+			#tiempo_api += tiempo_api_fin - tiempo_api_ini
 			self.authorizator.add_query_to_key()
 
 			if len(statuses) == 0:
@@ -52,31 +52,34 @@ class RecolectorTweetsUser(Recolector):
 			maximo = self.getMinIDtweets(arrayFinal, query)
 			maximo -= 1
 			if len(arrayFinal) > 50:
-				tiempo_baseDatos_ini = time()
+				#tiempo_baseDatos_ini = time()
 				self.guarda(arrayFinal)
-				tiempo_baseDatos_fin = time()
-				tiempo_baseDatos += tiempo_baseDatos_fin - tiempo_baseDatos_ini
+				#tiempo_baseDatos_fin = time()
+				#tiempo_baseDatos += tiempo_baseDatos_fin - tiempo_baseDatos_ini
 				auxMax = self.getMaxIDtweets(arrayFinal, query)
 				if auxMax > maximoGlobal:
 					maximoGlobal = auxMax
 					
 				cont += len(arrayFinal)
 				arrayFinal = []
-				
+			
 
 			#limite de la api
-			if cont > 3200:
+			if len(arrayFinal) > 3200:
 				break
 
 		#fin del while
+		#tiempo_baseDatos_ini = time()
 		self.guarda(arrayFinal)
+		#tiempo_baseDatos_fin = time()
+		tiempo_baseDatos += tiempo_baseDatos_fin - tiempo_baseDatos_ini
 		if maximoGlobal != 0:
 			self.apoyo.setLastUserTweet(query, maximoGlobal)
 
-		elapsed_time = time() - start_time
-		print("Elapsed time total: %0.10f seconds." % elapsed_time)
-		print("Elapsed time DB: %0.10f seconds." % tiempo_baseDatos)
-		print("Elapsed time API: %0.10f seconds." % tiempo_api)
+		#elapsed_time = time() - start_time
+		#print("Elapsed time total: %0.10f seconds." % elapsed_time)
+		#print("Elapsed time DB: %0.10f seconds." % tiempo_baseDatos)
+		#print("Elapsed time API: %0.10f seconds." % tiempo_api)
 
 	def guarda(self, arrayDatos):
 		self.escritor.escribe(arrayDatos)

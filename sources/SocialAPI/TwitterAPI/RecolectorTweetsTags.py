@@ -1,4 +1,5 @@
 from RecolectorTweetsUser import RecolectorTweetsUser
+from time import time
 
 class RecolectorTweetsTags(RecolectorTweetsUser):
 	"""docstring for RecolectorTweetsTags"""
@@ -7,11 +8,18 @@ class RecolectorTweetsTags(RecolectorTweetsUser):
 
 
 	def recolecta(self, query):
+		#start_time = time()
+		#tiempo_baseDatos = 0
+		#tiempo_api = 0
+
 		arrayFinal = []
 		maximo = long(0)
 		cont = 0
 		while True:
+			#tiempo_api_ini = time()
 			statuses = self.privateRealizaConsulta(query, maxi=maximo)
+			#tiempo_api_fin = time()
+			#tiempo_api += tiempo_api_fin - tiempo_api_ini
 			self.authorizator.add_query_to_key()
 
 			if len(statuses) == 0:
@@ -27,7 +35,10 @@ class RecolectorTweetsTags(RecolectorTweetsUser):
 			maximo = self.getMinIDtweets(arrayFinal, query)
 			maximo -= 1
 			if len(arrayFinal) > 50:
+				#tiempo_baseDatos_ini = time()
 				self.guarda(arrayFinal)
+				#tiempo_baseDatos_fin = time()
+				#tiempo_baseDatos += tiempo_baseDatos_fin - tiempo_baseDatos_ini
 				cont += len(arrayFinal)
 				arrayFinal = []
 				
@@ -36,7 +47,15 @@ class RecolectorTweetsTags(RecolectorTweetsUser):
 				break
 
 		#fin del while
+		#tiempo_baseDatos_ini = time()
 		self.guarda(arrayFinal)
+		#tiempo_baseDatos_fin = time()
+		#tiempo_baseDatos += tiempo_baseDatos_fin - tiempo_baseDatos_ini
+
+		#elapsed_time = time() - start_time
+		#print("Elapsed time total: %0.10f seconds." % elapsed_time)
+		#print("Elapsed time DB: %0.10f seconds." % tiempo_baseDatos)
+		#print("Elapsed time API: %0.10f seconds." % tiempo_api)
 
 
 	def privateRealizaConsulta(self, query, maxi=0, mini=0):
