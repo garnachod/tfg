@@ -307,11 +307,12 @@ def listaTweetTrain():
 			return redirect('/success?code=3')
 		else:
 			try:
-				if request.args['linkBorrado'] is None:
-					nlistaEntrena_web.borrar(int(request.args['linkBorrado']))
-					return redirect('/lista_entrena_tweets')
-				else:
+				if request.args['borrar_id'] is None:
 					return nlistaEntrena_web.toString()
+				else:
+					nlistaEntrena_web.borrar(int(request.args['borrar_id']))
+					return redirect('/lista_entrena_tweets')
+					
 			except Exception, e:
 				return nlistaEntrena_web.toString()
 	else:

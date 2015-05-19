@@ -39,7 +39,7 @@ class App():
         i = 0
 
         while True:
-
+            time.sleep(100)
             #codigo principal
             generador = GeneraTareasDesdeDB()
             tareas = generador.genera()
@@ -74,7 +74,7 @@ class App():
 
             #logger.error("Error message %s" %i)
 
-            time.sleep(100)
+            
 
 
 #Se crea la instancia de la clase
