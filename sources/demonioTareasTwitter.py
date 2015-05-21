@@ -3,6 +3,7 @@
 import logging
 import os
 import time
+import random
 
 
 #de python-daemon import runner
@@ -43,6 +44,7 @@ class App():
             #codigo principal
             generador = GeneraTareasDesdeDB()
             tareas = generador.genera()
+            random.shuffle(tareas)
             if tareas is None:
                 pass
             else:
