@@ -1,11 +1,11 @@
-tfg
+#TFG
 ===
 Aplicación web:
-	Recolección de Tweets
-	Clasificación Automática
-	Estadisticas sencillas
+* Recolección de Tweets
+* Clasificación Automática
+* Estadisticas sencillas
 
-TFM
+#TFM
 ===
 Posibles puntos (más probables):
 	Migración a Cassandra (índices de texto no tan completos como en mongo) o MongoDB
