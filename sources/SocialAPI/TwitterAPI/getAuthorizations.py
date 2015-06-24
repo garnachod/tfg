@@ -13,14 +13,14 @@ class GetAuthorizations():
         self.cur = conSql.getCursor()
 
     def load_twitter_token(self):
-        query = "SELECT id FROM twitter_tokens"
+        query = "SELECT id FROM twitter_tokens;"
         self.cur.execute(query)
         rows = self.cur.fetchall()
         for row in rows:
-            query = "INSERT INTO tokens_count (id_token, simulado) VALUES (%s, true)"
+            query = "INSERT INTO tokens_count (id_token, simulado) VALUES (%s, true);"
             self.cur.execute(query, (row[0],))
 
-        query = "SELECT id_token, count(id_token) as cuenta from (select * from tokens_count  where tiempo > current_timestamp - interval '15 minutes') as A  GROUP BY id_token order by cuenta Limit 1"
+        query = "SELECT id_token, count(id_token) as cuenta from (select * from tokens_count  where tiempo > current_timestamp - interval '15 minutes') as A  GROUP BY id_token order by cuenta Limit 1;"
         self.cur.execute(query)
         rows = self.cur.fetchall()
         for row in rows:
@@ -28,7 +28,7 @@ class GetAuthorizations():
             self.cuenta = row[1]
 
 
-        query = "SELECT * FROM twitter_tokens WHERE id = %s"
+        query = "SELECT * FROM twitter_tokens WHERE id = %s;"
         self.cur.execute(query, (self.id,))
         rows = self.cur.fetchall()
         for row in rows:
@@ -48,7 +48,7 @@ class GetAuthorizations():
 
     #mira a ver cuantas consultas se han realizado con ese apik
     def is_limit_api(self):
-        query = "SELECT count(id_token) as cuenta from (select * from tokens_count  where id_token = %s and tiempo > current_timestamp - interval '15 minutes') as A  GROUP BY id_token"
+        query = "SELECT count(id_token) as cuenta from (select * from tokens_count  where id_token = %s AND tiempo > current_timestamp - interval '15 minutes') as A  GROUP BY id_token"
 
         self.cur.execute(query, (self.id,))
         row = self.cur.fetchone()

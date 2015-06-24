@@ -72,7 +72,7 @@ class RecolectorTweetsUser(Recolector):
 		#tiempo_baseDatos_ini = time()
 		self.guarda(arrayFinal)
 		#tiempo_baseDatos_fin = time()
-		tiempo_baseDatos += tiempo_baseDatos_fin - tiempo_baseDatos_ini
+		#tiempo_baseDatos += tiempo_baseDatos_fin - tiempo_baseDatos_ini
 		if maximoGlobal != 0:
 			self.apoyo.setLastUserTweet(query, maximoGlobal)
 

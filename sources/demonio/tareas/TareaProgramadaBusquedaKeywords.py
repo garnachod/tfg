@@ -19,6 +19,8 @@ class TareaProgramadaBusquedaKeywords(TareaProgramada):
 		escritor = EscritorTweets(ConexionSQL(), self.search_id)
 		recolector = RecolectorTweetsTags(escritor)
 		recolector.recolecta(cadenaBusqueda)
+
+		
 		return True
 
 	def doPostProc(self):

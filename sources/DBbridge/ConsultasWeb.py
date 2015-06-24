@@ -322,7 +322,7 @@ class ConsultasWeb(ConsultasGeneral):
 	def getTweetsRecuperadosTareaID(self, identificador):
 		query =  """SELECT tw.status, tw.favorite_count, tw.retweet_count, tw.is_retweet, tw.media_url, u.screen_name 
 					From tweets as tw, join_search_tweet as j, tareas_programadas as t , users as u
-					where t.id = %s and t.id_search = j.id_search and tw.id = j.id_tweet and tw.is_retweet = FALSE and u.id = tw.tuser;
+					where t.id = %s and t.id_search = j.id_search and tw.id = j.id_tweet and tw.is_retweet = FALSE and u.id = tw.tuser limit 500;
 					"""
 
 		try:
@@ -337,7 +337,7 @@ class ConsultasWeb(ConsultasGeneral):
 	def getTweetsRecuperadosTareaAnalisisID(self, identificador):
 		query =  """SELECT tw.status, tw.favorite_count, tw.retweet_count, tw.is_retweet, tw.media_url, u.screen_name 
 					From tweets as tw, join_search_tweet as j, tareas_programadas as t , users as u, clasificaciontweets as c
-					where t.id = %s and t.id_search = j.id_search and tw.id = j.id_tweet and c.id_tweet = j.id_tweet and c.clase = 'relevante' and tw.is_retweet = FALSE and u.id = tw.tuser;
+					where t.id = %s and t.id_search = j.id_search and tw.id = j.id_tweet and c.id_tweet = j.id_tweet and c.clase = 'relevante' and tw.is_retweet = FALSE and u.id = tw.tuser limit 500; 
 					"""
 
 		try:

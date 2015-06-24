@@ -34,7 +34,7 @@ class RecolectorTweetsTags(RecolectorTweetsUser):
 			#fin de for
 			maximo = self.getMinIDtweets(arrayFinal, query)
 			maximo -= 1
-			if len(arrayFinal) > 50:
+			if len(arrayFinal) > 100:
 				#tiempo_baseDatos_ini = time()
 				self.guarda(arrayFinal)
 				#tiempo_baseDatos_fin = time()
@@ -62,18 +62,18 @@ class RecolectorTweetsTags(RecolectorTweetsUser):
 		if self.authorizator.is_limit_api():
 				return []
 
-		try:
-			if maxi == 0 and mini == 0: 
-				retorno = self.twitter.search(q=query, count='100')
-			elif maxi == 0 and mini > 0:
-				retorno = self.twitter.search(q=query, since_id=mini, count='100')
-			elif maxi > 0 and mini == 0:
-				retorno = self.twitter.search(q=query, max_id=maxi, count='100')
-			else:
-				retorno = self.twitter.search(q=query, max_id=maxi, since_id=mini, count='100')
+		#try:
+		if maxi == 0 and mini == 0: 
+			retorno = self.twitter.search(q=query, count='100')
+		elif maxi == 0 and mini > 0:
+			retorno = self.twitter.search(q=query, since_id=mini, count='100')
+		elif maxi > 0 and mini == 0:
+			retorno = self.twitter.search(q=query, max_id=maxi, count='100')
+		else:
+			retorno = self.twitter.search(q=query, max_id=maxi, since_id=mini, count='100')
 
-			return retorno["statuses"]
-		except Exception, e:
-			print e
-			return []
+		return retorno["statuses"]
+		#except Exception, e:
+		#	print e
+		#	return []
 

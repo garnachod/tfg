@@ -17,7 +17,7 @@ def crea_tablas():
              ', created_at date'
              ', last_tweet_collected bigint'  # puede no ser el ultimo, sino el ultimo recogido sistemáticamente del usuario
              ');'
-             'CREATE UNIQUE INDEX users_idx ON Users(id_twitter);'
+             'CREATE UNIQUE INDEX CONCURRENTLY users_idx ON Users(id_twitter);'
              'CREATE UNIQUE INDEX users_sn_idx ON Users(screen_name);'
     )
     cur.execute(query)
@@ -35,7 +35,7 @@ def crea_tablas():
              ', retweet_count int'
              ', media_url varchar(100)'
              ');'
-             'CREATE UNIQUE INDEX tweets_idx ON Tweets (id_twitter);'
+             'CREATE UNIQUE INDEX CONCURRENTLY ON  tweets (id_twitter);'
              'CREATE INDEX tweets_tu_idx ON Tweets (tuser);'
     )
     cur.execute(query)

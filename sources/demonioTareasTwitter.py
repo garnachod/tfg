@@ -40,11 +40,12 @@ class App():
         i = 0
 
         while True:
-            time.sleep(100)
+            time.sleep(1)
             #codigo principal
             generador = GeneraTareasDesdeDB()
             tareas = generador.genera()
             random.shuffle(tareas)
+            logger.info("Numero de tareas %s" %len(tareas))
             if tareas is None:
                 pass
             else:
@@ -71,7 +72,6 @@ class App():
             #logger.debug("Debug message %s" %i)
 
             logger.info("Iteraciones desde arrancado %s" %i)
-            logger.info("Numero de tareas %s" %len(tareas))
             #logger.warn("Warning message %s" %i)
 
             #logger.error("Error message %s" %i)
