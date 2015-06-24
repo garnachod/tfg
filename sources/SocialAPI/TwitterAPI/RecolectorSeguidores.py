@@ -8,7 +8,7 @@ class RecolectorSeguidores(Recolector):
 	"""docstring for RecolectorSeguidores"""
 	def __init__(self, escritor):
 		super(RecolectorSeguidores, self).__init__(escritor)
-		self.authorizator = GetAuthorizations()
+		self.authorizator = GetAuthorizations(30)
 		self.twitter = None
 		self.apoyo = ApoyoTwitter()
 		self.inicializa()

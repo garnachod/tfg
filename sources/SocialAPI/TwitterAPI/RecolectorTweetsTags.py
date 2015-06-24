@@ -5,6 +5,7 @@ class RecolectorTweetsTags(RecolectorTweetsUser):
 	"""docstring for RecolectorTweetsTags"""
 	def __init__(self, escritor):
 		super(RecolectorTweetsTags, self).__init__(escritor)
+		self.authorizator.set_limit_api(450)
 
 
 	def recolecta(self, query):

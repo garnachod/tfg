@@ -9,7 +9,7 @@ class RecolectorTweetsUser(Recolector):
 	"""docstring for RecolectorTweetsUser"""
 	def __init__(self, escritor):
 		super(RecolectorTweetsUser, self).__init__(escritor)
-		self.authorizator = GetAuthorizations()
+		self.authorizator = GetAuthorizations(300)
 		self.twitter = None
 		self.apoyo = ApoyoTwitter()
 		self.inicializa()

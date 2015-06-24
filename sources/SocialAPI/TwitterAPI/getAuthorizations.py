@@ -7,10 +7,11 @@ from DBbridge.ConexionSQL import ConexionSQL
 #queue = multiprocessing.Manager()
 #queue.start()
 class GetAuthorizations():
-    def __init__(self):
+    def __init__(self, limit):
         conSql = ConexionSQL()
         self.conn = conSql.getConexion()
         self.cur = conSql.getCursor()
+        self.limit = limit
 
     def load_twitter_token(self):
         query = "SELECT id FROM twitter_tokens;"
@@ -46,13 +47,16 @@ class GetAuthorizations():
         self.cur.execute(query, (self.id,))
         self.cur.execute("COMMIT")
 
+    def set_limit_api(self, limit):
+        self.limit = limit
+
     #mira a ver cuantas consultas se han realizado con ese apik
     def is_limit_api(self):
         query = "SELECT count(id_token) as cuenta from (select * from tokens_count  where id_token = %s AND tiempo > current_timestamp - interval '15 minutes') as A  GROUP BY id_token"
 
         self.cur.execute(query, (self.id,))
         row = self.cur.fetchone()
-        if int(row[0]) >= 160:
+        if int(row[0]) >= self.limit:
             return True
         else:
             return False
