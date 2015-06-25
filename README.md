@@ -10,6 +10,7 @@ Aplicación web:
 ##Posibles puntos (más probables):
 * Migración a Cassandra (índices de texto no tan completos como en mongo) o MongoDB
 	* Si se usa Cassandra hay que tener en cuenta la posible utilización de un gestor de indices externo
+		* https://github.com/Stratio/cassandra-lucene-index 
 * Spark (si se usa, la base de datos debe ser Cassandra)
 	* Tiene análisis de grafos
 	* pagerank <- https://github.com/apache/spark/blob/master/examples/src/main/python/pagerank.py
@@ -30,7 +31,7 @@ Aplicación web:
 	* redes neuronales recurrentes?
 
 ##Posibles puntos (menos probables o al menos complicados de integrar):
-*clasificación de imágenes <- CAFFE
-*clasificación de sentimientos <- http://nlp.stanford.edu/sentiment/code.html
+* clasificación de imágenes <- CAFFE
+* clasificación de sentimientos <- http://nlp.stanford.edu/sentiment/code.html
 
 
