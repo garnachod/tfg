@@ -25,6 +25,8 @@ Aplicación web:
 * Mejores clasificadores para texto:
 	* (es lo mismo que uso +o-, pero añadiendo TF-IDF) https://en.wikipedia.org/wiki/Bag-of-words_model (la red neuronal se encarga de crear los pesos, pero se puede ayudar)
 
+* Búsquedas en tiempo real al estilo TweetDeck pero con clasificación automática.(MUY IMPORTANTE)
+
 * Clasificación de lenguaje natural
 	* doctorado <- https://www.cl.cam.ac.uk/techreports/UCAM-CL-TR-721.pdf
 	* investigación de stanford <- http://nlp.stanford.edu/software/classifier.shtml
