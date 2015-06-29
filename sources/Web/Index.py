@@ -39,7 +39,7 @@ class Index():
 
 		cadena += '''<div class="mid">
 						<div class="mid-cont">
-							<div class="cont-busqueda">
+							<div class="cont-general">
 								<h3 style="text-align:  left;">Búsqueda:</h3>
 								<form action="/busqueda" method="post">
 									<select name="tipoBusqueda" id="tipoBusqueda">
@@ -66,7 +66,7 @@ class Index():
 					</div>
 					<div class="mid">
 						<div class="mid-cont">
-							<div class="ini-ses">
+							<div class="cont-general">
 								<h3>
 									Debes iniciar sesión en la aplicación
 								</h3>
