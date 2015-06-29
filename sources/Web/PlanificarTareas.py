@@ -4,66 +4,59 @@ from MenuSlide import MenuSlide
 from UserHeader import UserHeader
 from flask import Flask, session
 from DBbridge.ConsultasWeb import ConsultasWeb
+from SupportWeb import SupportWeb
+from WebPageMenu import WebPageMenu
 
-class PlanificarTareas():
+class PlanificarTareas(WebPageMenu):
 	def __init__(self):
-		self.head = Head('Planificar tarea') 
-		self.consultas = ConsultasWeb()
-		self.generaHead()
+		super(PlanificarTareas, self).__init__()
+		self.head.setTitulo('Planificar Tarea')
 
-	def generaHead(self):
+
+	def insertStyles(self):
 		self.head.add_css("static/css/general.css")
 		self.head.add_css("static/css/tareas.css")
+
+	def insertScripts(self):
 		self.head.add_js("static/js/jquery.js")
 		self.head.add_js("static/js/opciones_index.js")
 		self.head.add_js("static/js/opciones_generar_tarea.js")
-		self.head.activaMenu()
 
-	def toString(self, usuario):
-		cadena = '<!DOCTYPE html>\n<html>'
-		cadena += self.head.toString()
-
-		cadena += '<body>'
-		
-		userHeader = UserHeader(usuario, 'static/img/usrIcon.png', self.consultas.isAdministrator(session['user_id']), True)
-		userHeader.setBotonInicio(True)
-		cadena += userHeader.toString()
-
-		cadena += '''<div class="mid">
-						<div class="mid-cont">
-							<div class="cont-tareas">
-								<h3 style="text-align: left;" >Planificar tarea:</h3>
-								<form action="/alta_tarea" method="post" style="max-width: 500px; margin-left: auto; margin-right: auto;">
-									<p style="text-align: left;">Tipo de tarea:</p>
-									<p style="text-align: left;">
-									<select name="tipoTarea" id="tipoTarea" style="width:339px; margin-left: 70px;">
-  										<option value="sb">Solo búsqueda</option>
-  										<option value="bp">Busqueda y análisis de palabras</option>'''
+	def mid(self):
+		mid = '''
+				  <h3 style="text-align: left;" >Planificar tarea:</h3>
+					<form action="/alta_tarea" method="post" style="max-width: 500px; margin-left: auto; margin-right: auto;">
+						<p style="text-align: left;">Tipo de tarea:</p>
+						<p style="text-align: left;">
+						<select name="tipoTarea" id="tipoTarea" style="width:339px; margin-left: 70px;">
+								<option value="sb">Solo búsqueda</option>
+								<option value="bp">Busqueda y análisis de palabras</option>
+						</select>
+						</p>'''
   		#<option value="bf">Busqueda y análisis de frecuencia</option>
-  		cadena +=	'''				</select>
-  									</p>
-  									<p style="text-align: left;">
-  										Búsqueda:
-  									</p>
-  									<p style="text-align: left;">
-									<select name="tipoBusqueda" id="tipoBusqueda" style="margin-left: 70px;">
-  										<option value="suser">Usuario</option>
-  										<option value="topic">Contenido</option>
-  									</select>
-  									<input id="input_search" type="text" name="search" placeholder="@username" style="text-align: left;">
-  									</p>
-  									<p style="text-align: left;">
-  										Tiempo activo:
-  									</p>
-  									<p style="text-align: left;">
-	  									<select name="tiempoTarea" id="tiempoTarea" style="width:339px; margin-left: 70px;">
-	  										<option value="semana">7 días</option>
-	  										<option value="dossemana">15 días</option>
-	  										<option value="mes">30 días</option> 
-	  									</select>
-  									</p>
+		mid +=	'''	
+						<p style="text-align: left;">
+							Búsqueda:
+						</p>
+						<p style="text-align: left;">
+						<select name="tipoBusqueda" id="tipoBusqueda" style="margin-left: 70px;">
+							<option value="suser">Usuario</option>
+							<option value="topic">Contenido</option>
+						</select>
+						<input id="input_search" type="text" name="search" placeholder="@username" style="text-align: left;">
+						</p>
+						<p style="text-align: left;">
+							Tiempo activo:
+						</p>
+						<p style="text-align: left;">
+							<select name="tiempoTarea" id="tiempoTarea" style="width:339px; margin-left: 70px;">
+								<option value="semana">7 días</option>
+								<option value="dossemana">15 días</option>
+								<option value="mes">30 días</option> 
+							</select>
+						</p>
   					'''
-  		cadena +=   '''				<div id="cont_lista_entrenamiento">
+  		mid +=   '''				<div id="cont_lista_entrenamiento">
   									<p style="text-align: left;">
   										Lista de tweets usada para el análisis:
   									</p>			
@@ -72,21 +65,18 @@ class PlanificarTareas():
   					'''
   		rows = self.consultas.getListasEntrenamiento()
 		for row in rows:
-			cadena += '<option value="'+str(row[0])+'">' + row[1] +'</option>'
+			mid += '<option value="'+str(row[0])+'">' + row[1] +'</option>'
 
-		cadena +=   '''
+		mid +=   '''
 										</select>
   									</p>
   									</div>
 					'''
-  		cadena +=   '''
+  		mid +=   '''
   									<p style="margin-bottom: 5px;"><input class="boton-general" type="submit" value="Enviar"></p>
 								</form>
-							</div>
-						</div>
-					</div>'''
+				'''
+		return SupportWeb.addGeneralStructureMid(mid)
 
-		menu = self.head.getMenuInstance()
-		cadena += menu.toStringContenido()
-		cadena += '</body>'
-		return cadena
+	def scripts(self):
+		return ''

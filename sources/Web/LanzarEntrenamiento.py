@@ -6,6 +6,7 @@ from DBbridge.ConsultasWeb import ConsultasWeb
 from MachineLearning.EntrenamientoTweets import EntrenamientoTweets
 from MachineLearning.EntrenamientoTweets import EntrenamientoTweets_ASINC
 from flask import Flask, session
+from SupportWeb import SupportWeb
 import json
 
 class LanzarEntrenamiento(object):
@@ -34,19 +35,14 @@ class LanzarEntrenamiento(object):
 		userHeader.setBotonInicio(True)
 		cadena += userHeader.toString()
 
-		cadena += '''<div class="mid">
-						<div class="mid-cont">
-							<div class="cont-general">
-							<h3 style="text-align: left;" >Lanzar entrenamiento Tweets</h3>'''
+		mid = '<h3 style="text-align: left;" >Lanzar entrenamiento Tweets</h3>'
 
 		rows = self.consultas.getListasEntrenamiento()
 		for row in rows:
-			cadena += '<p><a class="boton-general" href="/lanzar_entrenamientos?id_entr='+str(row[0])+'">' + row[1] +'</a></p>'
+			mid += '<p><a class="boton-general" href="/lanzar_entrenamientos?id_entr='+str(row[0])+'">' + row[1] +'</a></p>'
 
 		
-		cadena +='''</div>
-						</div>
-					</div>'''
+		cadena += SupportWeb.addGeneralStructureMid(mid)
 
 		menu = self.head.getMenuInstance()
 		cadena += menu.toStringContenido()

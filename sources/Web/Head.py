@@ -2,12 +2,15 @@ from MenuSlide import MenuSlide
 
 class Head():
 	"""docstring for Head""" 
-	def __init__(self, titulo):
+	def __init__(self, titulo=""):
 		self.lista_css = []
 		self.lista_js =[]
 		self.titulo = titulo
 		self.menu = False
 		self.menuInstance = MenuSlide()
+
+	def setTitulo(self, titulo):
+		self.titulo = titulo
 
 	def activaMenu(self):
 		self.menu = True

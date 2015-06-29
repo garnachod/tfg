@@ -5,6 +5,7 @@ from DBbridge.ConsultasWeb import ConsultasWeb
 from MenuSlide import MenuSlide
 from flask import Flask, session
 from Tweet import Tweet
+from SupportWeb import SupportWeb
 
 class ListarTweetsEntrenamiento(object):
 	"""docstring for ListarTweetsEntrenamiento"""
@@ -38,48 +39,44 @@ class ListarTweetsEntrenamiento(object):
 		#	return 'ERR'
 		
 
-		cadena += '''<div class="mid">
-						<div class="mid-cont">
-							<div class="cont-busqueda">
-				'''
+		mid = ''
+
 		if identificador == -1:
 			rows = self.consultas.getListasEntrenamiento()
-			cadena += '<h3 style="text-align:  left;">Seleccionar lista de entrenamiento:</h3>'
+			mid += '<h3 style="text-align:  left;">Seleccionar lista de entrenamiento:</h3>'
 			if rows == False:
 				return 'ERR'
 			
 			for row in rows:
 				#insertar el link
 				link = '/ver_entrena_tweets?id_lista=' + str(row[0])
-				cadena += '<p><a href="'+link+'" class="boton-general">' + row[1] + '</a></p>'
+				mid += '<p><a href="'+link+'" class="boton-general">' + row[1] + '</a></p>'
 		else:
 			tweets = self.consultas.getTweetsEntrenamientoListar(identificador)
-			cadena += '<h3 style="text-align:  left;">tweets</h3>'
+			mid += '<h3 style="text-align:  left;">tweets</h3>'
 			if tweets == False:
 				return 'ERR'
 
 			for tweet in tweets:
 				clase = self.privateTweetDBGetClass(tweet)
 				if clase == 'no_relevante':
-					cadena += '<div id="'+ str(self.privateTweetDBGetId(tweet))+ '" class="no_relevante">'
-					cadena += Tweet.imprimeTweett(tweet, False)
-					cadena += '<div style="text-align:center;">'
-					cadena += '<a href="javascript:votar.cambiarVotoID('+str(self.privateTweetDBGetId(tweet)) +')" class="boton-general" style="margin-bottom: 10px;">Cambiar voto</a>'
-					cadena += '</div>'
-					cadena += '</div>'
+					mid += '<div id="'+ str(self.privateTweetDBGetId(tweet))+ '" class="no_relevante">'
+					mid += Tweet.imprimeTweett(tweet, False)
+					mid += '<div style="text-align:center;">'
+					mid += '<a href="javascript:votar.cambiarVotoID('+str(self.privateTweetDBGetId(tweet)) +')" class="boton-general" style="margin-bottom: 10px;">Cambiar voto</a>'
+					mid += '</div>'
+					mid += '</div>'
 				else:
-					cadena += '<div id="'+ str(self.privateTweetDBGetId(tweet)) + '" class="relevante">'
-					cadena += Tweet.imprimeTweett(tweet, False)
-					cadena += '<div style="text-align:center;">'
-					cadena += '<a href="javascript:votar.cambiarVotoID('+str(self.privateTweetDBGetId(tweet)) +')" class="boton-general" style="margin-bottom: 10px;">Cambiar voto</a>'
-					cadena += '</div>'
-					cadena += '</div>'
+					mid += '<div id="'+ str(self.privateTweetDBGetId(tweet)) + '" class="relevante">'
+					mid += Tweet.imprimeTweett(tweet, False)
+					mid += '<div style="text-align:center;">'
+					mid += '<a href="javascript:votar.cambiarVotoID('+str(self.privateTweetDBGetId(tweet)) +')" class="boton-general" style="margin-bottom: 10px;">Cambiar voto</a>'
+					mid += '</div>'
+					mid += '</div>'
 
 
-		cadena +=  '''
-							</div>
-						</div>
-					</div>'''
+		cadena += SupportWeb.addGeneralStructureMid(mid)
+
 		menu = self.head.getMenuInstance()
 		cadena += menu.toStringContenido()
 		cadena += '</body></html>'

@@ -4,64 +4,51 @@ from MenuSlide import MenuSlide
 from UserHeader import UserHeader
 from DBbridge.ConsultasWeb import ConsultasWeb
 from flask import Flask, session
+from SupportWeb import SupportWeb
+from WebPageMenu import WebPageMenu
 
-class VisualizarListaTareas(object):
+class VisualizarListaTareas(WebPageMenu):
 	"""docstring for VisualizarListaTareas"""
 	def __init__(self):
 		super(VisualizarListaTareas, self).__init__()
-		self.head = Head('Lista tareas')
-		self.consultas = ConsultasWeb()
-		self.generaHead()
+		self.head.setTitulo('Lista tareas')
 
-	def generaHead(self):
+	def insertStyles(self):
 		self.head.add_css("static/css/general.css")
 		self.head.add_css("static/css/tareas.css")
+
+	def insertScripts(self):
 		self.head.add_js("static/js/jquery.js")
-		self.head.activaMenu()
 
-	def toString(self, finalizadas=False):
-
+	def mid(self):
 		tuplas = []
-		if finalizadas == True:
+		if self.finalizadas == True:
 			tuplas = self.consultas.getTareasTerminadasListado()
 		else:
 			tuplas = self.consultas.getTareasPendientesListado()
 
 		if tuplas == False:
-			return 'ERR'
+			return SupportWeb.addGeneralStructureMid('ERR')
 
-		cadena = '<!DOCTYPE html>\n<html>'
-		cadena += self.head.toString()
-
-		cadena += '<body>'
-		
-		consultasWeb = ConsultasWeb()
-		userHeader = UserHeader(session['username'], 'static/img/usrIcon.png', consultasWeb.isAdministrator(session['user_id']), True)
-		userHeader.setBotonInicio(True)
-		cadena += userHeader.toString()
-
-		cadena += '''<div class="mid">
-						<div class="mid-cont">
-							<div class="cont-tareas">'''
-
-		cadena += '<div class="tarea" style="margin-bottom: 10px;">'
-		cadena += '<div class="fragmento-tarea claro">Búsqueda</div>'
-		cadena += '<div class="fragmento-tarea oscuro">Tipo Tarea</div>'
-		cadena += '<div class="fragmento-tarea claro">Fecha Inicio</div>'
-		cadena += '<div class="fragmento-tarea oscuro">Fecha Fin</div>'
-		cadena += '</div>'
+		medio  = ('<div class="tarea" style="margin-bottom: 10px;">'
+					'<div class="fragmento-tarea claro">Búsqueda</div>'
+					'<div class="fragmento-tarea oscuro">Tipo Tarea</div>'
+					'<div class="fragmento-tarea claro">Fecha Inicio</div>'
+					'<div class="fragmento-tarea oscuro">Fecha Fin</div>'
+				'</div>')
 
 		for tupla in tuplas:
-			cadena += self.generaTareaDeTupla(tupla)
+			medio += self.generaTareaDeTupla(tupla)
 
-		cadena +='''</div>
-						</div>
-					</div>'''
+		return SupportWeb.addGeneralStructureMid(medio)
 
-		menu = self.head.getMenuInstance()
-		cadena += menu.toStringContenido()
-		cadena += '</body>'
-		return cadena
+	def scripts(self):
+		return ''
+		
+	def toString(self, finalizadas=False):
+		self.finalizadas = finalizadas
+		return super(VisualizarListaTareas, self).toString()
+		
 
 	def generaTareaDeTupla(self, tupla):
 		cadena = '<a href="/resumen_tarea?identificador=' + str(tupla[0]) + '">'

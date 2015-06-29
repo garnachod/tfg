@@ -4,41 +4,30 @@ from MenuSlide import MenuSlide
 from UserHeader import UserHeader
 from DBbridge.ConsultasWeb import ConsultasWeb
 from flask import Flask, session
+from SupportWeb import SupportWeb
+from WebPageMenu import WebPageMenu
 import json
 
-class Estadisticas(object):
+class Estadisticas(WebPageMenu):
 	"""docstring for VisualizarListaTareas"""
 	def __init__(self):
 		super(Estadisticas, self).__init__()
-		self.head = Head('Estadísticas')
-		self.consultas = ConsultasWeb()
-		self.generaHead()
-
-	def generaHead(self):
+		self.head.setTitulo('Estadisticas')
+	
+	def insertStyles(self):
 		self.head.add_css("static/css/general.css")
 		self.head.add_css("static/css/estadisticas.css")
+
+	def insertScripts(self):
 		self.head.add_js("static/js/jquery.js")
 		self.head.add_js("static/js/Chart.min.js")
-		self.head.activaMenu()
-
-	def toString(self):
-		cadena = '<!DOCTYPE html>\n<html>'
-		cadena += self.head.toString()
-
-		cadena += '<body>'
-		
-		consultasWeb = ConsultasWeb()
-		userHeader = UserHeader(session['username'], 'static/img/usrIcon.png', consultasWeb.isAdministrator(session['user_id']), True)
-		userHeader.setBotonInicio(True)
-		cadena += userHeader.toString()
-
-		cadena += '''<div class="mid">
-						<div class="mid-cont">
-							<div class="cont-estadisticas">
-							<h3 style="text-align: left;" >Estadísticas de tweets</h3>'''
 
 
-		cadena += '''
+	def mid(self):
+		mid = '<h3 style="text-align: left;" >Estadísticas de tweets</h3>'
+
+
+		mid += '''
 					<div class="contenedor-estadistica contenedor-pie">	
 					<p class="titulo-estadistica">Número de Tweets</p>
 						<div id="canvas-holder">
@@ -47,7 +36,7 @@ class Estadisticas(object):
 					</div>
 				  '''
 
-		cadena += '''
+		mid += '''
 					<div class="contenedor-estadistica contenedor-pie">	
 					<p class="titulo-estadistica">Número de Tweets únicos, multimedia</p>
 						<div id="canvas-holder">
@@ -56,10 +45,10 @@ class Estadisticas(object):
 					</div>
 				  ''' 
 
-		cadena += '<div style="overflow:hidden; width: 100%;">'
-		cadena += '<h3 style="text-align: left;" >Estadísticas de la aplicación</h3>'
+		mid += '<div style="overflow:hidden; width: 100%;">'
+		mid += '<h3 style="text-align: left;" >Estadísticas de la aplicación</h3>'
 
-		cadena += '''
+		mid += '''
 					<div class="contenedor-estadistica">	
 						<p class="titulo-estadistica">Frecuencia de consultas diarias</p>
 						<div id="canvas-holder">
@@ -67,16 +56,14 @@ class Estadisticas(object):
 						</div>
 					</div>
 				  '''
-		cadena += '</div>'
-		cadena +='''</div>
-						</div>
-					</div>'''
+		mid += '</div>'
 
-		menu = self.head.getMenuInstance()
-		cadena += menu.toStringContenido()
+		return SupportWeb.addGeneralStructureMid(mid)
 
+	def scripts(self):
+		#cadena = menu.toStringContenido()
 		
-		cadena += '<script>'
+		cadena = '<script>'
 		cadena += self.generaCodigoNumeroTweetsRT()
 		cadena += '</script>'
 		cadena += '<script>'
@@ -92,6 +79,7 @@ class Estadisticas(object):
 		cadena += '</body>'
 
 		return cadena
+
 
 	def generaCodigoNumeroTweetsRT(self):
 		'''

@@ -16,6 +16,9 @@ class APISetTweetTrain(object):
 		if vote is None or t_id is None:
 			retorno = {"status":"false"}
 			return json.dumps(retorno)
+		elif vote is '' or t_id is '':
+			retorno = {"status":"false"}
+			return json.dumps(retorno)
 
 		if vote == "relevante":
 			self.consultas.setTweetTrainID(t_id, "relevante", lista_id);
@@ -35,6 +38,9 @@ class APISetTweetTrain(object):
 
 
 		if identificador is None:
+			retorno = {"status":"false"}
+			return json.dumps(retorno)
+		elif identificador is '':
 			retorno = {"status":"false"}
 			return json.dumps(retorno)
 

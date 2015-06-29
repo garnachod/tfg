@@ -20,6 +20,8 @@ class AdminNewUser():
 
 		if nombre is None or correo is None or institucion is None or usern is None or passw is None or passwr is None:
 			return False
+		elif nombre is '' or correo is '' or institucion is '' or usern is '' or passw is '' or passwr is '':
+			return False
 		else:
 			if passwr == passw:
 				h = hashlib.new('sha256')

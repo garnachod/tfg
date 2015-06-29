@@ -4,7 +4,9 @@ from MenuSlide import MenuSlide
 from UserHeader import UserHeader
 from DBbridge.ConsultasWeb import ConsultasWeb
 from flask import Flask, session
+from SupportWeb import SupportWeb
 import json
+
 class EntrenamientoTweets(object):
 	"""docstring for EntrenamientoTweets"""
 	def __init__(self):
@@ -33,40 +35,39 @@ class EntrenamientoTweets(object):
 		userHeader.setBotonInicio(True)
 		cadena += userHeader.toString()
 
-		cadena += '''<div class="mid">
-						<div class="mid-cont">
-							<div class="cont-busqueda">
-								<h3 style="text-align:  left;">Búsqueda:</h3>
-								<form id="form1" action="" method="post">
-  									<input id="input_search" type="text" name="search" placeholder="#hashtag,palabra1,p1 p2">
-  									<input id="input_aleat" type="checkbox" name="aleat">Aleatorio'''
+		mid = '''
+					<h3 style="text-align:  left;">Búsqueda:</h3>
+					<form id="form1" action="" method="post">
+							<input id="input_search" type="text" name="search" placeholder="#hashtag,palabra1,p1 p2">
+							<input id="input_aleat" type="checkbox" name="aleat">Aleatorio'''
   		#array 0 id, 1 nombre
   		#lista de entrenamientos
   		listas = self.consultas.getListasEntrenamiento()
-  		cadena += '<p><select name="lista_entrenamiento" id="lista_entrenamiento" style="width: 325px;text-align: center;">'
+  		mid += '<p><select name="lista_entrenamiento" id="lista_entrenamiento" style="width: 325px;text-align: center;">'
   		for lista in listas:
-  			cadena += '<option value="'+str(lista[0])+'">'+str(lista[1])+'</option>'
+  			mid += '<option value="'+str(lista[0])+'">'+str(lista[1])+'</option>'
 
-  		cadena += '</select></p>'
+  		mid += '</select></p>'
 
-  		cadena += '''				<p style="margin-bottom: 5px;"><input class="boton-general" type="submit" value="Buscar"></p>
-								</form>
-							</div>
-							<div class="cont-busqueda" style="text-align: left;">
-								<h3 style="text-align:  left;">Tweet a entrenar:</h3>
-								<div id="cont_tweet_bot">
-									<div id="cont_tweet">
+		mid += '''<p style="margin-bottom: 5px;"><input class="boton-general" type="submit" value="Buscar"></p>
+					</form>
+				</div>
+				<div class="cont-busqueda" style="text-align: left;">
+					<h3 style="text-align:  left;">Tweet a entrenar:</h3>
+					<div id="cont_tweet_bot">
+						<div id="cont_tweet">
 
-									</div>
-									<div id="cont_bot" style="text-align: center;">
-										<a id="bot_no_usar" href="" class="boton-general"> No usar tweet </a>
-										<a id="bot_no_relevante" href="" class="boton-general"> No relevante </a>
-										<a id="bot_relevante" href="" class="boton-general"> Relevante </a>
-									</div>
-								</div>
-							</div>
 						</div>
-					</div>'''
+						<div id="cont_bot" style="text-align: center;">
+							<a id="bot_no_usar" href="" class="boton-general"> No usar tweet </a>
+							<a id="bot_no_relevante" href="" class="boton-general"> No relevante </a>
+							<a id="bot_relevante" href="" class="boton-general"> Relevante </a>
+						</div>
+					</div>
+				'''
+
+		cadena += SupportWeb.addGeneralStructureMid(mid)
+			
 		menu = self.head.getMenuInstance()
 		cadena += menu.toStringContenido()
 		cadena += '</body>'

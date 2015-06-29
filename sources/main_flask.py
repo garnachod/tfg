@@ -161,14 +161,14 @@ def admin_new_apikey():
 @app.route('/contacto')
 def contacto():
 	if 'username' in session:
-		return contacto_web.toString(session['username'])
+		return contacto_web.toString()
 	else:
 		return redirect('/err?code=5')
 #************************Tareas***********************************
 @app.route('/planificartarea')
 def planificartarea():
 	if 'username' in session:
-		return planificartarea_web.toString(session['username'])
+		return planificartarea_web.toString()
 	else:
 		return redirect('/err?code=5')
 

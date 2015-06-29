@@ -16,6 +16,9 @@ class APIGetTweetTrain(object):
 		if isAleat is None or search is None:
 			retorno = {"status":"false"}
 			return json.dumps(retorno)
+		elif isAleat is '' or search is '':
+			retorno = {"status":"false"}
+			return json.dumps(retorno)
 
 		if isAleat == "true":
 			isAleat = True

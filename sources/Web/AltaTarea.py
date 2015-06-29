@@ -20,6 +20,8 @@ class AltaTarea():
 		#if nombre is None or correo is None or institucion is None or usern is None or passw is None or passwr is None:
 		if tipoTarea is None or tipoBusqueda is None or search is None or tiempoTarea is None:
 			return False
+		elif tipoTarea is '' or tipoBusqueda is '' or search is '' or tiempoTarea is '':
+			return False
 		else:
 			tipoDB = ''
 			if tipoTarea == 'sb':

@@ -6,44 +6,38 @@ from DBbridge.ConsultasWeb import ConsultasWeb
 from MachineLearning.ClasificadorTweets import ClasificadorTweets
 from flask import Flask, session
 from Tweet import Tweet
+from SupportWeb import SupportWeb
+from WebPageMenu import WebPageMenu
 import json
 
-class ResumenTarea(object):
+class ResumenTarea(WebPageMenu):
 	"""docstring for ResumenTarea"""
 	def __init__(self):
 		super(ResumenTarea, self).__init__()
-		self.head = Head('Resumen Entrenamiento')
-		self.consultas = ConsultasWeb()
-		self.generaHead()
+		self.head.setTitulo('Resumen Tarea')
 
-	def generaHead(self):
+
+	def insertStyles(self):
 		self.head.add_css("static/css/general.css")
 		self.head.add_css("static/css/estadisticas.css")
 		self.head.add_css("static/css/resumen_tarea.css")
 		self.head.add_css("static/css/busqueda.css")
+
+	def insertScripts(self):
 		self.head.add_js("static/js/jquery.js")
 		self.head.add_js("static/js/Chart.min.js")
-		self.head.activaMenu()
 
 	def toString(self, identificador):
-		cadena = '<!DOCTYPE html>\n<html>'
-		cadena += self.head.toString()
+		self.identificador = identificador
+		return super(ResumenTarea, self).toString()
 
-		cadena += '<body>'
-		
-		userHeader = UserHeader(session['username'], 'static/img/usrIcon.png', self.consultas.isAdministrator(session['user_id']), True)
-		userHeader.setBotonInicio(True)
-		cadena += userHeader.toString()
-
-		cadena += '''<div class="mid">
-						<div class="mid-cont">
-							<div class="cont-general">
-							<h3 style="text-align: left;" >Resumen tarea</h3>'''
+	def mid(self):
+		mid = '<h3 style="text-align: left;" >Resumen tarea</h3>'
 
 		#información genérica de la tarea
 		#cadena += '<div class="tweets_recuperados">'
-		cadena += '''
-					<div class="contenedor-estadistica" style="width: 100%; ">	
+		mid += '''
+				<div class="contenedor-estadistica" style="width: 100%; ">	
 					<p class="titulo-estadistica">Frecuencia diaria de tweets recuperados</p>
 						<div id="canvas-holder">
 							<canvas id="chart-numTweets" width="1000" height="300"/>
@@ -51,31 +45,24 @@ class ResumenTarea(object):
 					</div>
 				  '''
 
-
 		#información especifica
-		tipo = self.consultas.getTipoTarea(identificador)
-		analisisPalabras = False
+		tipo = self.consultas.getTipoTarea(self.identificador)
+		self.analisisPalabras = False
 		if "BusquedaSencilla" in tipo:
-			cadena += self.toStringBusquedaSencilla(identificador)
-			analisisPalabras = False
+			mid += self.toStringBusquedaSencilla(self.identificador)
+			self.analisisPalabras = False
 		if "AnalisisPalabras" in tipo:
-			cadena += "<div>"
-			cadena += '<a href="/resumen_tarea?identificador='+str(identificador)+'&analizar=t" class="boton-general">Volver a analizar</a>'
-			cadena += "</div>"
-			cadena += self.toStringTweetsAnalisisPalabras(identificador)
-			analisisPalabras = True
-		
+			mid += "<div>"
+			mid += '<a href="/resumen_tarea?identificador='+str(self.identificador)+'&analizar=t" class="boton-general">Volver a analizar</a>'
+			mid += "</div>"
+			mid += self.toStringTweetsAnalisisPalabras(self.identificador)
+			self.analisisPalabras = True
 
-		
-		cadena +='''</div>
-						</div>
-					</div>'''
+		return SupportWeb.addGeneralStructureMid(mid)
 
-		menu = self.head.getMenuInstance()
-		cadena += menu.toStringContenido()
-
-		cadena += '<script>'
-		cadena += self.generaGraficaFrecuenciasDiarias(identificador, analisisPalabras)
+	def scripts(self):
+		cadena = '<script>'
+		cadena += self.generaGraficaFrecuenciasDiarias(self.identificador, self.analisisPalabras)
 		cadena += '</script>'
 		cadena += '<script>'
 		cadena += self.generaOnLoad()
@@ -84,6 +71,8 @@ class ResumenTarea(object):
 		cadena += '</body>'
 
 		return cadena
+
+	
 
 	def toStringBusquedaSencilla(self, identificador):
 		cadena = '<h3 style="text-align: left;" >Tweets</h3>'

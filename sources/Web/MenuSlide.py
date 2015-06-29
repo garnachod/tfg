@@ -23,20 +23,20 @@ class MenuSlide(object):
 		return '<a href="#menu"></a>'
 
 	def toStringContenido(self):
-		cadena = '<nav id="menu">'
-		cadena += '<ul>'
-		cadena += '<li><a href="/">Búsqueda</a></li>'
-		cadena += '<li><a href="/planificartarea">Planificar Tareas</a></li>'
-		cadena += '<li><a href="/ver_tareas_pendientes">Ver Tareas pendientes</a></li>'
-		cadena += '<li><a href="/ver_tareas_finalizadas">Ver Tareas finalizadas</a></li>'
-		cadena += '<li><a href="/lista_entrena_tweets">Listas de tweets de entrenamiento</a></li>'
-		cadena += '<li><a href="/entrena_tweets">Entrenar usando tweets</a></li>'
-		cadena += '<li><a href="/ver_entrena_tweets">Ver Tweets entrenamiento</a></li>'
-		cadena += '<li><a href="/lanzar_entrenamientos">Lanzar entrenamientos</a></li>'
-		cadena += '<li><a href="/estadisticas">Estadísticas</a></li>'
-		cadena += '<li><a href="/contacto">Contacto</a></li>'
-		cadena += '</ul>'
-		cadena += '</nav>'
+		cadena =('<nav id="menu">'
+					'<ul>'
+					'<li><a href="/">Búsqueda</a></li>'
+					'<li><a href="/planificartarea">Planificar Tareas</a></li>'
+					'<li><a href="/ver_tareas_pendientes">Ver Tareas pendientes</a></li>'
+					'<li><a href="/ver_tareas_finalizadas">Ver Tareas finalizadas</a></li>'
+					'<li><a href="/lista_entrena_tweets">Listas de tweets de entrenamiento</a></li>'
+					'<li><a href="/entrena_tweets">Entrenar usando tweets</a></li>'
+					'<li><a href="/ver_entrena_tweets">Ver Tweets entrenamiento</a></li>'
+					'<li><a href="/lanzar_entrenamientos">Lanzar entrenamientos</a></li>'
+					'<li><a href="/estadisticas">Estadísticas generales</a></li>'
+					'<li><a href="/contacto">Contacto</a></li>'
+					'</ul>'
+				'</nav>')
 
 		return cadena
 		

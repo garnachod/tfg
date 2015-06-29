@@ -4,6 +4,7 @@ from UserHeader import UserHeader
 from DBbridge.ConsultasWeb import ConsultasWeb
 from MenuSlide import MenuSlide
 from flask import Flask, session, request
+from SupportWeb import SupportWeb
 
 class NuevaListaEntrenamiento(object):
 	"""docstring for NuevaListaEntrenamiento"""
@@ -28,27 +29,20 @@ class NuevaListaEntrenamiento(object):
 		userHeader.setBotonInicio(True)
 		cadena += userHeader.toString()
 
-		cadena += '''<div class="mid">
-							<div class="mid-cont">
-								<div class="cont-general">
-									<h3 style="text-align: left;">Crear una lista de entrenamiento:</h3>
-					   '''
+		mid = '<h3 style="text-align: left;">Crear una lista de entrenamiento:</h3>'
 
-		cadena += '''
+		mid += '''
 						<form method="post">
 							Nombre de la lista: 
 							<input id="nlista" type="text" name="nlista" placeholder="Nombre" style="text-align: left;">
 							<p style="margin-bottom: 5px;"><input class="boton-general" type="submit" value="Crear"></p>
 						</form>
 				  '''
-		cadena += '<h3 style="text-align: left;">listas de entrenamiento:</h3>'
+		mid += '<h3 style="text-align: left;">listas de entrenamiento:</h3>'
 		#crear la cadena de las listas
-		cadena += self.generaVistaListas()
+		mid += self.generaVistaListas()
 
-		cadena +=  '''
-							</div>
-						</div>
-					</div>'''
+		cadena += SupportWeb.addGeneralStructureMid(mid)
 		menu = self.head.getMenuInstance()
 		cadena += menu.toStringContenido()
 		cadena += '</body></html>'
