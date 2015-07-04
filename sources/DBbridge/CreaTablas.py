@@ -152,6 +152,7 @@ def crea_tabla_MLT():
              'id serial PRIMARY KEY'
              ', id_tweet integer REFERENCES tweets(id)'
              ', id_lista integer REFERENCES listas_entrenamiento(id) ON DELETE CASCADE'
+             ', id_username integer app_users(id)'
              ', fecha_creacion timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP '
              ', clase varchar(30)'
              ');'
@@ -210,6 +211,7 @@ def crea_tabla_lista_entrenamiento():
              'CREATE TABLE listas_entrenamiento ('
              'id serial PRIMARY KEY'
              ', nombre varchar(140)'
+             ', id_username integer app_users(id)'
              ');'
              )
     cur.execute(query)
@@ -248,5 +250,7 @@ if __name__ == "__main__":
     #crea_tabla_MLT()
     #crea_tabla_entrenamientos()
     #crea_tabla_clasificacion()
-    crea_tabla_seguidores()
+    #crea_tabla_seguidores()
     
+    crea_tabla_MLT()
+    crea_tabla_lista_entrenamiento()

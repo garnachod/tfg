@@ -22,6 +22,10 @@ from Web.LanzarEntrenamiento import LanzarEntrenamiento
 from Web.ResumenTarea import ResumenTarea
 from Web.NuevaListaEntrenamiento import NuevaListaEntrenamiento
 from DBbridge.ConsultasWeb import ConsultasWeb
+
+#test
+from Web.EntrenamientoTweet import EntrenamientoTweet
+####
 import os
 import time
 
@@ -319,7 +323,10 @@ def listaTweetTrain():
 		#si no se ha iniciado sesion redirige a la pagina principal
 		return redirect('/')
 		
-
+@app.route('/test')
+def test():
+	test = EntrenamientoTweet()
+	return test.toString()
 
 #******************fin de entrenamiento*******************************
 
