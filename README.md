@@ -35,5 +35,7 @@ Aplicación web:
 ##Posibles puntos (menos probables o al menos complicados de integrar):
 * clasificación de imágenes <- CAFFE
 * clasificación de sentimientos <- http://nlp.stanford.edu/sentiment/code.html
+* clasificación de sentimientos <- https://github.com/nltk/nltk/wiki/Sentiment-Analysis
+* clasificación de sentimientos <- http://textblob.readthedocs.org/en/dev/quickstart.html#sentiment-analysis
 
 
