@@ -1,11 +1,12 @@
 class Clasificador(object):
-	"""docstring for Clasificador"""
+	"""Clase de la que deben extender los demás clasificadores
+	   Sirve como encapsulado"""
 	def __init__(self):
 		super(Clasificador, self).__init__()
 
-	"""parametros es un string de configuracion para el clasificador"""
-	"""para KNN por ejemplo k=11, para una red reuronal,numero de capas
-	 	nl=2... cada clasificador se puede preguntar con getCapabilities()"""
+	"""parametros es un string de configuracion para el clasificador
+	   para KNN por ejemplo k=11, para una red reuronal,numero de capas
+	   nl=2... cada clasificador se puede preguntar con getCapabilities()"""
 	def setParameters(self, parametros):
 		raise NotImplementedError( "Should have implemented this" )
 		
