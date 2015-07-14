@@ -17,6 +17,7 @@ from Web.Estadisticas import Estadisticas
 from Web.EntrenamientoTweets import EntrenamientoTweets
 from Web.APIGetTweetTrain import APIGetTweetTrain 
 from Web.APISetTweetTrain import APISetTweetTrain
+from Web.APIGetSearchTweetsDB import APIGetSearchTweetsDB
 from Web.ListarTweetsEntrenamiento import ListarTweetsEntrenamiento
 from Web.LanzarEntrenamiento import LanzarEntrenamiento
 from Web.ResumenTarea import ResumenTarea
@@ -49,6 +50,7 @@ listaTareas_web = VisualizarListaTareas()
 estadisticas_web = Estadisticas()
 getTweetTrain_web = APIGetTweetTrain()
 setTweetTrain_web = APISetTweetTrain()
+getTweetsSearchSinc = APIGetSearchTweetsDB()
 listaTweetTrain_web = ListarTweetsEntrenamiento()
 lanzarEntrenamiento_web = LanzarEntrenamiento()
 resumenTarea_web = ResumenTarea()
@@ -123,6 +125,20 @@ def busquedaAsinc():
 		return busquedaAsinc_web.toJsonSearch()
 	else:
 		return redirect('/err?code=2')
+
+@app.route('/busqueda_sinc', methods=['GET', 'POST'])
+def busquedaSinc():
+	if request.method == 'POST':
+		return getTweetsSearchSinc.toString()
+	else:
+		try:
+			return getTweetsSearchSinc.toString()
+		except Exception, e:
+			print e
+			return 'ERR'
+		
+		
+		#return redirect('/err?code=2')
 
 #*****rutas de aministrador*************************************
 @app.route('/admin')

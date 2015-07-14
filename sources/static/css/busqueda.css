@@ -1,23 +1,7 @@
-.busqueda-cont{
-	margin-left: auto;
-	margin-right: auto;
-	margin-bottom: 10px;
-	/*width: 100%;*/
-	background-color: #ffffff;
-	padding: 60px 0px;
-	-webkit-border-radius: 10px;
-	-moz-border-radius: 10px;
-	border-radius: 10px;
-	-webkit-box-shadow: 0px 3px 3px 0px rgba(0,0,0,0.3);
-	-moz-box-shadow: 0px 3px 3px 0px rgba(0,0,0,0.3);
-	box-shadow: 0px 3px 3px 0px rgba(0,0,0,0.3); 
-
-	/*text-align: center;*/
-}
-
 .tweet{
 	padding: 10px 10px;
 	color: rgb(11, 36, 45);
+	border-bottom: 1px solid #00263A;
 	overflow: hidden;
 }
 /*importancia del tweet*/
@@ -175,3 +159,4 @@ h3{
 	margin-left: auto;
 	margin-right: auto;
 }
+

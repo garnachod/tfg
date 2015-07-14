@@ -60,19 +60,31 @@ class ConsultasWeb(ConsultasGeneral):
 			print str(e)
 			return False
 
-	def getTweetsUsuario(self, twitterUser):
+	def getTweetsUsuario(self, twitterUser, use_max_id=False, max_id=0, limit=1000):
 		if twitterUser[0] == '@':
 			twitterUser = twitterUser[1:]
 
-		query = "SELECT t.status, t.favorite_count, t.retweet_count, t.is_retweet, t.media_url, u.screen_name FROM tweets as t, users as u WHERE u.screen_name = %s and u.id = t.tuser order by t.created_at DESC;"
-		try:
-			self.cur.execute(query, [twitterUser, ])
-			row = self.cur.fetchall()
-			
-			return row
-		except Exception, e:
-			print str(e)
-			return False
+
+		if use_max_id == True:
+			query = "SELECT t.status, t.favorite_count, t.retweet_count, t.is_retweet, t.media_url, u.screen_name FROM tweets as t, users as u WHERE u.screen_name = %s and u.id = t.tuser order by t.created_at DESC LIMIT %s;"
+			try:
+				self.cur.execute(query, [twitterUser, ])
+				row = self.cur.fetchall()
+				
+				return row
+			except Exception, e:
+				print str(e)
+				return False
+		else:
+			query = "SELECT t.status, t.favorite_count, t.retweet_count, t.is_retweet, t.media_url, u.screen_name FROM tweets as t, users as u WHERE u.screen_name = %s and u.id = t.tuser order by t.created_at DESC LIMIT %s;"
+			try:
+				self.cur.execute(query, [twitterUser, limit])
+				row = self.cur.fetchall()
+				
+				return row
+			except Exception, e:
+				print str(e)
+				return False
 
 	def getTweetsEntrenamientoListar(self, identificador):
 		query = """SELECT t.status, t.favorite_count, t.retweet_count, t.is_retweet, t.media_url, u.screen_name, t.id, te.clase 

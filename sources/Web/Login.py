@@ -16,7 +16,10 @@ class Login():
 
 	def doLogin(self):
 		#control de parametros
+		
 		if request.form['usr'] is None or request.form['pwd'] is None:
+			return 'ERR'
+		if request.form['usr'] == "" or request.form['pwd'] == "":
 			return 'ERR'
 
 		#se busca en la base de datos, se parsea el hash con la contrasenya	

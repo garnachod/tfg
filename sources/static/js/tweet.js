@@ -30,7 +30,8 @@ var Tweet = {
 	},
 
 	toHTML:function(){
-		var cadena = '<div class="delimitador"></div>';
+		//var cadena = '<div class="delimitador"></div>';
+		var cadena = '';
 		cadena += Tweet.relevanciaToHTML();
 		cadena += Tweet.usrImgToHTML();
 		cadena += '<div class="cont-tweet">';

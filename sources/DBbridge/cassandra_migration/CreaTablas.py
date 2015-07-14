@@ -16,6 +16,13 @@ def creaIndexUsersTwitter(session):
     query = "CREATE INDEX indx_screen_name ON users (screen_name);"
     session.execute(query)
 
+def getSchemas(session):
+    query = "SELECT * FROM system.schema_keyspaces;"
+    print session.execute(query)
+def getTables(session):
+    query = "select columnfamily_name from system.schema_columnfamilies where keyspace_name = 'twitter';"
+    print session.execute(query)
+
 def creaTweets(session):
     query = ('CREATE TABLE Tweets ('
              'id_twitter bigint PRIMARY KEY'
@@ -59,4 +66,6 @@ if __name__ == '__main__':
     session = cluster.connect('twitter')
     #creaUsersTwitter(session)
     #creaIndexUsersTwitter(session)
+    getSchemas(session)
+    getTables(session)
     

@@ -46,13 +46,11 @@ class ConsultasGeneral(object):
 		try:
 			self.cur.execute(query, [idbusqueda, ])
 			row = self.cur.fetchone()
-			print row[0]
-			print row[1]
-
+		
 			return row[0], row[1]
 		except Exception, e:
 			print str(e)
-			return False
+			return False, False
 
 	def getTweetDebugMachineLearning(self, identificador):
 		query = "SELECT status FROM tweets WHERE id = %s;"
