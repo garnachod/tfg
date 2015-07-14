@@ -9,10 +9,10 @@ import random
 import math   # This will import math module
 import json
 
-class RedNeuronal(Clasificador):
-	"""docstring for RedNeuronal"""
+class RandomNeuralNetwork(Clasificador):
+	"""docstring for RandomNeuralNetwork"""
 	def __init__(self):
-		super(RedNeuronal, self).__init__()
+		super(RandomNeuralNetwork, self).__init__()
 		self.clases = []
 		self.columnas = []
 		self.nColumnas = 0
@@ -33,6 +33,8 @@ class RedNeuronal(Clasificador):
 		self.conjuntoValidacion = None
 		self.lastError = 100;
 		self.errorCuadraticoMedio_old = 0.00000001
+		self.probSinapsis = 1.0
+		self.probAct = 0.0
 
 	"""parametros es un string de configuracion para el clasificador"""
 	"""para KNN por ejemplo k=11, para una red reuronal,numero de capas
@@ -63,8 +65,8 @@ class RedNeuronal(Clasificador):
 		self.nClases = len(self.clases)
 		self.columnas = list(data.getColumnasList())
 		self.nColumnas = len(self.columnas)
-		
-		if data.getNumeroInstances() >= 1000:
+
+		if data.getNumeroInstances() >= 100:
 			self.activo_control_fin = True
 			particionado = DivisionPorcentual()
 			particionado.setPorcentajeTrain(0.8)
@@ -74,19 +76,19 @@ class RedNeuronal(Clasificador):
 		
 		self.nInstaces = data.getNumeroInstances()
 		#creamos las neuronas de entrada
-		self.capaEntrada = [1 for x in xrange(0, self.nColumnas + 1)]
-		#self.capaEntrada = map((lambda x: 1), xrange(0, self.nColumnas + 1))
+		self.capaEntrada = [1 for x in range(0, self.nColumnas + 1)]
+		#self.capaEntrada = map((lambda x: 1), range(0, self.nColumnas + 1))
 		#inicializamos los pesos de manera aleatoria
 		#por cada neurona de la capa oculta
-		for indNeurona in xrange(0, self.neuronasCapaOculta):
+		for indNeurona in range(0, self.neuronasCapaOculta):
 			#por cada neurona de la capa de entrada
 			self.pesosCapaOculta.append([])
-			self.pesosCapaOculta[indNeurona] = map((lambda x: (random.random() - 0.5)), xrange(0, self.nColumnas + 1))
+			self.pesosCapaOculta[indNeurona] = map((lambda x: (random.random() - 0.5)), range(0, self.nColumnas + 1))
 
 		#inicializamos los pesos de la capa de salida
-		for indNeurona in xrange(0, self.nClases):
+		for indNeurona in range(0, self.nClases):
 			self.pesosCapaSalida.append([])
-			self.pesosCapaSalida[indNeurona] = map((lambda x: (random.random() - 0.5)), xrange(0, self.neuronasCapaOculta + 1))
+			self.pesosCapaSalida[indNeurona] = map((lambda x: (random.random() - 0.5)), range(0, self.neuronasCapaOculta + 1))
 
 		self.NguyenWidrow()
 
@@ -107,68 +109,69 @@ class RedNeuronal(Clasificador):
 			self.debugFile.write("Error train\tArray de pesos\n")
 
 		cuadratico_anterior = 1000
-		# 
-		salidaCapaOculta = range(1, self.neuronasCapaOculta+2)
-		salidaFinal = range(0, self.nClases)
 		#paso1
-		for epoca in xrange(0, self.nEpocas):
+		for epoca in range(0, self.nEpocas):
+			if epoca % 50 == 0:
+				print epoca
 			cuadratico_epoca = 0
-			#print epoca
 			#paso2 por cada instancia en train
 			for instancia in instancias:
 				#***********inicio de Feedforward**********************************
 				#paso 3, valores de entrada
-				for indNeurona in xrange(1, self.nColumnas + 1):
+				for indNeurona in range(1, self.nColumnas + 1):
 					self.capaEntrada[indNeurona] = instancia.getElementAtPos(indNeurona - 1)
 				#paso 4, salida neuronas capa oculta, vector Z
 				#z0 siempre es 1
-				#salidaCapaOculta = [1]
+				salidaCapaOculta = [1]
 				#por cada neurona realizamos una salida
-				for indNeurona in xrange(0, self.neuronasCapaOculta):
+				for indNeurona in range(0, self.neuronasCapaOculta):
 					suma = 0
-					for indNeuronaEntr in xrange(0, self.nColumnas + 1):
+					for indNeuronaEntr in range(0, self.nColumnas + 1):
 						suma += (self.pesosCapaOculta[indNeurona][indNeuronaEntr] * self.capaEntrada[indNeuronaEntr])
 					#aplicamos la sigmoidal a la suma, esto nos da la salida de la neurona
 					if self.bipolar == False:
 						#f1 
 						if suma > 200:
-							salidaCapaOculta[indNeurona + 1] = 1
-						elif suma < -200:
-							salidaCapaOculta[indNeurona + 1] = 0
+							salidaCapaOculta.append(1)
+						elif suma < -40:
+							salidaCapaOculta.append(0)
 						else:
-							salidaCapaOculta[indNeurona + 1] = 1.0/(1.0 + math.exp( - suma))
+							salidaCapaOculta.append(1.0/(1.0 + math.exp( - suma)))
 					else:
 						#f2
-						if suma > 200:
-							salidaCapaOculta[indNeurona + 1] = 1
-						elif suma < -200:
-							salidaCapaOculta[indNeurona + 1] = -1
+						if random.random() <= self.probSinapsis:
+							if suma > 200:
+								salidaCapaOculta.append(1)
+							elif suma < -200:
+								salidaCapaOculta.append(-1)
+							else:
+								salidaCapaOculta.append((2.0/(1.0 + math.exp( - suma))) - 1.0)
 						else:
-							salidaCapaOculta[indNeurona + 1] = (2.0/(1.0 + math.exp( - suma))) - 1.0
+							salidaCapaOculta.append(0.0)
 
 				#paso 5, calculamos las respuestas de las neuronas de la capa de salida, vector Y
-				#salidaFinal = []
-				for indNeurona in xrange(0, self.nClases):
+				salidaFinal = []
+				for indNeurona in range(0, self.nClases):
 					suma = 0
-					for indNeuronaOculta in xrange(0, self.neuronasCapaOculta + 1):
+					for indNeuronaOculta in range(0, self.neuronasCapaOculta + 1):
 						suma += (self.pesosCapaSalida[indNeurona][indNeuronaOculta] * salidaCapaOculta[indNeuronaOculta])
 					#aplicamos la sigmoidal a la suma, esto nos da la salida de la neurona
 					if self.bipolar == False:
 						#f1
 						if suma > 200:
-							salidaFinal[indNeurona] = 1
-						elif suma < -200:
-							salidaFinal[indNeurona] = 0
+							salidaFinal.append(1)
+						elif suma < -40:
+							salidaFinal.append(0)
 						else:
-							salidaFinal[indNeurona] = 1.0/(1.0 + math.exp( - suma))
+							salidaFinal.append(1.0/(1.0 + math.exp( - suma)))
 					else:
 						#f2
 						if suma > 200:
-							salidaFinal[indNeurona] = 1
+							salidaFinal.append(1)
 						elif suma < -200:
-							salidaFinal[indNeurona] = -1
+							salidaFinal.append(-1)
 						else:
-							salidaFinal[indNeurona] = (2.0/(1.0 + math.exp( - suma))) - 1.0
+							salidaFinal.append((2.0/(1.0 + math.exp( - suma))) - 1.0)
 				#***********fin de Feedforward **********************************
 				#calculo del error cuadratico medio
 				cuadratico_instancia = reduce(add, map((lambda x, y: (x - y)**2), vectoresObjetivos[instancia], salidaFinal))
@@ -184,19 +187,19 @@ class RedNeuronal(Clasificador):
 					deltaMinusculaK = map((lambda x, y: (x - y) * (0.5 * ((1 + y) * (1.0 - y)))), vectoresObjetivos[instancia], salidaFinal)
 				
 				deltaMayusculaJK = []
-				for indNeuronaSalida in xrange(0, self.nClases):
+				for indNeuronaSalida in range(0, self.nClases):
 					#calculamos delta mayuscula
 					deltaMayusculaJK.append([])
 					aux = deltaMinusculaK[indNeuronaSalida] * self.alpha
 					deltaMayusculaJK[indNeuronaSalida] = map((lambda x: aux*x), salidaCapaOculta)
 				#paso 7
 				
-				deltaMinInj = [0 for x in xrange(0, self.neuronasCapaOculta)]
-				for indNeurona in xrange(0, self.nClases):
-					for indNeuronaOculta  in xrange(1, self.neuronasCapaOculta + 1):
+				deltaMinInj = [0 for x in range(0, self.neuronasCapaOculta)]
+				for indNeurona in range(0, self.nClases):
+					for indNeuronaOculta  in range(1, self.neuronasCapaOculta + 1):
 						deltaMinInj[indNeuronaOculta - 1] += self.pesosCapaSalida[indNeurona][indNeuronaOculta]
 
-				for indNeuronaOculta  in xrange(0, self.neuronasCapaOculta):
+				for indNeuronaOculta  in range(0, self.neuronasCapaOculta):
 						deltaMinInj[indNeuronaOculta] *= deltaMinusculaK[indNeurona]
 
 				deltaMinusculaJ = []
@@ -207,20 +210,21 @@ class RedNeuronal(Clasificador):
 					#f`2
 					deltaMinusculaJ = map((lambda x, y: x *(0.5* ((1.0 + y) * (1.0 - y)))),deltaMinInj, salidaCapaOculta[1:])
 				
-				deltaMayusculaIJ = []
-				for indNeuronaOculta  in xrange(0, self.neuronasCapaOculta):
+				"""deltaMayusculaIJ = []
+				for indNeuronaOculta  in range(0, self.neuronasCapaOculta):
 					deltaMayusculaIJ.append([])
 					aux = self.alpha*deltaMinusculaJ[indNeuronaOculta]
 					deltaMayusculaIJ[indNeuronaOculta] = map((lambda x: aux*x),  self.capaEntrada)
-					
+				"""
 				#paso 8
 				#Actualizar pesos y sesgos
-				for indiceClase in xrange(0, self.nClases):
+				for indiceClase in range(0, self.nClases):
 					self.pesosCapaSalida[indiceClase] = map(add, self.pesosCapaSalida[indiceClase], deltaMayusculaJK[indiceClase])
-
-				for indiceNOculta in xrange(0, self.neuronasCapaOculta):
-					self.pesosCapaOculta[indiceNOculta] = map(add, self.pesosCapaOculta[indiceNOculta] ,deltaMayusculaIJ[indiceNOculta])
-
+				"""
+				for indiceNOculta in range(0, self.neuronasCapaOculta):
+					if random.random() <= self.probAct:
+						self.pesosCapaOculta[indiceNOculta] = map(add, self.pesosCapaOculta[indiceNOculta] ,deltaMayusculaIJ[indiceNOculta])
+				"""
 				#comprobar condicion de finalizacion
 				#fin de bucle de instancias
 
@@ -231,9 +235,9 @@ class RedNeuronal(Clasificador):
 				else:
 					self.debugFile.write(str(epoca) + '\t' + str(self.getErrorFromInstances(test)) + '\t' + str(self.getErrorFromInstances(data)) + '\t')
 				
-				#for indiceNOculta in xrange(0, self.neuronasCapaOculta):
+				#for indiceNOculta in range(0, self.neuronasCapaOculta):
 				#	map(lambda x: self.debugFile.write(str(x) + '\t'), self.pesosCapaOculta[indiceNOculta])
-				#for indiceClase in xrange(0, self.nClases):
+				#for indiceClase in range(0, self.nClases):
 				#	map(lambda x: self.debugFile.write(str(x) + '\t'), self.pesosCapaSalida[indiceClase])
 				self.debugFile.write('\n')
 
@@ -250,7 +254,7 @@ class RedNeuronal(Clasificador):
 				#print self.lastError
 				#print error
 				error = self.getErrorFromInstances(self.conjuntoValidacion)
-				if self.lastError < error:
+				if error > self.lastError:
 					break
 				else:
 					#print str(epoca)+ '\t' + str(error)
@@ -294,7 +298,7 @@ class RedNeuronal(Clasificador):
 	def NguyenWidrow(self):
 		beta = 0.7 * math.pow(self.neuronasCapaOculta, 1.0 / self.nColumnas)
 
-		for j in xrange(0, self.neuronasCapaOculta):
+		for j in range(0, self.neuronasCapaOculta):
 			modulo = math.sqrt(reduce(add, map(lambda x: math.pow(x, 2), self.pesosCapaOculta[j])))
 			preCalculo = beta / modulo
 		
@@ -305,15 +309,15 @@ class RedNeuronal(Clasificador):
 	def computeInstance(self, instancia):
 		#***********inicio de Feedforward**********************************
 		#paso 3, valores de entrada
-		for indNeurona in xrange(1, self.nColumnas + 1):
+		for indNeurona in range(1, self.nColumnas + 1):
 			self.capaEntrada[indNeurona] = instancia.getElementAtPos(indNeurona - 1)
 		#paso 4, salida neuronas capa oculta, vector Z
 		#z0 siempre es 1
 		salidaCapaOculta = [1]
 		#por cada neurona realizamos una salida
-		for indNeurona in xrange(0, self.neuronasCapaOculta):
+		for indNeurona in range(0, self.neuronasCapaOculta):
 			suma = 0
-			for indNeuronaEntr in xrange(0, self.nColumnas + 1):
+			for indNeuronaEntr in range(0, self.nColumnas + 1):
 				suma += (self.pesosCapaOculta[indNeurona][indNeuronaEntr] * self.capaEntrada[indNeuronaEntr])
 			#aplicamos la sigmoidal a la suma, esto nos da la salida de la neurona
 			if self.bipolar == False:
@@ -335,9 +339,9 @@ class RedNeuronal(Clasificador):
 
 		#paso 5, calculamos las respuestas de las neuronas de la capa de salida, vector Y
 		salidaFinal = []
-		for indNeurona in xrange(0, self.nClases):
+		for indNeurona in range(0, self.nClases):
 			suma = 0
-			for indNeuronaOculta in xrange(0, self.neuronasCapaOculta + 1):
+			for indNeuronaOculta in range(0, self.neuronasCapaOculta + 1):
 				suma += (self.pesosCapaSalida[indNeurona][indNeuronaOculta] * salidaCapaOculta[indNeuronaOculta])
 			#aplicamos la sigmoidal a la suma, esto nos da la salida de la neurona
 			if self.bipolar == False:
@@ -365,7 +369,7 @@ class RedNeuronal(Clasificador):
 		#print salidaFinal
 		mejorClase = None
 		mejorProb = -1.0
-		for i in xrange(0, self.nClases):
+		for i in range(0, self.nClases):
 			if salidaFinal[i] > mejorProb:
 				mejorClase = self.clases[i]
 				mejorProb = salidaFinal[i]
@@ -394,7 +398,7 @@ class RedNeuronal(Clasificador):
 		self.pesosCapaSalida = jsonObj['pesos_oculta_salida']
 
 		#creamos las neuronas de entrada
-		for indNeurona in xrange(0, self.nColumnas + 1):
+		for indNeurona in range(0, self.nColumnas + 1):
 			self.capaEntrada.append(1)
 
 
