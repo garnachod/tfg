@@ -14,3 +14,8 @@ http://docs.datastax.com/en/getting_started/doc/getting_started/gettingStartedDe
 
 ##### ya se pueden crear las "tablas"
 * utilizar el fichero CreaTablas.py
+
+#### Pruebas de Rendimiento
+* 5 Nodos Raspberry Pi 2, 2103 ops/s
+* 1 Hilo AMD Phenom(tm) II X6 1055T / 8G Ram, 3127 ops/s
+* 6 Hilo AMD Phenom(tm) II X6 1055T / 8G Ram, 17408 ops/s
