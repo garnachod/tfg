@@ -8,8 +8,7 @@ def crea_tablas():
 
     query = ('DROP TABLE IF EXISTS Users CASCADE;'
              'CREATE TABLE Users ('
-             'id serial PRIMARY KEY'
-             ', id_twitter bigint'
+             ' id_twitter bigint PRIMARY KEY'
              ', name varchar(20)'
              ', screen_name varchar(15)'
              ', followers int'
@@ -17,16 +16,15 @@ def crea_tablas():
              ', created_at date'
              ', last_tweet_collected bigint'  # puede no ser el ultimo, sino el ultimo recogido sistemáticamente del usuario
              ');'
-             'CREATE UNIQUE INDEX CONCURRENTLY users_idx ON Users(id_twitter);'
+             #'CREATE UNIQUE INDEX CONCURRENTLY users_idx ON Users(id_twitter);'
              'CREATE UNIQUE INDEX users_sn_idx ON Users(screen_name);'
     )
     cur.execute(query)
     query = ('DROP TABLE IF EXISTS Tweets CASCADE;'
              'CREATE TABLE Tweets ('
-             'id serial PRIMARY KEY'
-             ', id_twitter bigint'
+             ' id_twitter bigint PRIMARY KEY'
              ', status varchar(160)'
-             ', tuser integer REFERENCES Users(id)'
+             ', tuser bigint'
              ', created_at timestamp'
              ', lang char(3)'
              ', is_retweet boolean'
@@ -35,7 +33,7 @@ def crea_tablas():
              ', retweet_count int'
              ', media_url varchar(100)'
              ');'
-             'CREATE UNIQUE INDEX CONCURRENTLY ON  tweets (id_twitter);'
+             #'CREATE UNIQUE INDEX CONCURRENTLY ON  tweets (id_twitter);'
              'CREATE INDEX tweets_tu_idx ON Tweets (tuser);'
     )
     cur.execute(query)
@@ -63,8 +61,7 @@ def crea_tablas():
     cur.execute(query)
 
     conn.commit()
-    cur.close()
-    conn.close()
+    
 
 
 def temp_crea_tablas():
@@ -100,14 +97,13 @@ def temp_crea_tablas():
     query = ('DROP TABLE IF EXISTS join_search_tweet CASCADE;'
              'CREATE TABLE join_search_tweet ( '
              'id_search int references app_searches(id), '
-             'id_tweet int references tweets(id), '
+             'id_tweet bigint, '
              'primary key (id_search, id_tweet)'
              ');')
     cur.execute(query)
     
     conn.commit()
-    cur.close()
-    conn.close()
+
 
 def crea_def_user():
     conSql = ConexionSQL()
@@ -118,8 +114,7 @@ def crea_def_user():
 
     cur.execute(query)
     conn.commit()
-    cur.close()
-    conn.close()
+
 
 def crea_tareas():
     conSql = ConexionSQL()
@@ -139,8 +134,7 @@ def crea_tareas():
     cur.execute(query)
     
     conn.commit()
-    cur.close()
-    conn.close()
+
 
 def crea_tabla_MLT():
     conSql = ConexionSQL()
@@ -150,9 +144,9 @@ def crea_tabla_MLT():
     query = ('DROP TABLE IF EXISTS tweets_entrenamiento CASCADE;'
              'CREATE TABLE tweets_entrenamiento ('
              'id serial PRIMARY KEY'
-             ', id_tweet integer REFERENCES tweets(id)'
+             ', id_tweet integer REFERENCES tweets(id_twitter)'
              ', id_lista integer REFERENCES listas_entrenamiento(id) ON DELETE CASCADE'
-             ', id_username integer app_users(id)'
+             ', id_username integer REFERENCES app_users(id)'
              ', fecha_creacion timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP '
              ', clase varchar(30)'
              ');'
@@ -160,8 +154,7 @@ def crea_tabla_MLT():
     cur.execute(query)
     
     conn.commit()
-    cur.close()
-    conn.close()
+
 
 def crea_tabla_entrenamientos():
     conSql = ConexionSQL()
@@ -182,8 +175,7 @@ def crea_tabla_entrenamientos():
     cur.execute(query)
     
     conn.commit()
-    cur.close()
-    conn.close()
+
 
 def crea_tabla_clasificacion():
     conSql = ConexionSQL()
@@ -199,8 +191,7 @@ def crea_tabla_clasificacion():
     cur.execute(query)
     
     conn.commit()
-    cur.close()
-    conn.close()
+
 
 def crea_tabla_lista_entrenamiento():
     conSql = ConexionSQL()
@@ -211,14 +202,13 @@ def crea_tabla_lista_entrenamiento():
              'CREATE TABLE listas_entrenamiento ('
              'id serial PRIMARY KEY'
              ', nombre varchar(140)'
-             ', id_username integer app_users(id)'
+             ', id_username integer REFERENCES app_users(id)'
              ');'
              )
     cur.execute(query)
     
     conn.commit()
-    cur.close()
-    conn.close()
+
 
 def crea_tabla_seguidores():
     conSql = ConexionSQL()
@@ -237,20 +227,24 @@ def crea_tabla_seguidores():
     cur.execute(query)
     
     conn.commit()
-    cur.close()
-    conn.close()
+
+
+def crea_tablas_close():
+	conSql = ConexionSQL()
+	conn = conSql.getConexion()
+	conn.close()
 
 if __name__ == "__main__":
-    #crea_tablas()
-    #temp_crea_tablas()
-    #crea_def_user()
-    #db universidad
-    #crea_tareas()
-    #crea_tabla_lista_entrenamiento()
-    #crea_tabla_MLT()
-    #crea_tabla_entrenamientos()
-    #crea_tabla_clasificacion()
-    #crea_tabla_seguidores()
-    
-    crea_tabla_MLT()
+    crea_tablas()
+    temp_crea_tablas()
+    crea_def_user()
+    crea_tareas()
     crea_tabla_lista_entrenamiento()
+    crea_tabla_MLT()
+    crea_tabla_entrenamientos()
+    crea_tabla_clasificacion()
+    crea_tabla_seguidores()
+    crea_tablas_close()
+    
+    #crea_tabla_MLT()
+    #crea_tabla_lista_entrenamiento()

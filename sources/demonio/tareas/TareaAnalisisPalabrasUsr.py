@@ -14,8 +14,10 @@ class TareaAnalisisPalabrasUsr(TareaAnalisisPalabrasK):
 		self.tipo = "AnalisisPalabrasUsuario"
 
 	def doSearch(self):
-		cadenaBusqueda, user_id = self.consultas.getBusquedaFromIdBusqueda(self.search_id);
-		escritor = EscritorTweets(ConexionSQL(), self.search_id)
-		recolector = RecolectorTweetsUser(escritor)
+		cadenaBusqueda, user_id = self.consultas.getBusquedaFromIdBusqueda(self.search_id)
+		escritorList = []
+		escritorList.append(EscritorTweets(ConexionSQL(), self.searchID))
+		escritorList.append(EscritorBusquedaTweets(ConexionSQL(), self.searchID))
+		recolector = RecolectorTweetsUser(escritorList)
 		recolector.recolecta(cadenaBusqueda)
 		return True

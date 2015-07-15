@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-from src.Instance import Instance
-from src.Instances import Instances
+from MachineLearning.Instance import Instance
+from MachineLearning.Instances import Instances
 from Clasificador import Clasificador
 from operator import add,mul
-from Particionado.DivisionPorcentual import DivisionPorcentual
-from Particionado.Particion import Particion
+from MachineLearning.Particionado.DivisionPorcentual import DivisionPorcentual
+from MachineLearning.Particionado.Particion import Particion
 import random
 import math   # This will import math module
 import json

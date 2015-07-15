@@ -82,7 +82,8 @@ class RecolectorTweetsUser(Recolector):
 		#print("Elapsed time API: %0.10f seconds." % tiempo_api)
 
 	def guarda(self, arrayDatos):
-		self.escritor.escribe(arrayDatos)
+		for escritor in self.escritores:
+			escritor.escribe(arrayDatos)
 		
 
 	def getMinIDtweets(self, tweets, query):

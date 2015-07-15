@@ -53,7 +53,7 @@ class ConsultasGeneral(object):
 			return False, False
 
 	def getTweetDebugMachineLearning(self, identificador):
-		query = "SELECT status FROM tweets WHERE id = %s;"
+		query = "SELECT status FROM tweets WHERE id_twitter = %s;"
 		try:
 			self.cur.execute(query, [identificador, ])
 			row = self.cur.fetchone()
@@ -64,7 +64,7 @@ class ConsultasGeneral(object):
 			return False
 
 	def getTweetStatus(self, identificador):
-		query = "SELECT status FROM tweets as t WHERE t.id = %s;"
+		query = "SELECT status FROM tweets as t WHERE t.id_twitter = %s;"
 		try:
 			self.cur.execute(query, [identificador, ])
 			row = self.cur.fetchone()
@@ -90,7 +90,7 @@ class ConsultasGeneral(object):
 			return False
 
 	def getTweetsAndClassTrain(self, id_lista):
-		query = "SELECT status, clase FROM tweets as t, tweets_entrenamiento as tw WHERE t.id = tw.id_tweet and tw.id_lista = %s and tw.clase != 'no_usar'"
+		query = "SELECT status, clase FROM tweets as t, tweets_entrenamiento as tw WHERE t.id_twitter = tw.id_tweet and tw.id_lista = %s and tw.clase != 'no_usar'"
 		try:
 			self.cur.execute(query, [id_lista, ])
 			rows = self.cur.fetchall()
@@ -139,7 +139,7 @@ class ConsultasGeneral(object):
 	def getTweetIDLarge(self, identificador):
 		query = """SELECT t.status, t.favorite_count, t.retweet_count, t.is_retweet, t.media_url, u.screen_name 
 				   FROM tweets as t, users as u 
-				   WHERE t.id = %s and t.tuser = u.id LIMIT 1;"""
+				   WHERE t.id_twitter = %s and t.tuser = u.id LIMIT 1;"""
 		try:
 			self.cur.execute(query, [identificador, ])
 			row = self.cur.fetchone()
@@ -150,7 +150,7 @@ class ConsultasGeneral(object):
 			return False
 
 	def getIDsTweetsTrain(self, topics, limit):
-		query = "SELECT t.id "
+		query = "SELECT t.id_twitter "
 		query += "FROM tweets as t "
 		query += "WHERE ("
 		i = 0

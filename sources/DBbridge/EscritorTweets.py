@@ -31,11 +31,11 @@ class EscritorTweets(Escritor):
 			self.actualizaTweet(tweet)
 		else:
 			db_id = self.insertaTweet(tweet, userid)
-			self.insertaJoinTable(self.searchID, db_id)
+			#self.insertaJoinTable(self.searchID, db_id)
 
 		
 
-
+	'''
 	def insertaJoinTable(self, id_search, id_tweet):
 		query = """INSERT INTO join_search_tweet (id_search, id_tweet) SELECT %s, %s
 					WHERE NOT EXISTS (SELECT * FROM join_search_tweet WHERE id_search=%s AND id_tweet=%s);"""
@@ -48,10 +48,11 @@ class EscritorTweets(Escritor):
 			print "error en insertaJoinTable Twitter"
 			print str(e)
 			return False
-
+	'''
 
 	def getTweetSiExisteAPIID(self, apiID):
-		query = "SELECT id FROM tweets WHERE id_twitter = %s;"
+
+		query = "SELECT id_twitter FROM tweets WHERE id_twitter = %s;"
 		try:
 			self.cur.execute(query, [apiID, ])
 			row = self.cur.fetchone()
@@ -62,10 +63,11 @@ class EscritorTweets(Escritor):
 		except Exception, e:
 			print str(e)
 			return -1
+		
 
 	def insertaTweet(self, tweet, userid):
 		query = """INSERT INTO tweets (id_twitter, status, tuser, created_at, lang, is_retweet, orig_tweet, favorite_count, retweet_count, media_url) 
-				   VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id;"""
+				   VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id_twitter;"""
 		#query = "INSERT INTO tweets_entrenamiento (id_tweet,clase) VALUES (%s,%s);"
 		try:
 
@@ -92,17 +94,19 @@ class EscritorTweets(Escritor):
 			return False
 
 	def getUserByAPIUserIDHash(self, apiUserID):
-		if apiUserID in self.hashCache:
+		return -1
+		"""if apiUserID in self.hashCache:
 			return self.hashCache[apiUserID]
 
 		return -1
+		"""
 
 	def putUserByAPIUserIDHash(self, apiUserID, identificador):
 		self.hashCache[apiUserID] = identificador
 
 	def getUserByAPIUserID(self, apiUserID):
 		#select returning id
-		query = "SELECT id FROM users WHERE id_twitter = %s;"
+		query = "SELECT id_twitter FROM users WHERE id_twitter = %s;"
 		try:
 			self.cur.execute(query, [apiUserID, ])
 			row = self.cur.fetchone()
@@ -113,10 +117,11 @@ class EscritorTweets(Escritor):
 		except Exception, e:
 			print str(e)
 			return -1
+		
 
 	def insertaUsuario(self, usuario):
 		query = """INSERT INTO users (id_twitter, name, screen_name, followers, location, created_at) 
-				   VALUES (%s, %s, %s, %s, %s, %s) RETURNING id;"""
+				   VALUES (%s, %s, %s, %s, %s, %s) RETURNING id_twitter;"""
 		#query = "INSERT INTO tweets_entrenamiento (id_tweet,clase) VALUES (%s,%s);"
 		try:
 			self.cur.execute(query, [usuario["id"], usuario["name"][:20], usuario["screen_name"][:15], usuario["followers_count"], usuario["location"][:50], usuario["created_at"]])

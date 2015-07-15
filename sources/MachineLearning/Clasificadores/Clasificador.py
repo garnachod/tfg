@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 class Clasificador(object):
 	"""Clase de la que deben extender los demás clasificadores
 	   Sirve como encapsulado"""

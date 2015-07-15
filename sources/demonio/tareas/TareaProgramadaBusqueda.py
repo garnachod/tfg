@@ -12,11 +12,13 @@ class TareaProgramadaBusqueda(TareaProgramada):
 		self.consultas = ConsultasGeneral()
 
 	def doSearch(self):
-		cadenaBusqueda, user_id = self.consultas.getBusquedaFromIdBusqueda(self.search_id);
+		cadenaBusqueda, user_id = self.consultas.getBusquedaFromIdBusqueda(self.search_id)
 		#skynet = Skynet(user_id)
 		#skynet.research_user(cadenaBusqueda, self.search_id);
-		escritor = EscritorTweets(ConexionSQL(), self.search_id)
-		recolector = RecolectorTweetsUser(escritor)
+		escritorList = []
+		escritorList.append(EscritorTweets(ConexionSQL(), self.searchID))
+		escritorList.append(EscritorBusquedaTweets(ConexionSQL(), self.searchID))
+		recolector = RecolectorTweetsUser(escritorList)
 		recolector.recolecta(cadenaBusqueda)
 
 		return True

@@ -1,6 +1,7 @@
 #from Skynet import Skynet
 from DBbridge.ConsultasGeneral import ConsultasGeneral
 from DBbridge.EscritorTweets import EscritorTweets
+from DBbridge.EscritorBusquedaTweets import EscritorBusquedaTweets
 from DBbridge.ConexionSQL import ConexionSQL
 from SocialAPI.TwitterAPI.RecolectorTweetsUser import RecolectorTweetsUser
 from SocialAPI.TwitterAPI.RecolectorTweetsTags import RecolectorTweetsTags
@@ -21,15 +22,19 @@ class AsincSearch(threading.Thread):
 		if self.tipo == 'suser':
 			#skynet = Skynet(self.user_id)
 			#skynet.research_user(self.texto, self.searchID)
-			escritor = EscritorTweets(ConexionSQL(), self.searchID)
-			recolector = RecolectorTweetsUser(escritor)
+			escritorList = []
+			escritorList.append(EscritorTweets(ConexionSQL(), self.searchID))
+			escritorList.append(EscritorBusquedaTweets(ConexionSQL(), self.searchID))
+			recolector = RecolectorTweetsUser(escritorList)
 			recolector.recolecta(self.texto)
 
 			fin = time.time()
 			self.consultas.setAppSearchTime(self.searchID, fin - inicio)
 		elif self.tipo == 'topic':
-			escritor = EscritorTweets(ConexionSQL(), self.searchID)
-			recolector = RecolectorTweetsTags(escritor)
+			escritorList = []
+			escritorList.append(EscritorTweets(ConexionSQL(), self.searchID))
+			escritorList.append(EscritorBusquedaTweets(ConexionSQL(), self.searchID))
+			recolector = RecolectorTweetsTags(escritorList)
 			recolector.recolecta(self.texto)
 
 			fin = time.time()

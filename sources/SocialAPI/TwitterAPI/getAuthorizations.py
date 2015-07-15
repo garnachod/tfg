@@ -1,5 +1,4 @@
 # -*- coding: iso-8859-15 -*-
-import tweepy
 import psycopg2
 from DBbridge.ConexionSQL import ConexionSQL
 
@@ -67,13 +66,13 @@ class GetAuthorizations():
         access_token = self.access_token
         access_token_secret = self.access_token_secret
         return [API_key, API_secret, access_token, access_token_secret]
-
+    """
     def get_tweepy_api_auth(self):
         API_key, API_secret, access_token, access_token_secret = get_twitter_secret()
         auth = tweepy.OAuthHandler(API_key, API_secret)
         auth.set_access_token(access_token, access_token_secret)
         return auth
-
+    """
     def get_twython_token(self):
         API_key = self.api_key
         access_token = self.oauth

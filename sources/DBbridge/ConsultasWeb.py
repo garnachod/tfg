@@ -66,7 +66,7 @@ class ConsultasWeb(ConsultasGeneral):
 
 
 		if use_max_id == True:
-			query = "SELECT t.status, t.favorite_count, t.retweet_count, t.is_retweet, t.media_url, u.screen_name FROM tweets as t, users as u WHERE u.screen_name = %s and u.id = t.tuser order by t.created_at DESC LIMIT %s;"
+			query = "SELECT t.status, t.favorite_count, t.retweet_count, t.is_retweet, t.media_url, u.screen_name FROM tweets as t, users as u WHERE u.screen_name = %s and u.id_twitter = t.tuser order by t.created_at DESC LIMIT %s;"
 			try:
 				self.cur.execute(query, [twitterUser, ])
 				row = self.cur.fetchall()
@@ -76,7 +76,7 @@ class ConsultasWeb(ConsultasGeneral):
 				print str(e)
 				return False
 		else:
-			query = "SELECT t.status, t.favorite_count, t.retweet_count, t.is_retweet, t.media_url, u.screen_name FROM tweets as t, users as u WHERE u.screen_name = %s and u.id = t.tuser order by t.created_at DESC LIMIT %s;"
+			query = "SELECT t.status, t.favorite_count, t.retweet_count, t.is_retweet, t.media_url, u.screen_name FROM tweets as t, users as u WHERE u.screen_name = %s and u.id_twitter = t.tuser order by t.created_at DESC LIMIT %s;"
 			try:
 				self.cur.execute(query, [twitterUser, limit])
 				row = self.cur.fetchall()
@@ -87,9 +87,9 @@ class ConsultasWeb(ConsultasGeneral):
 				return False
 
 	def getTweetsEntrenamientoListar(self, identificador):
-		query = """SELECT t.status, t.favorite_count, t.retweet_count, t.is_retweet, t.media_url, u.screen_name, t.id, te.clase 
+		query = """SELECT t.status, t.favorite_count, t.retweet_count, t.is_retweet, t.media_url, u.screen_name, t.id_twitter, te.clase 
 				FROM tweets as t, users as u, tweets_entrenamiento as te , listas_entrenamiento as li
-				WHERE te.clase != 'no_usar' and li.id = id_lista and li.id = %s and te.id_tweet = t.id and u.id = t.tuser order by te.id DESC;
+				WHERE te.clase != 'no_usar' and li.id = id_lista and li.id = %s and te.id_tweet = t.id_twitter and u.id_twitter = t.tuser order by te.id DESC;
 				"""
 		
 		try:
@@ -123,7 +123,7 @@ class ConsultasWeb(ConsultasGeneral):
 				query += " or status LIKE %s"
 			i = i + 1
 
-		query += "  ) and is_retweet is False and (lang = 'es' or lang = 'en') and t.tuser = u.id order by t.created_at DESC LIMIT 2000;"
+		query += "  ) and is_retweet is False and (lang = 'es' or lang = 'en') and t.tuser = u.id_twitter order by t.created_at DESC LIMIT 2000;"
 		print query
 		print topics
 		try:
@@ -136,13 +136,13 @@ class ConsultasWeb(ConsultasGeneral):
 			return False
 
 	def getTweetsAsincSearc(self, searchID, last_id, limit):
-		query = "SELECT t.status, t.favorite_count, t.retweet_count, t.is_retweet, t.media_url, u.screen_name, t.id "
+		query = "SELECT t.status, t.favorite_count, t.retweet_count, t.is_retweet, t.media_url, u.screen_name, t.id_twitter "
 		query+= "FROM tweets as t, users as u, join_search_tweet as j "
-		query+= "WHERE t.id = j.id_tweet and t.tuser = u.id and j.id_search = %s "
+		query+= "WHERE t.id_twitter = j.id_tweet and t.tuser = u.id_twitter and j.id_search = %s "
 		if last_id == 0:
 			query+= "order by t.created_at DESC LIMIT %s;"
 		else:
-			query+= "and t.id > %s order by t.created_at DESC LIMIT %s;"
+			query+= "and t.id_twitter > %s order by t.created_at DESC LIMIT %s;"
 
 		try:
 			if last_id == 0:
@@ -334,7 +334,7 @@ class ConsultasWeb(ConsultasGeneral):
 	def getTweetsRecuperadosTareaID(self, identificador):
 		query =  """SELECT tw.status, tw.favorite_count, tw.retweet_count, tw.is_retweet, tw.media_url, u.screen_name 
 					From tweets as tw, join_search_tweet as j, tareas_programadas as t , users as u
-					where t.id = %s and t.id_search = j.id_search and tw.id = j.id_tweet and tw.is_retweet = FALSE and u.id = tw.tuser limit 500;
+					where t.id = %s and t.id_search = j.id_search and tw.id_twitter = j.id_tweet and tw.is_retweet = FALSE and u.id_twitter = tw.tuser limit 500;
 					"""
 
 		try:
@@ -349,7 +349,7 @@ class ConsultasWeb(ConsultasGeneral):
 	def getTweetsRecuperadosTareaAnalisisID(self, identificador):
 		query =  """SELECT tw.status, tw.favorite_count, tw.retweet_count, tw.is_retweet, tw.media_url, u.screen_name 
 					From tweets as tw, join_search_tweet as j, tareas_programadas as t , users as u, clasificaciontweets as c
-					where t.id = %s and t.id_search = j.id_search and tw.id = j.id_tweet and c.id_tweet = j.id_tweet and c.clase = 'relevante' and tw.is_retweet = FALSE and u.id = tw.tuser limit 500; 
+					where t.id = %s and t.id_search = j.id_search and tw.id_twitter = j.id_tweet and c.id_tweet = j.id_tweet and c.clase = 'relevante' and tw.is_retweet = FALSE and u.id_twitter = tw.tuser limit 500; 
 					"""
 
 		try:
