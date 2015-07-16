@@ -8,7 +8,7 @@ Aplicación web:
 ##### Arrancar el sistema
 * Cambiar la información de conexión en DBbrige/ConexionSQL.py
 * Ejecutar DBbrige/CreaTablas.py se crea un usuario por defecto, se puede cambiar si no se conoce la contraseña
-** En test hay un fichero para crear la hash de la contraseña
+	* En test hay un fichero para crear la hash de la contraseña
 * Arrancar la aplicación con runserver.py
 * Poner en el navegador localhost:5000
 * Iniciar sesión con el usuario por defecto
