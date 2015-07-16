@@ -24,7 +24,7 @@ var allTweets = {
 			allTweets.listTweetsSinc.push(tweets[i]);
 			allTweets.numTweetsSinc++;
 			Tweet.contructorFromJSON(tweets[i]);
-			$('#tweets').append(Tweet.toHTML);
+			$('#tweets').append(Tweet.toHTML(true));
 		};
 	},
 	pushTweetsAsinc:function(tweets){

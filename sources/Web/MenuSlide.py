@@ -33,7 +33,6 @@ class MenuSlide(object):
 					'<li><a href="/entrena_tweets">Entrenar usando tweets</a></li>'
 					'<li><a href="/ver_entrena_tweets">Ver Tweets entrenamiento</a></li>'
 					'<li><a href="/lanzar_entrenamientos">Lanzar entrenamientos</a></li>'
-					'<li><a href="/estadisticas">Estadísticas generales</a></li>'
 					'<li><a href="/contacto">Contacto</a></li>'
 					'<li><a href="/test">TEST</a></li>'
 					'</ul>'

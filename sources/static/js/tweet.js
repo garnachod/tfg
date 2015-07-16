@@ -29,10 +29,10 @@ var Tweet = {
 		Tweet.media_url = tweet.media;
 	},
 
-	toHTML:function(){
+	toHTML:function(border){
 		//var cadena = '<div class="delimitador"></div>';
 		var cadena = '';
-		cadena += Tweet.relevanciaToHTML();
+		cadena += Tweet.relevanciaToHTML(border);
 		cadena += Tweet.usrImgToHTML();
 		cadena += '<div class="cont-tweet">';
 		cadena += Tweet.tweetUsrToHTML();
@@ -59,8 +59,11 @@ var Tweet = {
 		return cadena;
 	},
 
-	relevanciaToHTML : function(){
-		return '<div class="tweet">';
+	relevanciaToHTML : function(border){
+		if (border == true)
+			return '<div class="tweet border-tweet">';
+		else
+			return '<div class="tweet">';
 	},
 	usrImgToHTML:function(){
 		var cadena = '<div class="cont-user-img">';

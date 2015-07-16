@@ -226,7 +226,7 @@ class ConsultasWeb(ConsultasGeneral):
 	#seccion de estadisticas
 
 	def getNumTweetsNoRT(self):
-		query ="SELECT count(id) FROM tweets WHERE is_retweet = FALSE;"
+		query ="SELECT count(id_twitter) FROM tweets WHERE is_retweet = FALSE;"
 		try:
 			self.cur.execute(query)
 			num = self.cur.fetchone()[0]
@@ -237,7 +237,7 @@ class ConsultasWeb(ConsultasGeneral):
 			return False
 
 	def getNumTweetsSiRT(self):
-		query ="SELECT count(id) FROM tweets WHERE is_retweet = TRUE;"
+		query ="SELECT count(id_twitter) FROM tweets WHERE is_retweet = TRUE;"
 		try:
 			self.cur.execute(query)
 			num = self.cur.fetchone()[0]
@@ -248,7 +248,7 @@ class ConsultasWeb(ConsultasGeneral):
 			return False
 
 	def getNumTweetsNoMedia(self):
-		query ="SELECT count(id) FROM tweets WHERE media_url is NULL and is_retweet = FALSE;"
+		query ="SELECT count(id_twitter) FROM tweets WHERE media_url is NULL and is_retweet = FALSE;"
 		try:
 			self.cur.execute(query)
 			num = self.cur.fetchone()[0]
@@ -259,7 +259,7 @@ class ConsultasWeb(ConsultasGeneral):
 			return False
 
 	def getNumTweetsSiMedia(self):
-		query ="SELECT count(id) FROM tweets WHERE media_url is NOT NULL and is_retweet = FALSE;"
+		query ="SELECT count(id_twitter) FROM tweets WHERE media_url is NOT NULL and is_retweet = FALSE;"
 		try:
 			self.cur.execute(query)
 			num = self.cur.fetchone()[0]

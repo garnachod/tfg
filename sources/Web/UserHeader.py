@@ -18,7 +18,7 @@ class UserHeader(object):
 			
 		cadena += '<ul class="header-cont">'
 		cadena += '<li class="user-header-cont">'
-		cadena += '<img src="' + self.img + '">'				
+		cadena += '<img src="/' + self.img + '">'				
 		cadena += '<h4>'
 		cadena += self.username
 		cadena += '</h4>'
@@ -26,7 +26,7 @@ class UserHeader(object):
 		cadena += '<ul>'
 		cadena += '<li><a href="cerrar_sesion">Cerrar sesión</a></li>'
 		if self.admin == True:
-			cadena += '<li><a href="admin">Panel administración</a></li>'
+			cadena += '<li><a href="/admin/usuario_nuevo">Panel administración</a></li>'
 
 		cadena += '</ul>'
 

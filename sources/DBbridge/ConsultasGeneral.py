@@ -139,7 +139,7 @@ class ConsultasGeneral(object):
 	def getTweetIDLarge(self, identificador):
 		query = """SELECT t.status, t.favorite_count, t.retweet_count, t.is_retweet, t.media_url, u.screen_name 
 				   FROM tweets as t, users as u 
-				   WHERE t.id_twitter = %s and t.tuser = u.id LIMIT 1;"""
+				   WHERE t.id_twitter = %s and t.tuser = u.id_twitter LIMIT 1;"""
 		try:
 			self.cur.execute(query, [identificador, ])
 			row = self.cur.fetchone()
@@ -170,7 +170,7 @@ class ConsultasGeneral(object):
 				query += " or status LIKE %s"
 			i = i + 1
 
-		query += "  ) and is_retweet = False and id not in (SELECT id_tweet FROM tweets_entrenamiento) and (lang = 'es' or lang = 'en') order by t.created_at DESC LIMIT %s;"
+		query += "  ) and is_retweet = False and id_twitter not in (SELECT id_tweet FROM tweets_entrenamiento) and (lang = 'es' or lang = 'en') order by t.created_at DESC LIMIT %s;"
 
 		parameters = list(topics)
 		parameters.append(limit)

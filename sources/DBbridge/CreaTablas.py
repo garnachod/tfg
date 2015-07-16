@@ -79,6 +79,7 @@ def temp_crea_tablas():
              ', username varchar(20)'
              ', pasw varchar(100)'
              ');'
+             'CREATE INDEX app_users_username ON app_users (username);'
              )
     cur.execute(query)
     

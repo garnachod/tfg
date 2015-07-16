@@ -86,7 +86,7 @@ var busqueda = {
 
 				Tweet.contructorFromJSON(tweets[i]);
 
-				$('#cont_tweet').html(Tweet.toHTML);
+				$('#cont_tweet').html(Tweet.toHTML(false));
 				$("#cont_tweet_bot").show();
 			};
 

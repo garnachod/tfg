@@ -3,29 +3,54 @@ from flask import Flask, session, request, redirect
 from Web.Index import Index
 from Web.Login import Login
 from Web.Error import Error
-from Web.Admin import Admin
+#from Web.Admin import Admin
 from Web.Success import Success
 from Web.Busqueda import Busqueda
 from Web.BusquedaAsinc import BusquedaAsinc
-from Web.AdminNewUser import AdminNewUser
-from Web.AdminNewApiKey import AdminNewApiKey
+from Web.Contacto import Contacto
+from Web.PlanificarTareas import PlanificarTareas
+from Web.AltaTarea import AltaTarea
+from Web.VisualizarListaTareas import VisualizarListaTareas
+from Web.EntrenamientoTweets import EntrenamientoTweets
+from Web.ListarTweetsEntrenamiento import ListarTweetsEntrenamiento
+from Web.LanzarEntrenamiento import LanzarEntrenamiento
+from Web.ResumenTarea import ResumenTarea
+from Web.NuevaListaEntrenamiento import NuevaListaEntrenamiento
 from DBbridge.ConsultasWeb import ConsultasWeb
+
+
+
+#test
+from Web.EntrenamientoTweet import EntrenamientoTweet
+####
 import os
 import time
 
 
 app = Flask(__name__)
+consultasWeb = ConsultasWeb()
+#vistas de la seccion admin
+import sources.views_admin
+#vistas JSON esto es, api
+import sources.views_api
+
 index_web = Index()
 login_web = Login()
 error_web = Error()
-admin_web = Admin()
+
+
 success_web = Success()
 busqueda_web = Busqueda()
-consultasWeb = ConsultasWeb()
-admin_new_usr = AdminNewUser()
-admin_new_apik = AdminNewApiKey()
+planificartarea_web = PlanificarTareas()
 busquedaAsinc_web = BusquedaAsinc()
-
+altaTarea_web = AltaTarea()
+contacto_web = Contacto()
+entrena_tweets_web = EntrenamientoTweets()
+listaTareas_web = VisualizarListaTareas()
+listaTweetTrain_web = ListarTweetsEntrenamiento()
+lanzarEntrenamiento_web = LanzarEntrenamiento()
+resumenTarea_web = ResumenTarea()
+nlistaEntrena_web = NuevaListaEntrenamiento()
 
 #simulacion de index
 @app.route('/')
@@ -51,7 +76,7 @@ def login():
 @app.route('/cerrar_sesion')
 def cerrar_sesion():
 	session.clear()
-	return redirect('/')
+	return redirect('/') 
 	
 
 #ruta generica de error con diferentes codigos de error
@@ -97,44 +122,153 @@ def busquedaAsinc():
 	else:
 		return redirect('/err?code=2')
 
-#*****rutas de aministrador*************************************
-@app.route('/admin')
-def admin():
-	if 'username' in session:
-		if consultasWeb.isAdministrator(session['user_id']):
-			return admin_web.toString()
-		else:
-			return redirect('/err?code=3')
-	else:
-		return redirect('/login');
+				
+		#return redirect('/err?code=2')
 
-@app.route('/admin_new_user', methods=['GET', 'POST'])
-def admin_new_user():
+
+@app.route('/contacto')
+def contacto():
 	if 'username' in session:
-		if request.method == 'POST':
-			if admin_new_usr.add():
-				return redirect('/success?code=1')
-			else:
-				return redirect('/err?code=6')
-		else:
-			return redirect('/err?code=4')
+		return contacto_web.toString()
+	else:
+		return redirect('/err?code=5')
+#************************Tareas***********************************
+@app.route('/planificartarea')
+def planificartarea():
+	if 'username' in session:
+		return planificartarea_web.toString()
 	else:
 		return redirect('/err?code=5')
 
-@app.route('/admin_new_apikey', methods=['GET', 'POST'])
-def admin_new_apikey():
+@app.route('/alta_tarea', methods=['GET', 'POST'])
+def altatarea():
 	if 'username' in session:
 		if request.method == 'POST':
-			if admin_new_apik.add():
-				return redirect('/success?code=2')
-			else:
-				return redirect('/err?code=6')
+			altaTarea_web.alta()
+			return redirect('/success?code=3')
 		else:
-			return redirect('/err?code=4')
+			return redirect('/err?code=2')
 	else:
-		return redirect('/err?code=5')
+		#si no se ha iniciado sesion redirige a la pagina principal
+		return redirect('/')
 
-#*****fin de rutas de aministrador********************************
+@app.route('/ver_tareas_pendientes')
+def verTareasPendientes():
+	if 'username' in session:
+		return listaTareas_web.toString(False)
+	else:
+		#si no se ha iniciado sesion redirige a la pagina principal
+		return redirect('/')
+
+@app.route('/ver_tareas_finalizadas')
+def verTareasFinalizadas():
+	if 'username' in session:
+		return listaTareas_web.toString(True)
+	else:
+		#si no se ha iniciado sesion redirige a la pagina principal
+		return redirect('/')
+
+@app.route('/resumen_tarea', methods=['GET'])
+def resumenTarea():
+	if 'username' in session:
+		try:
+			identificadorTarea = request.args['identificador']
+			try:
+				analizar = request.args['analizar']
+				if analizar == 't':
+					return resumenTarea_web.volverAnalizarTweets(identificadorTarea)
+				else:
+					return resumenTarea_web.toString(identificadorTarea)
+			except Exception, e:
+				print e
+				return resumenTarea_web.toString(identificadorTarea)
+		except Exception, e:
+			print e
+			return redirect('/')
+	else:
+		#si no se ha iniciado sesion redirige a la pagina principal
+		return redirect('/')
+
+#******************fin de tareas*************************************
+#************************Estadisticas********************************
+
+#******************fin de Estadisticas*******************************
+
+#************************entrenamiento********************************
+@app.route('/entrena_tweets')
+def entrenamientoTweets():
+	if 'username' in session:
+		return entrena_tweets_web.toString()
+	else:
+		#si no se ha iniciado sesion redirige a la pagina principal
+		return redirect('/')
+
+
+@app.route('/ver_entrena_tweets', methods=['GET'])
+def listaEntrenamientoTweets():
+	if 'username' in session:
+		try:
+			if request.args['id_lista'] is None:
+				return listaTweetTrain_web.toString()
+			else:
+				return listaTweetTrain_web.toString(int(request.args['id_lista']))
+		except Exception, e:
+			return listaTweetTrain_web.toString()
+	else:
+		#si no se ha iniciado sesion redirige a la pagina principal
+		return redirect('/')
+		
+@app.route('/change_tweet_train' , methods=['GET', 'POST'])
+def changeTweetTrain():
+	if 'username' in session:
+		if request.method == 'POST':
+			return setTweetTrain_web.toStringChange()
+		else:
+			return redirect('/err?code=2')
+	else:
+		return 'err'
+
+@app.route('/lanzar_entrenamientos', methods=['GET'])
+def lanzarEntrenamientos():
+	if 'username' in session:
+		try:
+			if request.args['id_entr'] is None:
+				return lanzarEntrenamiento_web.toString()
+			else:
+				lanzarEntrenamiento_web.generaEntrenamientoTweets(request.args['id_entr'])
+				return redirect('/success?code=4')
+		except Exception, e:
+			return lanzarEntrenamiento_web.toString()
+	else:
+		#si no se ha iniciado sesion redirige a la pagina principal
+		return redirect('/')
+
+@app.route('/lista_entrena_tweets' , methods=['GET', 'POST'])
+def listaTweetTrain():
+	if 'username' in session:
+		if request.method == 'POST':
+			nlistaEntrena_web.creaLista()
+			return redirect('/success?code=3')
+		else:
+			try:
+				if request.args['borrar_id'] is None:
+					return nlistaEntrena_web.toString()
+				else:
+					nlistaEntrena_web.borrar(int(request.args['borrar_id']))
+					return redirect('/lista_entrena_tweets')
+					
+			except Exception, e:
+				return nlistaEntrena_web.toString()
+	else:
+		#si no se ha iniciado sesion redirige a la pagina principal
+		return redirect('/')
+		
+@app.route('/test')
+def test():
+	test = EntrenamientoTweet()
+	return test.toString()
+
+#******************fin de entrenamiento*******************************
 
 #@app.route('/login')
 #def login():

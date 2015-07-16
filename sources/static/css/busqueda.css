@@ -1,8 +1,10 @@
 .tweet{
 	padding: 10px 10px;
 	color: rgb(11, 36, 45);
-	border-bottom: 1px solid #00263A;
 	overflow: hidden;
+}
+.border-tweet{
+	border-bottom: 1px solid #00263A;
 }
 /*importancia del tweet*/
 .tweet.im1{

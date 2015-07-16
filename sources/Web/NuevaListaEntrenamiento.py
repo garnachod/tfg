@@ -52,6 +52,8 @@ class NuevaListaEntrenamiento(object):
 		rows = self.consultas.getListasEntrenamiento()
 		cadena = ''
 		#0 id 1 nombre
+		if rows is None or rows == False:
+			return ''
 		for row in rows:
 			cadena += '<div>'
 			cadena += '<div class="elemento-listado-sencillo">' + row[1] + '</div>'
