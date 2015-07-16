@@ -1,16 +1,18 @@
 # -*- coding: utf-8 -*-
 from DBbridge.ConsultasWeb import ConsultasWeb
 from UserHeader import UserHeader
-from flask import Flask, session
+from flask import Flask, session, request
 from Head import Head
 from MenuSlide import MenuSlide
 from SupportWeb import SupportWeb
+from i18n.i18n import i18n
 
 
 class Index():
 	def __init__(self):
 		self.head = Head('index') 
-		self.generaHead() 
+		self.generaHead()
+		self.internationalization = i18n()
 
 	def generaHead(self):
 		self.head.add_css("static/css/general.css")
@@ -53,6 +55,8 @@ class Index():
 		return cadena
 
 	def toStringNoRegistrado(self):
+		lang = request.headers.get('Accept-Language')
+
 		cadena = '<body>'
 		cadena += '''<div class="header">
 						<div class="header-cont">
@@ -61,16 +65,18 @@ class Index():
 					</div>
 					'''
 
-		cadena += 	SupportWeb.addGeneralStructureMid('''
-						<h3>
-							Debes iniciar sesión en la aplicación
-						</h3>
-						<div class="cont-boton" style="width: 160px;">
-							<a href="/login" class="boton-general">
-								Inicio sesión
-							</a>
-						</div>
-					''')
+		medio =  (
+					'<h3>'
+					''+self.internationalization["session_info_login"][lang]+''
+					'</h3>'
+					'<div class="cont-boton" style="width: 160px;">'
+						'<a href="/login" class="boton-general">'
+							'Inicio sesión'
+						'</a>'
+					'</div>'
+					)
+
+		cadena += SupportWeb.addGeneralStructureMid(medio)
 
 		cadena += '</body></html>'
 		return cadena

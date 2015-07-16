@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from flask import Flask, session, request, redirect
 from DBbridge.ConsultasWeb import ConsultasWeb
 import json

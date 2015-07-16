@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from flask import Flask, session, request, redirect
+from flask.ext.compress import Compress
 from Web.Index import Index
 from Web.Login import Login
 from Web.Error import Error
@@ -28,6 +29,7 @@ import time
 
 
 app = Flask(__name__)
+Compress(app)
 consultasWeb = ConsultasWeb()
 #vistas de la seccion admin
 import sources.views_admin
@@ -51,6 +53,8 @@ listaTweetTrain_web = ListarTweetsEntrenamiento()
 lanzarEntrenamiento_web = LanzarEntrenamiento()
 resumenTarea_web = ResumenTarea()
 nlistaEntrena_web = NuevaListaEntrenamiento()
+
+#request.headers.get('Accept-Language')
 
 #simulacion de index
 @app.route('/')

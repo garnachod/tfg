@@ -337,3 +337,21 @@ class ConsultasGeneral(object):
 			print "error en getIdListaEntrenamientoByIDSearch"
 			print str(e)
 			return False
+
+	def isListasEntrenamientoFromUser(self, id_user, id_lista):
+		query = """SELECT * FROM listas_entrenamiento WHERE id_username = %s and id = %s;"""
+
+		try:
+			self.cur.execute(query, [id_user, id_lista])
+			row = self.cur.fetchone()
+
+			if row is None:
+				return False
+			else:
+				return True
+
+		except Exception, e:
+			print "error en isListasEntrenamientoFromUser"
+			print str(e)
+			return False
+		
