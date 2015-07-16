@@ -1,0 +1,4 @@
+item = i18n_item()
+item["en"] = "You must log in to the application"
+item["es"] = "Debes iniciar sesión en la aplicación"
+self.diccionario["session_info_login"] = item
