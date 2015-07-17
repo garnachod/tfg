@@ -5,6 +5,10 @@ http://docs.datastax.com/en/getting_started/doc/getting_started/gettingStartedDe
 * sudo pip install blist
 * sudo pip install cassandra-driver
 
+##### Instalar lucene-cassandra
+* GIT https://github.com/Stratio/cassandra-lucene-index
+* CASSANDRA_HOME == /usr/share/cassandra
+
 ##### arrancar la interfaz de cassandra para crear el keyspace
 ```
  cd /usr/bin/
