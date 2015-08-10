@@ -4,30 +4,6 @@
 ##### 3400 tweets
 Sincrono 31.72 Segundos
 Asincrono 9.5 Segundos 
-=======
-##### instalar
-http://docs.datastax.com/en/getting_started/doc/getting_started/gettingStartedDeb_t.html
-
-sudo apt-get install cassandra=2.1.8
-
-##### instalar blist y cassandra-driver para python
-* sudo pip install blist
-* sudo pip install cassandra-driver
-
-##### Instalar lucene-cassandra
-* GIT https://github.com/Stratio/cassandra-lucene-index
-* CASSANDRA_HOME == /usr/share/cassandra
-
-##### arrancar la interfaz de cassandra para crear el keyspace
-```
- cd /usr/bin/
- ./cqlsh
- CREATE KEYSPACE twitter WITH REPLICATION = { "class" : "SimpleStrategy", "replication_factor" : 1 };
-```
-
-##### ya se pueden crear las "tablas"
-* utilizar el fichero CreaTablas.py
->>>>>>> 5391a3e73b53ccf0149d81a70335899a84210c11:sources/DBbridge/cassandra_migration/README.md
 
 ### Comparación RPy
 #### Pruebas de Rendimiento
