@@ -16,8 +16,8 @@ class TareaProgramadaBusqueda(TareaProgramada):
 		#skynet = Skynet(user_id)
 		#skynet.research_user(cadenaBusqueda, self.search_id);
 		escritorList = []
-		escritorList.append(EscritorTweets(ConexionSQL(), self.searchID))
-		escritorList.append(EscritorBusquedaTweets(ConexionSQL(), self.searchID))
+		escritorList.append(EscritorTweets(self.searchID))
+		escritorList.append(EscritorBusquedaTweets(self.searchID))
 		recolector = RecolectorTweetsUser(escritorList)
 		recolector.recolecta(cadenaBusqueda)
 

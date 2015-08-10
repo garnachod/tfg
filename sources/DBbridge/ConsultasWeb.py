@@ -1,4 +1,4 @@
-from ConexionSQL import ConexionSQL
+#from PostgreSQL.ConexionSQL import ConexionSQL
 from ConsultasGeneral import ConsultasGeneral
 
 class ConsultasWeb(ConsultasGeneral): 

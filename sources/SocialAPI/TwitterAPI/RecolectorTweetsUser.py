@@ -43,11 +43,8 @@ class RecolectorTweetsUser(Recolector):
 				break
 
 			for status in statuses:
-				#parseo del retorno a array de objetos que entiende el escritor
-				arrayTemporal = self.privateParseaStatus(status)
+				arrayFinal.append(status)
 
-				for tweet in arrayTemporal:
-					arrayFinal.append(tweet)
 			#fin de for
 			maximo = self.getMinIDtweets(arrayFinal, query)
 			maximo -= 1
@@ -102,7 +99,6 @@ class RecolectorTweetsUser(Recolector):
 
 		maximo = long(0)
 		for tweet in tweets:
-			if tweet["user"]["screen_name"] == query:
 				if tweet["id"] > maximo:
 					maximo = tweet["id"]
 
@@ -131,46 +127,8 @@ class RecolectorTweetsUser(Recolector):
 
 	def privateParseaStatus(self, status):
 		arrayTweets = []
-		tweet = {}
-		tweet["created_at"] = status['created_at']
-		tweet["id"] = status["id"]
-		tweet["text"] = status["text"]
-		#print tweet["text"]
-		tweet["lang"] = status["lang"]
-
-		if "retweet_count" in status:
-			tweet["retweet_count"] = status["retweet_count"]
-		else:
-			tweet["retweet_count"] = 0
-
-		if "favorite_count" in status:
-			tweet["favorite_count"] = status["favorite_count"]
-		else:
-			tweet["favorite_count"] = 0
-
-		tweet["user"] = self.privateParseaUserFormStatus(status["user"])
-
-		if "retweeted_status" in status:
-			tweet["retweet"] = True
-			tweet["orig_tweet"] = status["retweeted_status"]["id"]
-		else:
-			tweet["retweet"] = False
-			tweet["orig_tweet"] = 0
-
-		tweet["media_url"] = None
-		if "entities" in status:
-			if "media" in status["entities"]:
-				for media in status["entities"]["media"]:
-					if media["type"] == "photo":
-						tweet["media_url"] = media["media_url"]
-						break
-
-		arrayTweets.append(tweet)
-
-		if "retweeted_status" in status:
-			arrayTemporal = self.privateParseaStatus(status["retweeted_status"])
-			for tweetTemp in arrayTemporal:
-				arrayTweets.append(tweetTemp)
+		
+		arrayTweets.append(status)
 
 		return arrayTweets
 

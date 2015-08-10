@@ -1,9 +1,13 @@
 from Escritor import Escritor
+from PostgreSQL.ConexionSQL import ConexionSQL
 
 class EscritorSeguidores(Escritor):
 	"""docstring for EscritorSeguidores"""
-	def __init__(self, conexionSQL, searchID):
-		super(EscritorSeguidores, self).__init__(conexionSQL, searchID)
+	def __init__(self, searchID):
+		super(EscritorSeguidores, self).__init__(searchID)
+		conSql = ConexionSQL()
+		self.conn = conSql.getConexion()
+		self.cur = conSql.getCursor()
 
 	def escribe(self, data):
 

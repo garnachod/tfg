@@ -1,6 +1,6 @@
 # -*- coding: iso-8859-15 -*-
 import psycopg2
-from DBbridge.ConexionSQL import ConexionSQL
+from DBbridge.PostgreSQL.ConexionSQL import ConexionSQL
 
 
 #queue = multiprocessing.Manager()

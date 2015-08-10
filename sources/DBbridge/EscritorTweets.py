@@ -1,8 +1,12 @@
 from Escritor import Escritor
+from PostgreSQL.ConexionSQL import ConexionSQL
 class EscritorTweets(Escritor):
 	"""docstring for EscritorTweets"""
-	def __init__(self, conexionSQL, searchID):
-		super(EscritorTweets, self).__init__(conexionSQL, searchID)
+	def __init__(self, searchID):
+		super(EscritorTweets, self).__init__(searchID)
+		conSql = ConexionSQL()
+		self.conn = conSql.getConexion()
+		self.cur = conSql.getCursor()
 		self.hashCache = {}
 
 	def escribe(self, data):

@@ -17,8 +17,8 @@ class TareaProgramadaBusquedaKeywords(TareaProgramada):
 		#lista_keywords = cadenaBusqueda.replace(" ", "").split(",")
 		#skynet.research_keywords(lista_keywords, self.search_id);
 		escritorList = []
-		escritorList.append(EscritorTweets(ConexionSQL(), self.searchID))
-		escritorList.append(EscritorBusquedaTweets(ConexionSQL(), self.searchID))
+		escritorList.append(EscritorTweets(self.searchID))
+		escritorList.append(EscritorBusquedaTweets(self.searchID))
 		recolector = RecolectorTweetsTags(escritorList)
 		recolector.recolecta(cadenaBusqueda)
 

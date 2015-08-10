@@ -1,4 +1,4 @@
-from ConexionSQL import ConexionSQL
+from PostgreSQL.ConexionSQL import ConexionSQL
 
 class ConsultasGeneral(object): 
 	"""docstring for ConsultasGeneral"""
@@ -355,3 +355,37 @@ class ConsultasGeneral(object):
 			print str(e)
 			return False
 		
+	def getLastTweetCollectedScreenName(self, screen_name):
+		if screen_name[0] == '@':
+			screen_name = screen_name[1:]
+
+		query = "SELECT last_tweet_collected FROM users WHERE screen_name=%s;"
+		try:
+			print screen_name
+			self.cur.execute(query, [screen_name, ])
+			row = self.cur.fetchone()
+			if row is None:
+				return 0
+			if row[0] is None:
+				return 0
+
+			#print long(row[0])
+			return long(row[0])
+		
+		except Exception, e:
+			print str(e)
+			return 0
+
+	def setLastTweetCollectedScreenName(self, screen_name, maximo):
+		if screen_name[0] == '@':
+			screen_name = screen_name[1:]
+
+		query = "UPDATE users SET last_tweet_collected=%s WHERE screen_name=%s;"
+		try:
+			self.cur.execute(query, [maximo, screen_name])
+			self.conn.commit()
+
+			return True
+		except Exception, e:
+			print str(e)
+			return False
