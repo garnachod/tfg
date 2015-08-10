@@ -1,5 +1,6 @@
 ##### instalar
 http://docs.datastax.com/en/getting_started/doc/getting_started/gettingStartedDeb_t.html
+
 sudo apt-get install cassandra=2.1.8
 
 ##### instalar blist y cassandra-driver para python
