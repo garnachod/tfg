@@ -1,6 +1,7 @@
 #from PostgreSQL.ConexionSQL import ConexionSQL
 from ConsultasGeneral import ConsultasGeneral
 
+
 class ConsultasWeb(ConsultasGeneral): 
 	"""docstring for ConsultasWeb"""
 	def __init__(self):
@@ -64,27 +65,21 @@ class ConsultasWeb(ConsultasGeneral):
 		if twitterUser[0] == '@':
 			twitterUser = twitterUser[1:]
 
-
-		if use_max_id == True:
-			query = "SELECT t.status, t.favorite_count, t.retweet_count, t.is_retweet, t.media_url, u.screen_name FROM tweets as t, users as u WHERE u.screen_name = %s and u.id_twitter = t.tuser order by t.created_at DESC LIMIT %s;"
-			try:
-				self.cur.execute(query, [twitterUser, ])
-				row = self.cur.fetchall()
-				
-				return row
-			except Exception, e:
-				print str(e)
-				return False
+		if self.cassandra_active:
+			return self.getTweetsUsuarioCassandra(twitterUser, use_max_id, max_id, limit)
 		else:
-			query = "SELECT t.status, t.favorite_count, t.retweet_count, t.is_retweet, t.media_url, u.screen_name FROM tweets as t, users as u WHERE u.screen_name = %s and u.id_twitter = t.tuser order by t.created_at DESC LIMIT %s;"
-			try:
-				self.cur.execute(query, [twitterUser, limit])
-				row = self.cur.fetchall()
-				
-				return row
-			except Exception, e:
-				print str(e)
-				return False
+			return self.getTweetsUsuarioSQL(twitterUser, use_max_id, max_id, limit)
+
+
+	def getUserIDByScreenName(self, twitterUser):
+		if twitterUser[0] == '@':
+			twitterUser = twitterUser[1:]
+
+		if self.cassandra_active:
+			return self.getUserIDByScreenNameCassandra(twitterUser)
+		else:
+			return self.getUserIDByScreenNameSQL(twitterUser)
+
 
 	def getTweetsEntrenamientoListar(self, identificador):
 		query = """SELECT t.status, t.favorite_count, t.retweet_count, t.is_retweet, t.media_url, u.screen_name, t.id_twitter, te.clase 

@@ -2,6 +2,7 @@
 from DBbridge.ConsultasGeneral import ConsultasGeneral
 from DBbridge.EscritorTweets import EscritorTweets
 from DBbridge.EscritorBusquedaTweets import EscritorBusquedaTweets
+from DBbridge.EscritorTweetsCassandra import EscritorTweetsCassandra
 from SocialAPI.TwitterAPI.RecolectorTweetsUser import RecolectorTweetsUser
 from SocialAPI.TwitterAPI.RecolectorTweetsTags import RecolectorTweetsTags
 import threading
@@ -22,7 +23,8 @@ class AsincSearch(threading.Thread):
 			#skynet = Skynet(self.user_id)
 			#skynet.research_user(self.texto, self.searchID)
 			escritorList = []
-			escritorList.append(EscritorTweets(self.searchID))
+			#escritorList.append(EscritorTweets(self.searchID))
+			escritorList.append(EscritorTweetsCassandra(self.searchID))
 			escritorList.append(EscritorBusquedaTweets(self.searchID))
 			recolector = RecolectorTweetsUser(escritorList)
 			recolector.recolecta(self.texto)
@@ -31,7 +33,8 @@ class AsincSearch(threading.Thread):
 			self.consultas.setAppSearchTime(self.searchID, fin - inicio)
 		elif self.tipo == 'topic':
 			escritorList = []
-			escritorList.append(EscritorTweets(self.searchID))
+			#escritorList.append(EscritorTweets(self.searchID))
+			escritorList.append(EscritorTweetsCassandra(self.searchID))
 			escritorList.append(EscritorBusquedaTweets(self.searchID))
 			recolector = RecolectorTweetsTags(escritorList)
 			recolector.recolecta(self.texto)

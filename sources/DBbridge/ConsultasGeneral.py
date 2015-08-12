@@ -1,11 +1,18 @@
-from PostgreSQL.ConexionSQL import ConexionSQL
+from PostgreSQL.ConexionSQL import ConexionSQL 
+from Cassandra.ConexionCassandra import ConexionCassandra
+from ConsultasSQL import ConsultasSQL
+from ConsultasCassandra import ConsultasCassandra
 
-class ConsultasGeneral(object): 
+class ConsultasGeneral(ConsultasSQL, ConsultasCassandra): 
 	"""docstring for ConsultasGeneral"""
 	def __init__(self):
+		super(ConsultasGeneral, self).__init__()
+
 		conSql = ConexionSQL()
 		self.conn = conSql.getConexion()
 		self.cur = conSql.getCursor()
+
+		self.cassandra_active = True
 
 	def setAppSearchTime(self, searchID, time):
 		query = "UPDATE app_searches SET search_time=%s WHERE id=%s;"
@@ -359,33 +366,17 @@ class ConsultasGeneral(object):
 		if screen_name[0] == '@':
 			screen_name = screen_name[1:]
 
-		query = "SELECT last_tweet_collected FROM users WHERE screen_name=%s;"
-		try:
-			print screen_name
-			self.cur.execute(query, [screen_name, ])
-			row = self.cur.fetchone()
-			if row is None:
-				return 0
-			if row[0] is None:
-				return 0
+		if self.cassandra_active:
+			return self.getLastTweetCollectedScreenNameCassandra(screen_name)
+		else:
+			return self.getLastTweetCollectedScreenNameSQL(screen_name)
 
-			#print long(row[0])
-			return long(row[0])
-		
-		except Exception, e:
-			print str(e)
-			return 0
 
 	def setLastTweetCollectedScreenName(self, screen_name, maximo):
 		if screen_name[0] == '@':
 			screen_name = screen_name[1:]
 
-		query = "UPDATE users SET last_tweet_collected=%s WHERE screen_name=%s;"
-		try:
-			self.cur.execute(query, [maximo, screen_name])
-			self.conn.commit()
-
-			return True
-		except Exception, e:
-			print str(e)
-			return False
+		if self.cassandra_active:
+			return self.setLastTweetCollectedScreenNameCassandra(screen_name, maximo)
+		else:
+			return self.setLastTweetCollectedScreenNameSQL(screen_name, maximo)
