@@ -80,7 +80,7 @@ class ConsultasWeb(ConsultasGeneral):
 		else:
 			return self.getUserIDByScreenNameSQL(twitterUser)
 
-
+	#TODO Cassandra 
 	def getTweetsEntrenamientoListar(self, identificador):
 		query = """SELECT t.status, t.favorite_count, t.retweet_count, t.is_retweet, t.media_url, u.screen_name, t.id_twitter, te.clase 
 				FROM tweets as t, users as u, tweets_entrenamiento as te , listas_entrenamiento as li
@@ -95,7 +95,7 @@ class ConsultasWeb(ConsultasGeneral):
 		except Exception, e:
 			print str(e)
 			return False
-
+	#TODO Cassandra
 	def getTweetsTopics(self, topics):
 		#SELECT * from tweets WHERE status LIKE '%beta%' or status LIKE '%@garnachod%'
 
@@ -130,6 +130,7 @@ class ConsultasWeb(ConsultasGeneral):
 			print str(e)
 			return False
 
+	#TODO Cassandra
 	def getTweetsAsincSearc(self, searchID, last_id, limit):
 		query = "SELECT t.status, t.favorite_count, t.retweet_count, t.is_retweet, t.media_url, u.screen_name, t.id_twitter "
 		query+= "FROM tweets as t, users as u, join_search_tweet as j "
@@ -218,8 +219,7 @@ class ConsultasWeb(ConsultasGeneral):
 			print str(e)
 			return False
 
-	#seccion de estadisticas
-
+	#seccion de estadisticas TODO Cassandra
 	def getNumTweetsNoRT(self):
 		query ="SELECT count(id_twitter) FROM tweets WHERE is_retweet = FALSE;"
 		try:
