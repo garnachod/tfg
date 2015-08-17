@@ -80,6 +80,9 @@ class ConsultasWeb(ConsultasGeneral):
 		else:
 			return self.getUserIDByScreenNameSQL(twitterUser)
 
+	def getTweetByID(self, identificador):
+		pass
+
 	#TODO Cassandra 
 	def getTweetsEntrenamientoListar(self, identificador):
 		query = """SELECT t.status, t.favorite_count, t.retweet_count, t.is_retweet, t.media_url, u.screen_name, t.id_twitter, te.clase 
@@ -95,40 +98,15 @@ class ConsultasWeb(ConsultasGeneral):
 		except Exception, e:
 			print str(e)
 			return False
-	#TODO Cassandra
+
+
 	def getTweetsTopics(self, topics):
 		#SELECT * from tweets WHERE status LIKE '%beta%' or status LIKE '%@garnachod%'
+		if self.cassandra_active:
+			return self.getTweetsTopicsCassandra(topics)
+		else:
+			return self.getTweetsTopicsSQL(topics)
 
-		query = "SELECT t.status, t.favorite_count, t.retweet_count, t.is_retweet, t.media_url, u.screen_name "
-		query += "FROM tweets as t, users as u "
-		query += "WHERE ("
-		i = 0
-		for topic in topics:
-			if " " in topic:
-				subtopics = topic.split(" ")
-				topics[i] = '%'
-				for subtopic in subtopics:
-					topics[i] += subtopic + '%'
-			else:
-				topics[i] = '%' + topic + '%'
-
-			if i == 0:
-				query += " status LIKE %s"
-			else:
-				query += " or status LIKE %s"
-			i = i + 1
-
-		query += "  ) and is_retweet is False and (lang = 'es' or lang = 'en') and t.tuser = u.id_twitter order by t.created_at DESC LIMIT 2000;"
-		print query
-		print topics
-		try:
-			self.cur.execute(query, topics)
-			rows = self.cur.fetchall()
-			
-			return rows
-		except Exception, e:
-			print str(e)
-			return False
 
 	#TODO Cassandra
 	def getTweetsAsincSearc(self, searchID, last_id, limit):

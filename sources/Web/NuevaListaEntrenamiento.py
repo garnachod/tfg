@@ -49,7 +49,7 @@ class NuevaListaEntrenamiento(object):
 		return cadena
 
 	def generaVistaListas(self):
-		rows = self.consultas.getListasEntrenamiento()
+		rows = self.consultas.getListasEntrenamiento(session['user_id'])
 		cadena = ''
 		#0 id 1 nombre
 		if rows is None or rows == False:
@@ -64,13 +64,13 @@ class NuevaListaEntrenamiento(object):
 		return cadena
 
 	def borrar(self, identificador):
-		self.consultas.deleteListaEntrenamiento(identificador)
+		if self.consultas.isListasEntrenamientoFromUser(session['user_id'], identificador):
+			self.consultas.deleteListaEntrenamiento(identificador)
 
 	def creaLista(self):
 		nombre = request.form['nlista']
 		if nombre is None:
 			return False
 
-
-		self.consultas.creaListaEntrenamiento(nombre)
+		self.consultas.creaListaEntrenamiento(nombre, session['user_id'])
 		return True

@@ -26,7 +26,7 @@ def getTables(session):
 
 def creaTweets(session):
     query = ('CREATE TABLE Tweets ('
-             'id_twitter bigint PRIMARY KEY'
+             'id_twitter bigint'
              ', status text'
              ', tuser bigint'
              ', created_at timestamp'
@@ -38,6 +38,7 @@ def creaTweets(session):
              ', latitude FLOAT'
     		 ', longitude FLOAT'
              ', lucene TEXT'
+             ', PRIMARY KEY (tuser, id_twitter)'
              ');'
              
     )
@@ -55,8 +56,9 @@ def creaIndexTweet(session):
         "fields : {"
         "   id_twitter : {type : \"bigint\"},"
         "   tuser  : {type : \"bigint\"},"
+        "   orig_tweet: {type : \"bigint\"},"
         "   status  : {type : \"text\", analyzer : \"english\"},"
-        "   created_at  : {type : \"date\", pattern : \"yyyy/MM/dd\"},"
+        "   created_at  : {type : \"date\", pattern : \"yyyy-MM-dd HH:mm:ss\",sorted:true},"
         " place : {type : \"geo_point\", latitude:\"latitude\", longitude:\"longitude\"}"
         "}"
     "}'"
@@ -64,8 +66,14 @@ def creaIndexTweet(session):
     )
     session.execute(query)
 
-    query = "CREATE INDEX indx_tuser ON tweets (tuser);"
+    query = "CREATE INDEX indx_id_twitter ON tweets (id_twitter);"
     session.execute(query)
+
+def creaIndexTweetFecha(session):
+    pass
+    #query = "CREATE INDEX indx_created_at ON tweets (created_at);"
+    #session.execute(query)
+
 
 def clean(session):
     session.execute("DROP TABLE Tweets;")
@@ -74,13 +82,18 @@ def clean(session):
 if __name__ == '__main__':
     cluster = Cluster()
     session = cluster.connect('twitter')
-    #clean(session)
-    creaUsersTwitter(session)
-    creaIndexUsersTwitter(session)
-    #print "************usuario creado **************"
-    creaTweets(session)
-    creaIndexTweet(session)
-    #print "************tweet creado **************"
-    getSchemas(session)
-    getTables(session)
+    debug = False
+    if debug:
+        creaIndexTweetFecha(session)
+    else:
+        clean(session)
+        creaUsersTwitter(session)
+        creaIndexUsersTwitter(session)
+        #print "************usuario creado **************"
+        creaTweets(session)
+        creaIndexTweet(session)
+        
+        #print "************tweet creado **************"
+        getSchemas(session)
+        getTables(session)
     

@@ -145,9 +145,8 @@ def crea_tabla_MLT():
     query = ('DROP TABLE IF EXISTS tweets_entrenamiento CASCADE;'
              'CREATE TABLE tweets_entrenamiento ('
              'id serial PRIMARY KEY'
-             ', id_tweet integer REFERENCES tweets(id_twitter)'
+             ', id_tweet bigint'
              ', id_lista integer REFERENCES listas_entrenamiento(id) ON DELETE CASCADE'
-             ', id_username integer REFERENCES app_users(id)'
              ', fecha_creacion timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP '
              ', clase varchar(30)'
              ');'
@@ -236,16 +235,20 @@ def crea_tablas_close():
 	conn.close()
 
 if __name__ == "__main__":
-    crea_tablas()
-    temp_crea_tablas()
-    crea_def_user()
-    crea_tareas()
-    crea_tabla_lista_entrenamiento()
-    crea_tabla_MLT()
-    crea_tabla_entrenamientos()
-    crea_tabla_clasificacion()
-    crea_tabla_seguidores()
-    crea_tablas_close()
+    debug = True
+    if debug:
+        crea_tabla_MLT()
+    else:
+        crea_tablas()
+        temp_crea_tablas()
+        crea_def_user()
+        crea_tareas()
+        crea_tabla_lista_entrenamiento()
+        crea_tabla_MLT()
+        crea_tabla_entrenamientos()
+        crea_tabla_clasificacion()
+        crea_tabla_seguidores()
+        crea_tablas_close()
     
     #crea_tabla_MLT()
     #crea_tabla_lista_entrenamiento()

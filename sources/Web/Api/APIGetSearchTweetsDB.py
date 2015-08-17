@@ -70,7 +70,7 @@ class APIGetSearchTweetsDB(object):
       retorno = {"status":"true", "tweets" : []}
       for row in arrayTweets:
          tweet = {}
-         tweet['text'] = str(row[0])
+         tweet['text'] = row[0]
          tweet['fav'] = str(row[1])
          tweet['rt'] = str(row[2])
          tweet['is_rt'] = str(row[3])

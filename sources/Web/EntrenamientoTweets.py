@@ -42,7 +42,7 @@ class EntrenamientoTweets(object):
 							<input id="input_aleat" type="checkbox" name="aleat">Aleatorio'''
   		#array 0 id, 1 nombre
   		#lista de entrenamientos
-  		listas = self.consultas.getListasEntrenamiento()
+  		listas = self.consultas.getListasEntrenamiento(session['user_id'])
   		mid += '<p><select name="lista_entrenamiento" id="lista_entrenamiento" style="width: 325px;text-align: center;">'
   		for lista in listas:
   			mid += '<option value="'+str(lista[0])+'">'+str(lista[1])+'</option>'

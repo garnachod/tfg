@@ -59,27 +59,13 @@ class ConsultasGeneral(ConsultasSQL, ConsultasCassandra):
 			print str(e)
 			return False, False
 
-	def getTweetDebugMachineLearning(self, identificador):
-		query = "SELECT status FROM tweets WHERE id_twitter = %s;"
-		try:
-			self.cur.execute(query, [identificador, ])
-			row = self.cur.fetchone()
-
-			return row[0]
-		except Exception, e:
-			print str(e)
-			return False
 
 	def getTweetStatus(self, identificador):
-		query = "SELECT status FROM tweets as t WHERE t.id_twitter = %s;"
-		try:
-			self.cur.execute(query, [identificador, ])
-			row = self.cur.fetchone()
+		if self.cassandra_active:
+			return self.getTweetStatusCassandra(identificador)
+		else:
+			return self.getTweetStatusSQL(identificador)
 
-			return row[0]
-		except Exception, e:
-			print str(e)
-			return False
 
 	def getIDTweetsTrainList(self, id_lista_entrenamiento):
 		query = """SELECT id_tweet FROM tweets_entrenamiento as tw WHERE tw.clase != 'no_usar' AND tw.id_lista = %s;"""
@@ -107,11 +93,11 @@ class ConsultasGeneral(ConsultasSQL, ConsultasCassandra):
 			print str(e)
 			return False
 
-	def creaListaEntrenamiento(self, nombre):
-		query = """INSERT INTO listas_entrenamiento (nombre) VALUES (%s)"""
+	def creaListaEntrenamiento(self, nombre, id_usuario):
+		query = """INSERT INTO listas_entrenamiento (nombre, id_username) VALUES (%s, %s)"""
 		#query = "INSERT INTO tweets_entrenamiento (id_tweet,clase) VALUES (%s,%s);"
 		try:
-			self.cur.execute(query, [nombre, ])
+			self.cur.execute(query, [nombre, id_usuario])
 			self.conn.commit()
 
 			return True
@@ -120,10 +106,10 @@ class ConsultasGeneral(ConsultasSQL, ConsultasCassandra):
 			print str(e)
 			return False
 
-	def getListasEntrenamiento(self):
-		query = "SELECT id, nombre FROM listas_entrenamiento"
+	def getListasEntrenamiento(self, id_usuario):
+		query = "SELECT id, nombre FROM listas_entrenamiento WHERE id_username = %s;"
 		try:
-			self.cur.execute(query)
+			self.cur.execute(query, [id_usuario, ])
 			rows = self.cur.fetchall()
 
 			return rows
@@ -143,50 +129,47 @@ class ConsultasGeneral(ConsultasSQL, ConsultasCassandra):
 			print str(e)
 			return False
 
-	def getTweetIDLarge(self, identificador):
-		query = """SELECT t.status, t.favorite_count, t.retweet_count, t.is_retweet, t.media_url, u.screen_name 
-				   FROM tweets as t, users as u 
-				   WHERE t.id_twitter = %s and t.tuser = u.id_twitter LIMIT 1;"""
+	def getTweetByIDLarge(self, identificador):
+		if self.cassandra_active:
+			return self.getTweetByIDLargeCassandra(identificador)
+		else:
+			return self.getTweetByIDLargeSQL(identificador)
+
+
+	#TODO Controlar los tiempos segun crece la DB
+	def getIDsTweetsTrain(self, topics, limit, lista_id):
+		if self.cassandra_active:
+			#busca los tweets y eliminar los ids que ya se hayan insertado
+			tweets_ya_insertados = self.getIDsTweetsEnTrain(lista_id)
+			#print len(tweets_ya_insertados)
+			#aumenta el limite mirando los tweets en la lista
+			limit = len(tweets_ya_insertados) + limit
+			tweets_no_filtrados = self.getIDsTweetsTrainCassandra(topics, limit)
+			tweets_filtrados = []
+			for tweet_no_filtrados in tweets_no_filtrados:
+				if tweet_no_filtrados[0] not in tweets_ya_insertados:
+					tweets_filtrados.append(tweet_no_filtrados)
+
+			return tweets_filtrados
+		else:
+			topics_sql = topics.replace(", ", ",").split(",")
+			return self.getIDsTweetsTrainSQL(topics_sql, limit)
+
+
+	def getIDsTweetsEnTrain(self, lista_id):
+		"""Retorna un diccionario {} de IDs para que sea sencillo hacer un filtrado"""
+		query = "SELECT id_tweet FROM tweets_entrenamiento WHERE id_lista = %s;"
+
 		try:
-			self.cur.execute(query, [identificador, ])
-			row = self.cur.fetchone()
-
-			return row
-		except Exception, e:
-			print str(e)
-			return False
-
-	def getIDsTweetsTrain(self, topics, limit):
-		query = "SELECT t.id_twitter "
-		query += "FROM tweets as t "
-		query += "WHERE ("
-		i = 0
-		for topic in topics:
-			if " " in topic:
-				subtopics = topic.split(" ")
-				topics[i] = '%'
-				for subtopic in subtopics:
-					topics[i] += subtopic + '%'
-			else:
-				topics[i] = '%' + topic + '%'
-
-
-			if i == 0:
-				query += " status LIKE %s"
-			else:
-				query += " or status LIKE %s"
-			i = i + 1
-
-		query += "  ) and is_retweet = False and id_twitter not in (SELECT id_tweet FROM tweets_entrenamiento) and (lang = 'es' or lang = 'en') order by t.created_at DESC LIMIT %s;"
-
-		parameters = list(topics)
-		parameters.append(limit)
-		try:
-			self.cur.execute(query, parameters)
+			self.cur.execute(query, [lista_id, ])
 			rows = self.cur.fetchall()
-			
-			return rows
+			retorno = {}
+			for row in rows:
+				retorno[row[0]] = 1
+
+			return retorno
 		except Exception, e:
+			print "error en getIDsTweetsEnTrain"
 			print str(e)
 			return False
 
@@ -274,7 +257,7 @@ class ConsultasGeneral(ConsultasSQL, ConsultasCassandra):
 			return False
 
 	def getTweetsIdBusquedaNoAnalizada(self, searchID):
-		query = "SELECT j.id_tweet FROM join_search_tweet as j WHERE j.id_search = %s AND j.id_tweet NOT IN (SELECT c.id_tweet from clasificaciontweets as c)"
+		query = "SELECT j.id_tweet FROM join_search_tweet as j WHERE j.id_search = %s AND j.id_tweet NOT IN (SELECT c.id_tweet from clasificaciontweets as c);"
 		try:
 			self.cur.execute(query, [searchID, ])
 			rows = self.cur.fetchall()
@@ -286,7 +269,7 @@ class ConsultasGeneral(ConsultasSQL, ConsultasCassandra):
 			return False
 
 	def getTweetsIdBusquedaTodos(self, searchID):
-		query = "SELECT j.id_tweet FROM join_search_tweet as j WHERE j.id_search = %s"
+		query = "SELECT j.id_tweet FROM join_search_tweet as j WHERE j.id_search = %s;"
 		try:
 			self.cur.execute(query, [searchID, ])
 			rows = self.cur.fetchall()
@@ -298,7 +281,7 @@ class ConsultasGeneral(ConsultasSQL, ConsultasCassandra):
 			return False
 
 	def getSearchIDFromIDTarea(self, idTarea):
-		query = """SELECT id_search FROM tareas_programadas WHERE id = %s"""
+		query = """SELECT id_search FROM tareas_programadas WHERE id = %s;"""
 		try:
 			self.cur.execute(query, [idTarea, ])
 			row = self.cur.fetchone()
@@ -310,7 +293,7 @@ class ConsultasGeneral(ConsultasSQL, ConsultasCassandra):
 			return False
 
 	def insertTweetAnalizado(self, id_tweet, clase):
-		query = """INSERT INTO clasificaciontweets (id_tweet, clase) VALUES (%s, %s)"""
+		query = """INSERT INTO clasificaciontweets (id_tweet, clase) VALUES (%s, %s);"""
 		try:
 			self.cur.execute(query, [id_tweet, clase])
 			self.conn.commit()
@@ -334,7 +317,7 @@ class ConsultasGeneral(ConsultasSQL, ConsultasCassandra):
 			return False
 
 	def getIdListaEntrenamientoByIDSearch(self, id_search):
-		query = """SELECT id_lista_entrenamiento FROM tareas_programadas WHERE id_search = %s"""
+		query = """SELECT id_lista_entrenamiento FROM tareas_programadas WHERE id_search = %s;"""
 		try:
 			self.cur.execute(query, [id_search, ])
 			row = self.cur.fetchone()

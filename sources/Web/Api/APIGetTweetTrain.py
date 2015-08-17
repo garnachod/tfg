@@ -10,13 +10,15 @@ class APIGetTweetTrain(object):
 		self.consultas = ConsultasWeb()
 
 	def toString(self):
-
 		isAleat = request.form['aleat']
 		search = request.form['search']
-		if isAleat is None or search is None:
+		#lista de entrenamiento
+		lista_id = request.form['lista']
+		
+		if isAleat is None or search is None or lista_id is None:
 			retorno = {"status":"false"}
 			return json.dumps(retorno)
-		elif isAleat is '' or search is '':
+		elif isAleat is '' or search is '' or lista_id is '':
 			retorno = {"status":"false"}
 			return json.dumps(retorno)
 
@@ -25,13 +27,21 @@ class APIGetTweetTrain(object):
 		else:
 			isAleat = False
 
-		lista_keywords = search.replace(", ", ",").split(",")
+		#se debe comprobar que es suya y valida, la lista
+		if self.consultas.isListasEntrenamientoFromUser(session['user_id'], lista_id) == False:
+			retorno = {"status":"false"}
+			return json.dumps(retorno)
+
+
+
+		#deprecated solo SQL, se mueve el funcionamineto a la base de datos
+		#lista_keywords = search.replace(", ", ",").split(",")
 
 		limit = 1
 		if isAleat == True:
 			limit = 1000
 
-		rows = self.consultas.getIDsTweetsTrain(lista_keywords, limit)
+		rows = self.consultas.getIDsTweetsTrain(search, limit, lista_id)
 		if rows == False or len(rows) == 0:
 				retorno = {"status":"false"}
 				return json.dumps(retorno)
@@ -41,7 +51,7 @@ class APIGetTweetTrain(object):
 			identificador = randint(0,len(rows)-1)
 
 		
-		tweetRow = self.consultas.getTweetIDLarge(rows[identificador][0])
+		tweetRow = self.consultas.getTweetByIDLarge(rows[identificador][0])
 		if tweetRow == False:
 				retorno = {"status":"false"}
 				return json.dumps(retorno)
@@ -51,7 +61,7 @@ class APIGetTweetTrain(object):
 		retorno = {"status":"true", "tweets" : []}
 
 		tweet = {}
-		tweet['text'] = str(tweetRow[0])
+		tweet['text'] = tweetRow[0]
 		tweet['fav'] = str(tweetRow[1])
 		tweet['rt'] = str(tweetRow[2])
 		tweet['is_rt'] = str(tweetRow[3])

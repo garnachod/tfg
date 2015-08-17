@@ -71,3 +71,98 @@ class ConsultasSQL(object):
 		except Exception, e:
 			print str(e)
 			return False
+
+	def getTweetStatusSQL(self, identificador):
+		query = "SELECT status FROM tweets WHERE id_twitter = %s;"
+		try:
+			self.cur.execute(query, [identificador, ])
+			row = self.cur.fetchone()
+
+			return row[0]
+		except Exception, e:
+			print str(e)
+			return False
+
+
+	def getTweetByIDLargeSQL(self, identificador):
+		query = """SELECT t.status, t.favorite_count, t.retweet_count, t.is_retweet, t.media_url, u.screen_name 
+				   FROM tweets as t, users as u 
+				   WHERE t.id_twitter = %s and t.tuser = u.id_twitter LIMIT 1;"""
+		try:
+			self.cur.execute(query, [identificador, ])
+			row = self.cur.fetchone()
+
+			return row
+		except Exception, e:
+			print str(e)
+			return False
+
+
+	def getTweetsTopicsSQL(self, topics):
+		#SELECT * from tweets WHERE status LIKE '%beta%' or status LIKE '%@garnachod%'
+
+		query = "SELECT t.status, t.favorite_count, t.retweet_count, t.is_retweet, t.media_url, u.screen_name "
+		query += "FROM tweets as t, users as u "
+		query += "WHERE ("
+		i = 0
+		for topic in topics:
+			if " " in topic:
+				subtopics = topic.split(" ")
+				topics[i] = '%'
+				for subtopic in subtopics:
+					topics[i] += subtopic + '%'
+			else:
+				topics[i] = '%' + topic + '%'
+
+			if i == 0:
+				query += " status LIKE %s"
+			else:
+				query += " or status LIKE %s"
+			i = i + 1
+
+		query += "  ) and is_retweet is False and (lang = 'es' or lang = 'en') and t.tuser = u.id_twitter order by t.created_at DESC LIMIT 2000;"
+		print query
+		print topics
+		try:
+			self.cur.execute(query, topics)
+			rows = self.cur.fetchall()
+			
+			return rows
+		except Exception, e:
+			print str(e)
+			return False
+
+
+	def getIDsTweetsTrainSQL(self, topics, limit):
+		query = "SELECT t.id_twitter "
+		query += "FROM tweets as t "
+		query += "WHERE ("
+		i = 0
+		for topic in topics:
+			if " " in topic:
+				subtopics = topic.split(" ")
+				topics[i] = '%'
+				for subtopic in subtopics:
+					topics[i] += subtopic + '%'
+			else:
+				topics[i] = '%' + topic + '%'
+
+
+			if i == 0:
+				query += " status LIKE %s"
+			else:
+				query += " or status LIKE %s"
+			i = i + 1
+
+		query += "  ) and is_retweet = False and id_twitter not in (SELECT id_tweet FROM tweets_entrenamiento) and (lang = 'es' or lang = 'en') order by t.created_at DESC LIMIT %s;"
+
+		parameters = list(topics)
+		parameters.append(limit)
+		try:
+			self.cur.execute(query, parameters)
+			rows = self.cur.fetchall()
+			
+			return rows
+		except Exception, e:
+			print str(e)
+			return False
