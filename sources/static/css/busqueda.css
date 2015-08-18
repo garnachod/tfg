@@ -130,7 +130,8 @@
 
 .cont-user-img {
 	float: left;
-	width: 8%;
+	width: 6%;
+	margin-right: 1%;
 }
 
 .cont-user-img img{

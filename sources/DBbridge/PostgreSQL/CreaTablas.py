@@ -49,12 +49,20 @@ def crea_tablas():
             ');'
              )
     cur.execute(query)
+    conn.commit()
+
+def crea_tokens_count():
+    """Se ha visto que no se necesita indice (empeora el tiempo), al menos por ahora"""
+    conSql = ConexionSQL()
+    conn = conSql.getConexion()
+    cur = conSql.getCursor()
 
     query = ('DROP TABLE IF EXISTS tokens_count CASCADE;'
              'CREATE TABLE tokens_count('
              'id serial PRIMARY KEY, '
              'tiempo timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, '
              'id_token int REFERENCES twitter_tokens (id), '
+             'id_tipo_query int, '
              'simulado boolean DEFAULT false'
              ');'
              )
@@ -238,9 +246,11 @@ if __name__ == "__main__":
     debug = True
     if debug:
         crea_tabla_MLT()
+        crea_tokens_count()
     else:
         crea_tablas()
         temp_crea_tablas()
+        crea_tokens_count()
         crea_def_user()
         crea_tareas()
         crea_tabla_lista_entrenamiento()

@@ -6,16 +6,6 @@ var Tweet = {
 	fav:'',
 	media_url:'',
 
-	/*
-	{
-	    "rt": "12",
-	    "tuser": "vmwarehorizon",
-	    "is_rt": "False",
-	    "text": "We're super excited about our collaboration with @googlechrome @nvidia to bring high end workstation graphics to a Chromebook #vmworld",
-	    "fav": "11",
-	    "media": ""
-	}
-	*/
 	contructorFromJSON:function(tweet){
 		Tweet.rt = tweet.rt;
 		Tweet.twitter_user = tweet.tuser;
@@ -26,7 +16,16 @@ var Tweet = {
 		}
 		Tweet.texto = tweet.text;
 		Tweet.fav = tweet.fav;
-		Tweet.media_url = tweet.media;
+
+		Tweet.media_urls = tweet.media;
+		console.log(Tweet.media_urls);
+		if(Tweet.media_urls != '' && Tweet.media_urls != 'None'){
+
+			Tweet.media_urls = JSON.parse(Tweet.media_urls);
+		}else{
+			Tweet.media_urls = '';
+		}
+		Tweet.user_img = tweet.user_img;
 	},
 
 	toHTML:function(border){
@@ -48,7 +47,8 @@ var Tweet = {
 		cadena += '</span>';
 		cadena += '</div>';
 		//#tiene algún tipo de objeto multimedia
-		if (Tweet.media_url != ''){
+
+		if (Tweet.media_urls != ''){
 			cadena += Tweet.multimediaToHTML();
 		}
 		cadena += '</div>';
@@ -67,7 +67,7 @@ var Tweet = {
 	},
 	usrImgToHTML:function(){
 		var cadena = '<div class="cont-user-img">';
-		cadena += '<img src="static/img/tweetuser.png">';
+		cadena += '<img src="'+Tweet.user_img+'">';
 		cadena += '</div>';
 		return cadena;
 	},
@@ -103,19 +103,26 @@ var Tweet = {
 	multimediaToHTML:function(){
 
 		var cadena = '';
+		for (var i = 1; i <= 4; i++) {
+			
+			var key = 'photo_'+i;
+            //alert("Mine is " + i + "|" + item.title + "|" + item.key);
+            if(key in Tweet.media_urls){
+				cadena += '<div class="cont-multi">';
+				cadena += '<a href="'+ Tweet.media_urls[key] +'" target="_blank">';
+				cadena += '<div class="img_busqueda" style="background-image: url(\'';
+				//#http://pbs.twimg.com/media/BziK-yaIIAA1uW2.jpg
+				cadena += Tweet.media_urls[key];
+				cadena += '\');">';
+			
+				cadena += '</div>';
+				cadena += '</a>';
+				cadena += '</div>';
+			}else{
+				break;
+			}
+        };
 
-		if((Tweet.media_url.indexOf(".jpg") > -1) || (Tweet.media_url.indexOf(".png") > -1)){
-			cadena += '<div class="cont-multi">';
-			cadena += '<a href="'+ Tweet.media_url +'" target="_blank">';
-			cadena += '<div class="img_busqueda" style="background-image: url(\'';
-			//#http://pbs.twimg.com/media/BziK-yaIIAA1uW2.jpg
-			cadena += Tweet.media_url;
-			cadena += '\');">';
-		
-			cadena += '</div>';
-			cadena += '</a>';
-			cadena += '</div>';
-		}
 		return cadena;
 	},
 	limpiaTwitterUser : function(user){

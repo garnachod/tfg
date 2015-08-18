@@ -42,7 +42,7 @@ class ListarTweetsEntrenamiento(object):
 		mid = ''
 
 		if identificador == -1:
-			rows = self.consultas.getListasEntrenamiento()
+			rows = self.consultas.getListasEntrenamiento(session['user_id'])
 			mid += '<h3 style="text-align:  left;">Seleccionar lista de entrenamiento:</h3>'
 			if rows == False:
 				return 'ERR'

@@ -54,7 +54,7 @@ class EscritorTweetsCassandra(Escritor):
 						mediaTypeCount[media["type"]] = 1
 
 					mediaTag = media["type"] + "_" + str(mediaTypeCount[media["type"]])
-					mediaWrite[mediaTag] = media["media_url"]
+					mediaWrite[mediaTag] = media["media_url_https"]
 		#Geolocalizacion
 		longitud = 0.0
 		latitud = 0.0
@@ -116,16 +116,18 @@ class EscritorTweetsUsersCassandra(Escritor):
 		followers_count = data["followers_count"]
 		#created_at
 		created_at = datetime.datetime.strptime(data["created_at"], '%a %b %d %H:%M:%S +0000 %Y')
+		#url_img_user
+		url_img_user = data["profile_image_url_https"]
 
-		query = """INSERT INTO users (id_twitter, name, screen_name, created_at, followers, location)
-				   VALUES (%s, %s, %s, %s, %s,%s)
+		query = """INSERT INTO users (id_twitter, name, screen_name, created_at, followers, location, profile_img)
+				   VALUES (%s, %s, %s, %s, %s,%s,%s)
 				"""
 		try:
 			if self.asinc:
 				self.session.execute_async(query,
-					(identificador, name, screen_name, created_at, followers_count, location))
+					(identificador, name, screen_name, created_at, followers_count, location, url_img_user))
 			else:
 				self.session.execute(query,
-					(identificador, name, screen_name, created_at, followers_count, location))
+					(identificador, name, screen_name, created_at, followers_count, location, url_img_user))
 		except Exception, e:
 			print e

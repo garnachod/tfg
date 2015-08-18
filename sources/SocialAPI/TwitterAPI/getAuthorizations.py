@@ -12,16 +12,17 @@ class GetAuthorizations():
         self.cur = conSql.getCursor()
         self.limit = limit
 
-    def load_twitter_token(self):
+
+    def load_twitter_token(self, tipo_id):
         query = "SELECT id FROM twitter_tokens;"
         self.cur.execute(query)
         rows = self.cur.fetchall()
         for row in rows:
-            query = "INSERT INTO tokens_count (id_token, simulado) VALUES (%s, true);"
-            self.cur.execute(query, (row[0],))
+            query = "INSERT INTO tokens_count (id_token, id_tipo_query, simulado) VALUES (%s, %s,true);"
+            self.cur.execute(query, [row[0],tipo_id])
 
-        query = "SELECT id_token, count(id_token) as cuenta from (select * from tokens_count  where tiempo > current_timestamp - interval '15 minutes') as A  GROUP BY id_token order by cuenta Limit 1;"
-        self.cur.execute(query)
+        query = "SELECT id_token, count(id_token) as cuenta from (select id_token from tokens_count  where id_tipo_query = %s AND tiempo > current_timestamp - interval '15 minutes') as A  GROUP BY id_token order by cuenta Limit 1;"
+        self.cur.execute(query, [tipo_id, ])
         rows = self.cur.fetchall()
         for row in rows:
             self.id = row[0]
@@ -39,21 +40,21 @@ class GetAuthorizations():
             self.access_token_secret = row[4]
             self.oauth = row[5]
 
-    def add_query_to_key(self):
-        query = "INSERT INTO tokens_count (id_token) VALUES (%s)"
+    def add_query_to_key(self, tipo):
+        query = "INSERT INTO tokens_count (id_token, id_tipo_query) VALUES (%s,%s);"
         #comienzo de la transaccion
         self.cur.execute("BEGIN")    
-        self.cur.execute(query, (self.id,))
+        self.cur.execute(query, [self.id,tipo])
         self.cur.execute("COMMIT")
 
     def set_limit_api(self, limit):
         self.limit = limit
 
     #mira a ver cuantas consultas se han realizado con ese apik
-    def is_limit_api(self):
-        query = "SELECT count(id_token) as cuenta from (select * from tokens_count  where id_token = %s AND tiempo > current_timestamp - interval '15 minutes') as A  GROUP BY id_token"
+    def is_limit_api(self, tipo):
+        query = "SELECT count(id_token) as cuenta from (select id_token from tokens_count where id_token = %s AND id_tipo_query = %s AND tiempo > current_timestamp - interval '15 minutes') as A  GROUP BY id_token"
 
-        self.cur.execute(query, (self.id,))
+        self.cur.execute(query, [self.id, tipo])
         row = self.cur.fetchone()
         if int(row[0]) >= self.limit:
             return True

@@ -166,3 +166,25 @@ class ConsultasSQL(object):
 		except Exception, e:
 			print str(e)
 			return False
+
+	def getNumTweetsNoRTSQL(self):
+		query ="SELECT count(id_twitter) FROM tweets WHERE is_retweet = FALSE;"
+		try:
+			self.cur.execute(query)
+			num = self.cur.fetchone()[0]
+			
+			return num
+		except Exception, e:
+			print str(e)
+			return False
+
+	def getNumTweetsSiRT(self):
+		query ="SELECT count(id_twitter) FROM tweets WHERE is_retweet = TRUE;"
+		try:
+			self.cur.execute(query)
+			num = self.cur.fetchone()[0]
+			
+			return num
+		except Exception, e:
+			print str(e)
+			return False

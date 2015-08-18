@@ -10,7 +10,7 @@ if __name__ == '__main__':
 	escritorList.append(EscritorTweetsCassandra(-1))
 	recolector = RecolectorTweetsUser(escritorList)
 	tiempo_inicio = time()
-	recolector.recolecta("WillyrexYT")
+	recolector.recolecta("intel")
 	tiempo_fin = time()
 	print "tiempo recoleccion y escritura"
 	print  tiempo_fin - tiempo_inicio

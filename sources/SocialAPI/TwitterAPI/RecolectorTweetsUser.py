@@ -12,10 +12,12 @@ class RecolectorTweetsUser(Recolector):
 		self.authorizator = GetAuthorizations(300)
 		self.twitter = None
 		self.apoyo = ApoyoTwitter()
+		self.tipo_id = 1
 		self.inicializa()
+		
 
 	def inicializa(self):
-		self.authorizator.load_twitter_token()
+		self.authorizator.load_twitter_token(self.tipo_id)
 		api_key, access_token = self.authorizator.get_twython_token()
 		self.twitter = Twython(api_key, access_token=access_token)
 
@@ -37,7 +39,7 @@ class RecolectorTweetsUser(Recolector):
 			statuses = self.privateRealizaConsulta(query, maxi=maximo, mini=minimo)
 			#tiempo_api_fin = time()
 			#tiempo_api += tiempo_api_fin - tiempo_api_ini
-			self.authorizator.add_query_to_key()
+			
 
 			if len(statuses) == 0:
 				break
@@ -106,7 +108,7 @@ class RecolectorTweetsUser(Recolector):
 
 
 	def privateRealizaConsulta(self, query, maxi=0, mini=0):
-		if self.authorizator.is_limit_api():
+		if self.authorizator.is_limit_api(self.tipo_id):
 				return []
 
 		try:
@@ -119,6 +121,7 @@ class RecolectorTweetsUser(Recolector):
 			else:
 				retorno = self.twitter.get_user_timeline(screen_name=query, max_id=maxi, since_id=mini, count='200')
 
+			self.authorizator.add_query_to_key(self.tipo_id)
 			return retorno
 		except Exception, e:
 			print e

@@ -13,9 +13,10 @@ class RecolectorSeguidores(Recolector):
 		self.apoyo = ApoyoTwitter()
 		self.inicializa()
 		self.cursor = -1
+		self.tipo_id = 3
 
 	def inicializa(self):
-		self.authorizator.load_twitter_token()
+		self.authorizator.load_twitter_token(self.tipo_id)
 		api_key, access_token = self.authorizator.get_twython_token()
 		self.twitter = Twython(api_key, access_token=access_token)
 
@@ -43,12 +44,13 @@ class RecolectorSeguidores(Recolector):
 		self.escritor.escribe(arrayDatos)
 
 	def privateRealizaConsulta(self, query):
-		if self.authorizator.is_limit_api():
+		if self.authorizator.is_limit_api(self.tipo_id):
 				return []
 
 		try:
 			retorno = self.twitter.get_followers_list(screen_name=query, cursor=self.cursor, count='200')
-			
+			self.authorizator.add_query_to_key(self.tipo_id)
+
 			if retorno["users"] == []:
 				return []
 

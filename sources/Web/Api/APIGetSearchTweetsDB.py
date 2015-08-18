@@ -62,7 +62,7 @@ class APIGetSearchTweetsDB(object):
       if tipo_busqueda == 'suser':
          arrayTweets = self.consultas.getTweetsUsuario(search_string, use_max_id=useMaxID, max_id=max_id, limit=num_tweets)
       elif tipo_busqueda == 'topic':
-         arrayTweets = self.consultas.getTweetsUsuario(search_string, use_max_id=useMaxID, max_id=max_id, limit=num_tweets)
+         arrayTweets = self.consultas.getTweetsTopics(search_string, use_max_id=useMaxID, max_id=max_id, limit=num_tweets)
       else:
          return self.error()
 
@@ -74,9 +74,13 @@ class APIGetSearchTweetsDB(object):
          tweet['fav'] = str(row[1])
          tweet['rt'] = str(row[2])
          tweet['is_rt'] = str(row[3])
-         tweet['media'] = str(row[4])
+         if row[4] is None:
+            tweet['media'] = str(row[4])
+         else:
+            tweet['media'] = str(row[4]).replace("u'", "\"").replace("'","\"")
          tweet['tuser'] = str(row[5])
-
+         tweet['user_img'] = str(row[6])
+         tweet['id_tweet'] = str(row[7])
          retorno['tweets'].append(tweet)
             
 

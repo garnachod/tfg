@@ -9,6 +9,7 @@ def creaUsersTwitter(session):
              ', followers int'
              ', location varchar'
              ', created_at timestamp '
+             ', profile_img varchar'
              ', last_tweet_collected bigint);'
             )
     session.execute(query)
@@ -70,9 +71,8 @@ def creaIndexTweet(session):
     session.execute(query)
 
 def creaIndexTweetFecha(session):
-    pass
-    #query = "CREATE INDEX indx_created_at ON tweets (created_at);"
-    #session.execute(query)
+    query = "CREATE INDEX indx_orig_tweet ON tweets (orig_tweet);"
+    session.execute(query)
 
 
 def clean(session):
@@ -82,7 +82,7 @@ def clean(session):
 if __name__ == '__main__':
     cluster = Cluster()
     session = cluster.connect('twitter')
-    debug = False
+    debug = True
     if debug:
         creaIndexTweetFecha(session)
     else:

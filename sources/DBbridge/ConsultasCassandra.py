@@ -14,15 +14,17 @@ class ConsultasCassandra(object):
 		if user_id is None:
 			return []
 
-		Row = namedtuple('Row', 'status, favorite_count, retweet_count, orig_tweet, media_urls, screen_name')
+		user = self.getUserByIDShortCassandra(user_id)
+
+		Row = namedtuple('Row', 'status, favorite_count, retweet_count, orig_tweet, media_urls, screen_name, profile_img, id_twitter')
 		if use_max_id:
-			query = """SELECT status, favorite_count, retweet_count, orig_tweet, media_urls  FROM tweets WHERE tuser = %s AND id_twitter < %s ORDER BY id_twitter DESC LIMIT %s;"""
+			query = """SELECT status, favorite_count, retweet_count, orig_tweet, media_urls, id_twitter  FROM tweets WHERE tuser = %s AND id_twitter < %s ORDER BY id_twitter DESC LIMIT %s;"""
 
 			try:
 				retorno = blist([])
 				rows = self.session_cassandra.execute(query, [user_id, max_id, limit])
 				for row in rows:
-					nuevaFila = Row(row.status, row.favorite_count, row.retweet_count, row.orig_tweet, row.media_urls, twitterUser)
+					nuevaFila = Row(row.status, row.favorite_count, row.retweet_count, row.orig_tweet, row.media_urls, user.screen_name, user.profile_img, row.id_twitter)
 					retorno.append(nuevaFila)
 				return retorno
 			except Exception, e:
@@ -30,13 +32,13 @@ class ConsultasCassandra(object):
 				print e
 				return []
 		else:
-			query = """SELECT status, favorite_count, retweet_count, orig_tweet, media_urls FROM tweets WHERE tuser = %s ORDER BY id_twitter DESC LIMIT %s;"""
+			query = """SELECT status, favorite_count, retweet_count, orig_tweet, media_urls, id_twitter FROM tweets WHERE tuser = %s ORDER BY id_twitter DESC LIMIT %s;"""
 
 			try:
 				retorno = blist([])
 				rows = self.session_cassandra.execute(query, [user_id, limit])
 				for row in rows:
-					nuevaFila = Row(row.status, row.favorite_count, row.retweet_count, row.orig_tweet, row.media_urls, twitterUser)
+					nuevaFila = Row(row.status, row.favorite_count, row.retweet_count, row.orig_tweet, row.media_urls, user.screen_name, user.profile_img, row.id_twitter)
 					retorno.append(nuevaFila)
 				return retorno
 			except Exception, e:
@@ -102,7 +104,7 @@ class ConsultasCassandra(object):
 			return False
 
 	def getUserByIDShortCassandra(self, identificador):
-		query = """SELECT screen_name FROM users WHERE id_twitter = %s LIMIT 1;"""
+		query = """SELECT screen_name, profile_img FROM users WHERE id_twitter = %s LIMIT 1;"""
 		try:
 			rows = self.session_cassandra.execute(query, [identificador])
 			row = rows[0]
@@ -120,8 +122,8 @@ class ConsultasCassandra(object):
 			row = rows[0]
 			user = self.getUserByIDShortCassandra(row.tuser)
 
-			Row = namedtuple('Row', 'status, favorite_count, retweet_count, orig_tweet, media_urls, screen_name')
-			retorno = Row(row.status, row.favorite_count, row.retweet_count, row.orig_tweet, row.media_urls, user.screen_name)
+			Row = namedtuple('Row', 'status, favorite_count, retweet_count, orig_tweet, media_urls, screen_name, profile_img, id_twitter')
+			retorno = Row(row.status, row.favorite_count, row.retweet_count, row.orig_tweet, row.media_urls, user.screen_name, user.profile_img, row.id_twitter)
 			return retorno
 		except Exception, e:
 			print "getTweetByIDLargeCassandra"
@@ -129,14 +131,17 @@ class ConsultasCassandra(object):
 			return False
 
 	#TODO Problemas de seguridad?
-	def getTweetsTopicsCassandra(self, topics, limit=100):
-		query = "SELECT status, favorite_count, retweet_count, orig_tweet, media_urls, tuser FROM tweets WHERE lucene =\'{"
+	def getTweetsTopicsCassandra(self, topics, use_max_id=False, max_id=0, limit=100):
+		query = "SELECT status, favorite_count, retweet_count, orig_tweet, media_urls, tuser, id_twitter FROM tweets WHERE lucene =\'{"
+		if use_max_id:
+			query += "filter : {type:\"boolean\", must:["
+			query += "{type:\"range\", field:\"id_twitter\", upper: "+str(max_id)+", include_upper:false} ] },"
 		query += "query : {type:\"phrase\", field:\"status\", value:\""+topics+"\", slop:1}, "
 		query += "sort : {fields: [ {field:\"created_at\", reverse:true} ] }"
 		query += "}\' limit %s;"
 		
 
-		Row = namedtuple('Row', 'status, favorite_count, retweet_count, orig_tweet, media_urls, screen_name')
+		Row = namedtuple('Row', 'status, favorite_count, retweet_count, orig_tweet, media_urls, screen_name, profile_img, id_twitter')
 
 		try:
 			rows = self.session_cassandra.execute(query, [limit])
@@ -144,7 +149,7 @@ class ConsultasCassandra(object):
 			#JOIN
 			for row in rows:
 				user = self.getUserByIDShortCassandra(row.tuser)
-				fila = Row(row.status, row.favorite_count, row.retweet_count, row.orig_tweet, row.media_urls, user.screen_name)
+				fila = Row(row.status, row.favorite_count, row.retweet_count, row.orig_tweet, row.media_urls, user.screen_name, user.profile_img, row.id_twitter)
 				retorno.append(fila)
 			return retorno
 		except Exception, e:
@@ -156,7 +161,7 @@ class ConsultasCassandra(object):
 	def getIDsTweetsTrainCassandra(self, topics, limit):
 		query = "SELECT id_twitter FROM tweets WHERE lucene =\'{"
 		query += """filter : {type:\"boolean\", must:[
-                   {type:"match", field:"orig_tweet", value:0} ] },"""
+				   {type:"match", field:"orig_tweet", value:0} ] },"""
 		query += "query : {type:\"phrase\", field:\"status\", value:\""+topics+"\", slop:1} "
 		query += "}\' limit %s;"
 
@@ -167,6 +172,29 @@ class ConsultasCassandra(object):
 			print str(e)
 			return False
 
+	"""estadisticas"""
+	def getNumTweetsNoRTCassandra(self):
+		query ="SELECT count(*) FROM tweets WHERE orig_tweet = 0;"
+		try:
+			rows = self.session_cassandra.execute(query)
+
+			num = rows[0][0]
+			
+			return num
+		except Exception, e:
+			print str(e)
+			return False
+
+	def getNumTweetsSiRTCassandra(self):
+		query ="SELECT count(*) FROM tweets;"
+		try:
+			rows = self.session_cassandra.execute(query)
+			num = rows[0][0]
+			
+			return num - self.getNumTweetsNoRTCassandra()
+		except Exception, e:
+			print str(e)
+			return False
 
 	"""PRUEBAS"""
 	def getTweetsUserAndPrintFile(self, filename, twitterUser):
@@ -201,8 +229,13 @@ if __name__ == '__main__':
 	print consultas.getTweetByIDLargeCassandra(611207358266544128)
 	print "test de getTweetsTopicsCassandra"
 	print consultas.getTweetsTopicsCassandra("galletas")[0]
+	print consultas.getTweetsTopicsCassandra("galletas", use_max_id=True, max_id=631260309026553856, limit=100)[0]
 	print "test de getIDsTweetsTrainCassandra"
 	print consultas.getIDsTweetsTrainCassandra("galletas", 100)[0]
+	print "test de getNumTweetsNoRTCassandra"
+	print consultas.getNumTweetsNoRTCassandra()
+	print "test de getNumTweetsSiRTCassandra"
+	print consultas.getNumTweetsSiRTCassandra()
 
 
 	testCompleto = False

@@ -100,10 +100,10 @@ class ConsultasWeb(ConsultasGeneral):
 			return False
 
 
-	def getTweetsTopics(self, topics):
+	def getTweetsTopics(self, topics, use_max_id=False, max_id=0, limit=100):
 		#SELECT * from tweets WHERE status LIKE '%beta%' or status LIKE '%@garnachod%'
 		if self.cassandra_active:
-			return self.getTweetsTopicsCassandra(topics)
+			return self.getTweetsTopicsCassandra(topics, use_max_id, max_id, limit)
 		else:
 			return self.getTweetsTopicsSQL(topics)
 
@@ -199,26 +199,17 @@ class ConsultasWeb(ConsultasGeneral):
 
 	#seccion de estadisticas TODO Cassandra
 	def getNumTweetsNoRT(self):
-		query ="SELECT count(id_twitter) FROM tweets WHERE is_retweet = FALSE;"
-		try:
-			self.cur.execute(query)
-			num = self.cur.fetchone()[0]
-			
-			return num
-		except Exception, e:
-			print str(e)
-			return False
+		if self.cassandra_active:
+			return self.getNumTweetsNoRTCassandra()
+		else:
+			return self.getNumTweetsNoRTSQL()
+		
 
 	def getNumTweetsSiRT(self):
-		query ="SELECT count(id_twitter) FROM tweets WHERE is_retweet = TRUE;"
-		try:
-			self.cur.execute(query)
-			num = self.cur.fetchone()[0]
-			
-			return num
-		except Exception, e:
-			print str(e)
-			return False
+		if self.cassandra_active:
+			return self.getNumTweetsSiRTCassandra()
+		else:
+			return self.getNumTweetsSiRTSQL()
 
 	def getNumTweetsNoMedia(self):
 		query ="SELECT count(id_twitter) FROM tweets WHERE media_url is NULL and is_retweet = FALSE;"

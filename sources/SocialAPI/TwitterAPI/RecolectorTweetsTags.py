@@ -6,6 +6,7 @@ class RecolectorTweetsTags(RecolectorTweetsUser):
 	def __init__(self, escritor):
 		super(RecolectorTweetsTags, self).__init__(escritor)
 		self.authorizator.set_limit_api(450)
+		self.tipo_id = 2
 
 
 	def recolecta(self, query):
@@ -21,7 +22,7 @@ class RecolectorTweetsTags(RecolectorTweetsUser):
 			statuses = self.privateRealizaConsulta(query, maxi=maximo)
 			#tiempo_api_fin = time()
 			#tiempo_api += tiempo_api_fin - tiempo_api_ini
-			self.authorizator.add_query_to_key()
+			
 
 			if len(statuses) == 0:
 				break
@@ -60,7 +61,7 @@ class RecolectorTweetsTags(RecolectorTweetsUser):
 
 
 	def privateRealizaConsulta(self, query, maxi=0, mini=0):
-		if self.authorizator.is_limit_api():
+		if self.authorizator.is_limit_api(self.tipo_id):
 				return []
 
 		#try:
@@ -73,6 +74,7 @@ class RecolectorTweetsTags(RecolectorTweetsUser):
 		else:
 			retorno = self.twitter.search(q=query, max_id=maxi, since_id=mini, count='100')
 
+		self.authorizator.add_query_to_key(self.tipo_id)
 		return retorno["statuses"]
 		#except Exception, e:
 		#	print e
