@@ -7,6 +7,7 @@ class RecolectorTweetsTags(RecolectorTweetsUser):
 		super(RecolectorTweetsTags, self).__init__(escritor)
 		self.authorizator.set_limit_api(450)
 		self.tipo_id = 2
+		self.inicializa()
 
 
 	def recolecta(self, query):

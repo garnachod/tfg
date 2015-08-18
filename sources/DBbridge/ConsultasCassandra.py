@@ -132,10 +132,14 @@ class ConsultasCassandra(object):
 
 	#TODO Problemas de seguridad?
 	def getTweetsTopicsCassandra(self, topics, use_max_id=False, max_id=0, limit=100):
-		query = "SELECT status, favorite_count, retweet_count, orig_tweet, media_urls, tuser, id_twitter FROM tweets WHERE lucene =\'{"
+		query = "SELECT status, favorite_count, retweet_count, orig_tweet, media_urls, tuser, id_twitter, created_at FROM tweets WHERE lucene =\'{"
 		if use_max_id:
 			query += "filter : {type:\"boolean\", must:["
+			query += "{type:\"match\", field:\"orig_tweet\", value:0}, "
 			query += "{type:\"range\", field:\"id_twitter\", upper: "+str(max_id)+", include_upper:false} ] },"
+		else:
+			query += """filter : {type:\"boolean\", must:[
+				   {type:"match", field:"orig_tweet", value:0} ] },"""
 		query += "query : {type:\"phrase\", field:\"status\", value:\""+topics+"\", slop:1}, "
 		query += "sort : {fields: [ {field:\"created_at\", reverse:true} ] }"
 		query += "}\' limit %s;"

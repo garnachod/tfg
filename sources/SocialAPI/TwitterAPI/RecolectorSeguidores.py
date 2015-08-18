@@ -11,9 +11,10 @@ class RecolectorSeguidores(Recolector):
 		self.authorizator = GetAuthorizations(30)
 		self.twitter = None
 		self.apoyo = ApoyoTwitter()
+		self.tipo_id = 3
 		self.inicializa()
 		self.cursor = -1
-		self.tipo_id = 3
+		
 
 	def inicializa(self):
 		self.authorizator.load_twitter_token(self.tipo_id)
