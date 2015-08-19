@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from Cassandra.ConexionCassandra import ConexionCassandra
 from collections import namedtuple
 from blist import blist
@@ -49,7 +50,11 @@ class ConsultasCassandra(object):
 	def getUserIDByScreenNameCassandra(self, twitterUser):
 		query = """SELECT id_twitter FROM users WHERE screen_name = %s LIMIT 1;"""
 		try:
-			return long(self.session_cassandra.execute(query, [twitterUser])[0].id_twitter)
+			rows = self.session_cassandra.execute(query, [twitterUser])
+			if len(rows) == 0:
+				return None
+				
+			return long(rows[0].id_twitter)
 		except Exception, e:
 			print "getUserIDByScreenNameCassandra"
 			print e
@@ -116,7 +121,7 @@ class ConsultasCassandra(object):
 			return False
 
 	def getTweetByIDLargeCassandra(self, identificador):
-		query = """SELECT status, favorite_count, retweet_count, orig_tweet, media_urls, tuser FROM tweets WHERE id_twitter = %s LIMIT 1;"""
+		query = """SELECT status, favorite_count, retweet_count, orig_tweet, media_urls, tuser, id_twitter FROM tweets WHERE id_twitter = %s LIMIT 1;"""
 		try:
 			rows = self.session_cassandra.execute(query, [identificador])
 			row = rows[0]
@@ -178,7 +183,7 @@ class ConsultasCassandra(object):
 
 	"""estadisticas"""
 	def getNumTweetsNoRTCassandra(self):
-		query ="SELECT count(*) FROM tweets WHERE orig_tweet = 0;"
+		query ="SELECT count(*) FROM tweets WHERE orig_tweet = 0 LIMIT 100000;"
 		try:
 			rows = self.session_cassandra.execute(query)
 
@@ -190,7 +195,7 @@ class ConsultasCassandra(object):
 			return False
 
 	def getNumTweetsSiRTCassandra(self):
-		query ="SELECT count(*) FROM tweets;"
+		query ="SELECT count(*) FROM tweets LIMIT 100000;"
 		try:
 			rows = self.session_cassandra.execute(query)
 			num = rows[0][0]
@@ -230,9 +235,10 @@ if __name__ == '__main__':
 	print "inspecion de los metodos de row"
 	print "Es un namedtuple, por lo que haremos un join a mano"
 	print "test de getTweetByIDLargeCassandra"
-	print consultas.getTweetByIDLargeCassandra(611207358266544128)
+	print consultas.getTweetByIDLargeCassandra(631260309026553856)
 	print "test de getTweetsTopicsCassandra"
 	print consultas.getTweetsTopicsCassandra("galletas")[0]
+	print consultas.getTweetsTopicsCassandra("@WillyrexYT Esto es mi día a día")[0]
 	print consultas.getTweetsTopicsCassandra("galletas", use_max_id=True, max_id=631260309026553856, limit=100)[0]
 	print "test de getIDsTweetsTrainCassandra"
 	print consultas.getIDsTweetsTrainCassandra("galletas", 100)[0]
