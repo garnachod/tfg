@@ -14,6 +14,7 @@ class RecolectorTweetsUser(Recolector):
 		self.apoyo = ApoyoTwitter()
 		self.tipo_id = 1
 		self.inicializa()
+		#self.tiempos_por_escritor = {}
 		
 
 	def inicializa(self):
@@ -22,10 +23,6 @@ class RecolectorTweetsUser(Recolector):
 		self.twitter = Twython(api_key, access_token=access_token)
 
 	def recolecta(self, query):
-		#start_time = time()
-		#tiempo_baseDatos = 0
-		#tiempo_api = 0
-
 		arrayFinal = []
 		if query[0] == '@':
 			query = query[1:]
@@ -35,26 +32,19 @@ class RecolectorTweetsUser(Recolector):
 
 		cont = 0
 		while True:
-			#tiempo_api_ini = time()
 			statuses = self.privateRealizaConsulta(query, maxi=maximo, mini=minimo)
-			#tiempo_api_fin = time()
-			#tiempo_api += tiempo_api_fin - tiempo_api_ini
 			
-
 			if len(statuses) == 0:
 				break
 
 			for status in statuses:
 				arrayFinal.append(status)
 
-			#fin de for
 			maximo = self.getMinIDtweets(arrayFinal, query)
 			maximo -= 1
 			if len(arrayFinal) > 50:
-				#tiempo_baseDatos_ini = time()
 				self.guarda(arrayFinal)
-				#tiempo_baseDatos_fin = time()
-				#tiempo_baseDatos += tiempo_baseDatos_fin - tiempo_baseDatos_ini
+
 				auxMax = self.getMaxIDtweets(arrayFinal, query)
 				if auxMax > maximoGlobal:
 					maximoGlobal = auxMax
@@ -64,34 +54,34 @@ class RecolectorTweetsUser(Recolector):
 			
 
 			#limite de la api
-			if len(arrayFinal) > 3200:
+			if len(arrayFinal) >= 3200:
 				break
 
 		#fin del while
-		#tiempo_baseDatos_ini = time()
 		self.guarda(arrayFinal)
-		#tiempo_baseDatos_fin = time()
-		#tiempo_baseDatos += tiempo_baseDatos_fin - tiempo_baseDatos_ini
+		for tipo in self.tiempos_por_escritor:
+			print tipo + "\t" + str(self.tiempos_por_escritor[tipo])
+		
 		if maximoGlobal != 0:
 			self.apoyo.setLastUserTweet(query, maximoGlobal)
 
-		#elapsed_time = time() - start_time
-		#print("Elapsed time total: %0.10f seconds." % elapsed_time)
-		#print("Elapsed time DB: %0.10f seconds." % tiempo_baseDatos)
-		#print("Elapsed time API: %0.10f seconds." % tiempo_api)
-
 	def guarda(self, arrayDatos):
 		for escritor in self.escritores:
+			#medicion de tiempos
+			#tipo_escritor = escritor.__class__.__name__
+			#if tipo_escritor not in self.tiempos_por_escritor:
+			#	self.tiempos_por_escritor[tipo_escritor] = 0
+			#tiempo_inicio = time()
 			escritor.escribe(arrayDatos)
+			#self.tiempos_por_escritor[tipo_escritor] += time() - tiempo_inicio
 		
 
 	def getMinIDtweets(self, tweets, query):
 
 		minimo = long(10**20)
 		for tweet in tweets:
-			if tweet["user"]["screen_name"] == query:
-				if minimo > tweet["id"]:
-					minimo = tweet["id"]
+			if minimo > tweet["id"]:
+				minimo = tweet["id"]
 		if minimo == long(10**20):
 			return 0
 

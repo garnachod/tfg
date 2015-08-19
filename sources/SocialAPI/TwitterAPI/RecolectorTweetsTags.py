@@ -23,20 +23,15 @@ class RecolectorTweetsTags(RecolectorTweetsUser):
 			statuses = self.privateRealizaConsulta(query, maxi=maximo)
 			#tiempo_api_fin = time()
 			#tiempo_api += tiempo_api_fin - tiempo_api_ini
-			
-
 			if len(statuses) == 0:
 				break
 
 			for status in statuses:
-				#parseo del retorno a array de objetos que entiende el escritor
-				arrayTemporal = self.privateParseaStatus(status)
-
-				for tweet in arrayTemporal:
-					arrayFinal.append(tweet)
-			#fin de for
+				arrayFinal.append(status)
+			
 			maximo = self.getMinIDtweets(arrayFinal, query)
-			maximo -= 1
+			if maximo != 0:
+				maximo -= 1
 			if len(arrayFinal) > 100:
 				#tiempo_baseDatos_ini = time()
 				self.guarda(arrayFinal)
@@ -46,8 +41,9 @@ class RecolectorTweetsTags(RecolectorTweetsUser):
 				arrayFinal = []
 				
 			#limite puesto por defecto
-			if cont > 2000:
+			if cont > 4000:
 				break
+
 
 		#fin del while
 		#tiempo_baseDatos_ini = time()

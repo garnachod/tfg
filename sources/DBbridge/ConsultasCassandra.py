@@ -9,6 +9,9 @@ class ConsultasCassandra(object):
 	def __init__(self):
 		super(ConsultasCassandra, self).__init__()
 		self.session_cassandra = ConexionCassandra().getSession()
+
+		#contiene identificador y valor
+		self.memoria_temporal = {}
 		
 	def getTweetsUsuarioCassandra(self, twitterUser, use_max_id=False, max_id=0, limit=1000):
 		user_id = self.getUserIDByScreenNameCassandra(twitterUser)
@@ -53,7 +56,7 @@ class ConsultasCassandra(object):
 			rows = self.session_cassandra.execute(query, [twitterUser])
 			if len(rows) == 0:
 				return None
-				
+
 			return long(rows[0].id_twitter)
 		except Exception, e:
 			print "getUserIDByScreenNameCassandra"
@@ -67,7 +70,11 @@ class ConsultasCassandra(object):
 			if len(rows) == 0:
 				return 0
 
-			return long(rows[0].last_tweet_collected)
+			ltc = rows[0].last_tweet_collected
+			if ltc is None:
+				return 0
+
+			return long(ltc)
 		except Exception, e:
 			print "getLastTweetCollectedScreenNameCassandra"
 			print e
@@ -181,15 +188,29 @@ class ConsultasCassandra(object):
 			print str(e)
 			return False
 
+	def getAllTweetsNoRtStatusCassandra(self):
+		query = "SELECT status FROM tweets WHERE orig_tweet = 0;"
+
+		try:
+			return self.session_cassandra.execute(query)
+		except Exception, e:
+			print "getAllTweetsStatusCassandra"
+			print e
+
 	"""estadisticas"""
 	def getNumTweetsNoRTCassandra(self):
-		query ="SELECT count(*) FROM tweets WHERE orig_tweet = 0 LIMIT 100000;"
+		identificador_memoria = "getNumTweetsNoRTCassandra"
+		if identificador_memoria in self.memoria_temporal:
+			return self.memoria_temporal[identificador_memoria]
+
+		query ="SELECT id_twitter FROM tweets WHERE orig_tweet = 0;"
 		try:
 			rows = self.session_cassandra.execute(query)
-
-			num = rows[0][0]
-			
-			return num
+			contador = 0
+			for row in rows:
+				contador += 1
+			self.memoria_temporal[identificador_memoria] = contador
+			return contador
 		except Exception, e:
 			print str(e)
 			return False
@@ -205,6 +226,8 @@ class ConsultasCassandra(object):
 			print str(e)
 			return False
 
+
+	"""Fin estadisticas"""
 	"""PRUEBAS"""
 	def getTweetsUserAndPrintFile(self, filename, twitterUser):
 		"""obtiene los tweets y los imprime en un fichero para que se puedan hacer pruebas con los textos"""
