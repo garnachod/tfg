@@ -1,4 +1,5 @@
 import psycopg2
+from Config.Conf import Conf
 
 class ConexionSQL(): 
 	"""docstring for ConexionSQL"""
@@ -8,7 +9,8 @@ class ConexionSQL():
 
 		def __init__(self):
 			#self.conn = psycopg2.connect(database="twitter", user="usrtwitter", password="postgres_tfg", host="localhost")
-			self.conn = psycopg2.connect(database="twitter", user="tfg", password="postgres_tfg", host="localhost")
+			infoSQL = Conf().getSQLInfo()
+			self.conn = psycopg2.connect(database=infoSQL.database, user=infoSQL.user, password=infoSQL.password, host=infoSQL.host)
 
 		def getConexion(self):
 			""" Test method, return singleton conexion"""

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#Para prueba unitarias
 import os
 import sys
 lib_path = os.path.abspath('/home/dani/tfg/sources')
@@ -36,21 +37,63 @@ class ConsultasCassandraSpark(object):
 
 	#no_media , si_media
 	def getNumTweetsMediaCS(self):
-		query ="SELECT media_urls FROM tweets;"
+		query ="SELECT media_urls, orig_tweet FROM tweets;"
 		try:
 
 			rows = self.session_cassandra.execute(query)
 
 			rows_paralelas = self.sc.parallelize(rows)
-			filtro_si_media = lambda x: 1 if x[0] is not None else 0
-			filtro_no_media = lambda x: 0 if x[0] is not None else 1
+			filtro_si_media = lambda x: 1 if x[0] is not None and x[1] == 0 else 0
+			filtro_no_media = lambda x: 1 if x[0] is None and x[1] == 0 else 0
 			reduce_f = lambda x, y: x + y
 			return rows_paralelas.map(filtro_no_media).reduce(reduce_f), rows_paralelas.map(filtro_si_media).reduce(reduce_f)
 			
 		except Exception, e:
 			print str(e)
 			return False
+	#no_media, si_media
+	def getAverageRTMediaCS(self):
+		query = "SELECT media_urls, retweet_count, orig_tweet FROM tweets;"
 
+		try:
+			rows = self.session_cassandra.execute(query)
+			rows_paralelas = self.sc.parallelize(rows)
+			filtro_si_media = lambda x: x[1] if x[0] is not None and x[2] == 0 else 0
+			filtro_no_media = lambda x: x[1] if x[0] is None and x[2] == 0 else 0
+			filtro_si_media_total = lambda x: 1 if x[0] is not None and x[2] == 0 else 0
+			filtro_no_media_total = lambda x: 1 if x[0] is None and x[2] == 0 else 0
+			reduce_f = lambda x, y: x + y
+
+			total_si_media = float(rows_paralelas.map(filtro_si_media_total).reduce(reduce_f))
+			total_no_media = float(rows_paralelas.map(filtro_no_media_total).reduce(reduce_f))
+
+			return rows_paralelas.map(filtro_no_media).reduce(reduce_f)/total_no_media, rows_paralelas.map(filtro_si_media).reduce(reduce_f)/total_si_media
+
+		except Exception, e:
+			print str(e)
+			return False
+
+	#no_media, si_media
+	def getAverageRTMediaByIDUserCS(self, user_id):
+		query = "SELECT media_urls, retweet_count, orig_tweet FROM tweets WHERE tuser = %s;"
+
+		try:
+			rows = self.session_cassandra.execute(query, [user_id])
+			rows_paralelas = self.sc.parallelize(rows)
+			filtro_si_media = lambda x: x[1] if x[0] is not None and x[2] == 0 else 0
+			filtro_no_media = lambda x: x[1] if x[0] is None and x[2] == 0 else 0
+			filtro_si_media_total = lambda x: 1 if x[0] is not None and x[2] == 0 else 0
+			filtro_no_media_total = lambda x: 1 if x[0] is None and x[2] == 0 else 0
+			reduce_f = lambda x, y: x + y
+
+			total_si_media = float(rows_paralelas.map(filtro_si_media_total).reduce(reduce_f))
+			total_no_media = float(rows_paralelas.map(filtro_no_media_total).reduce(reduce_f))
+
+			return rows_paralelas.map(filtro_no_media).reduce(reduce_f)/total_no_media, rows_paralelas.map(filtro_si_media).reduce(reduce_f)/total_si_media
+
+		except Exception, e:
+			print str(e)
+			return False
 
 if __name__ == '__main__':
 	ccs = ConsultasCassandraSpark()
@@ -60,6 +103,10 @@ if __name__ == '__main__':
 	print tiempo_fin - tiempo_inicio
 	tiempo_inicio = time.time()
 	print ccs.getNumTweetsRTCS()
+	tiempo_fin = time.time()
+	print tiempo_fin - tiempo_inicio
+	tiempo_inicio = time.time()
+	print ccs.getAverageRTMediaCS()
 	tiempo_fin = time.time()
 	print tiempo_fin - tiempo_inicio
 	#time.sleep(200)

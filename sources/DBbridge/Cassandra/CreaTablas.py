@@ -70,9 +70,9 @@ def creaIndexTweet(session):
     query = "CREATE INDEX indx_id_twitter ON tweets (id_twitter);"
     session.execute(query)
 
+
 def creaIndexTweetFecha(session):
-    query = "CREATE INDEX indx_orig_tweet ON tweets (orig_tweet);"
-    session.execute(query)
+    pass
 
 
 def clean(session):
@@ -82,7 +82,7 @@ def clean(session):
 if __name__ == '__main__':
     cluster = Cluster()
     session = cluster.connect('twitter')
-    debug = True
+    debug = False
     if debug:
         creaIndexTweetFecha(session)
     else:

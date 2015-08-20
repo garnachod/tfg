@@ -1,4 +1,10 @@
 # -*- coding: utf-8 -*-
+#Para prueba unitarias
+import os
+import sys
+lib_path = os.path.abspath('/home/dani/tfg/sources')
+sys.path.append(lib_path)
+
 from Cassandra.ConexionCassandra import ConexionCassandra
 from collections import namedtuple
 from blist import blist
@@ -227,6 +233,15 @@ class ConsultasCassandra(object):
 	def getNumTweetsMediaCassandra(self):
 		return self.cassandra_spark.getNumTweetsMediaCS()
 
+	def getAverageRTMediaCassandra(self):
+		return self.cassandra_spark.getAverageRTMediaCS()
+
+	#no_media, si_media
+	def getAverageRTMediaByScreenNameCassandra(self, screen_name):
+		user_id = self.getUserIDByScreenNameCassandra(screen_name)
+		return self.cassandra_spark.getAverageRTMediaByIDUserCS(user_id)
+
+
 
 	"""Fin estadisticas"""
 	"""PRUEBAS"""
@@ -271,6 +286,8 @@ if __name__ == '__main__':
 	print consultas.getNumTweetsRTCassandra()
 	tiempo_fin = time.time()
 	print tiempo_fin - tiempo_inicio
+	print "test de getAverageRTMediaByScreenNameCassandra"
+	print consultas.getAverageRTMediaByScreenNameCassandra("WillyrexYT")
 
 
 	testCompleto = False

@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 import os
 import sys
-lib_path = os.path.abspath('/home/dani/spark/spark-1.4.0/python')
+from Config.Conf import Conf
+lib_path = os.path.abspath(Conf().getSparkHome() + '/python')
 sys.path.append(lib_path)
 from pyspark import SparkConf, SparkContext
+
 
 class SparkContexto():
 	"""docstring for SparkContexto"""
@@ -14,7 +16,7 @@ class SparkContexto():
 			 .setMaster("local[4]")
 			 .setAppName("My app")
 			 .set("spark.executor.memory", "100m")
-			 .setSparkHome('/home/dani/spark/spark-1.4.0/python'))
+			 .setSparkHome(Conf().getSparkHome()))
 			self.sc = SparkContext(conf = self.conf)
 
 		def getContexto(self):

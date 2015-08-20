@@ -1,3 +1,5 @@
+from collections import namedtuple
+
 class Conf():
 	"""docstring for SparkContexto"""
 	class __impl:
@@ -17,6 +19,13 @@ class Conf():
 
 		def getCassandraKeyspace(self):
 			return self.cassandra_keyspace
+
+		def getSparkHome(self):
+			return self.spark_home
+
+		def getSQLInfo(self):
+			infoSQL = namedtuple('InfoSQL', 'database, user, password, host')
+			return infoSQL(self.sql_database, self.sql_user, self.sql_password, self.sql_host)
 
 
 	# storage for the instance reference
