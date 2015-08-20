@@ -59,8 +59,8 @@ class RecolectorTweetsUser(Recolector):
 
 		#fin del while
 		self.guarda(arrayFinal)
-		for tipo in self.tiempos_por_escritor:
-			print tipo + "\t" + str(self.tiempos_por_escritor[tipo])
+		#for tipo in self.tiempos_por_escritor:
+		#	print tipo + "\t" + str(self.tiempos_por_escritor[tipo])
 		
 		if maximoGlobal != 0:
 			self.apoyo.setLastUserTweet(query, maximoGlobal)
