@@ -188,3 +188,51 @@ class ConsultasSQL(object):
 		except Exception, e:
 			print str(e)
 			return False
+
+	def getNumTweetsNoMediaSQL(self):
+		query ="SELECT count(id_twitter) FROM tweets WHERE media_url is NULL and is_retweet = FALSE;"
+		try:
+			self.cur.execute(query)
+			num = self.cur.fetchone()[0]
+			
+			return num
+		except Exception, e:
+			print str(e)
+			return False
+
+	def getNumTweetsSiMediaSQL(self):
+		query ="SELECT count(id_twitter) FROM tweets WHERE media_url is NOT NULL and is_retweet = FALSE;"
+		try:
+			self.cur.execute(query)
+			num = self.cur.fetchone()[0]
+			
+			return num
+		except Exception, e:
+			print str(e)
+			return False
+
+	def getTweetsEntrenamientoListarSQL(self, identificador):
+		query = """SELECT t.status, t.favorite_count, t.retweet_count, t.is_retweet, t.media_url, u.screen_name, t.id_twitter, te.clase 
+				FROM tweets as t, users as u, tweets_entrenamiento as te , listas_entrenamiento as li
+				WHERE te.clase != 'no_usar' and li.id = id_lista and li.id = %s and te.id_tweet = t.id_twitter and u.id_twitter = t.tuser order by te.id DESC;
+				"""
+		
+		try:
+			self.cur.execute(query, [identificador, ])
+			rows = self.cur.fetchall()
+			
+			return rows
+		except Exception, e:
+			print str(e)
+			return False
+
+	def getTweetsAndClassTrainSQL(self, id_lista):
+		query = "SELECT status, clase FROM tweets as t, tweets_entrenamiento as tw WHERE t.id_twitter = tw.id_tweet and tw.id_lista = %s and tw.clase != 'no_usar'"
+		try:
+			self.cur.execute(query, [id_lista, ])
+			rows = self.cur.fetchall()
+
+			return rows
+		except Exception, e:
+			print str(e)
+			return False

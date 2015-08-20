@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from WebPage import WebPage
 from DBbridge.ConsultasWeb import ConsultasWeb
 from UserHeader import UserHeader

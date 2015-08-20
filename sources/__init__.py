@@ -217,6 +217,7 @@ def listaEntrenamientoTweets():
 			else:
 				return listaTweetTrain_web.toString(int(request.args['id_lista']))
 		except Exception, e:
+			print e
 			return listaTweetTrain_web.toString()
 	else:
 		#si no se ha iniciado sesion redirige a la pagina principal

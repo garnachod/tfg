@@ -65,8 +65,13 @@ class APIGetTweetTrain(object):
 		tweet['fav'] = str(tweetRow[1])
 		tweet['rt'] = str(tweetRow[2])
 		tweet['is_rt'] = str(tweetRow[3])
-		tweet['media'] = str(tweetRow[4])
+		if tweetRow[4] is None:
+			tweet['media'] = str(tweetRow[4])
+		else:
+			tweet['media'] = str(tweetRow[4]).replace("u'", "\"").replace("'","\"")
 		tweet['tuser'] = str(tweetRow[5])
+		tweet['user_img'] = str(tweetRow[6])
+		tweet['id_tweet'] = str(tweetRow[7])
 
 		retorno['tweets'].append(tweet)
 

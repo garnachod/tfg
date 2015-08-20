@@ -2,14 +2,16 @@
 from Cassandra.ConexionCassandra import ConexionCassandra
 from collections import namedtuple
 from blist import blist
+from ConsultasCassandraSpark import ConsultasCassandraSpark
 import codecs
+import time
 
 class ConsultasCassandra(object):
 	"""docstring for ConsultasCassandra"""
 	def __init__(self):
 		super(ConsultasCassandra, self).__init__()
 		self.session_cassandra = ConexionCassandra().getSession()
-
+		self.cassandra_spark = ConsultasCassandraSpark()
 		#contiene identificador y valor
 		self.memoria_temporal = {}
 		
@@ -188,6 +190,27 @@ class ConsultasCassandra(object):
 			print str(e)
 			return False
 
+
+	def getTweetsEntrenamientoListarCassandra(self, identificadores):
+		# entrada [[id_tweet, clase], ...]
+		Row = namedtuple('Row', 'status, favorite_count, retweet_count, orig_tweet, media_urls, screen_name, profile_img, id_twitter, clase')
+
+		try:
+			retorno = []
+
+			for tweet_entrenamiento in identificadores:
+				tw = self.getTweetByIDLargeCassandra(tweet_entrenamiento[0])
+				row = Row(tw.status, tw.favorite_count, tw.retweet_count, tw.orig_tweet, 
+					tw.media_urls, tw.screen_name, tw.profile_img, tw.id_twitter,tweet_entrenamiento[1])
+
+				retorno.append(row)
+
+			print retorno
+			return retorno
+		except Exception, e:
+			print str(e)
+			return False
+
 	def getAllTweetsNoRtStatusCassandra(self):
 		query = "SELECT status FROM tweets WHERE orig_tweet = 0;"
 
@@ -198,33 +221,11 @@ class ConsultasCassandra(object):
 			print e
 
 	"""estadisticas"""
-	def getNumTweetsNoRTCassandra(self):
-		identificador_memoria = "getNumTweetsNoRTCassandra"
-		if identificador_memoria in self.memoria_temporal:
-			return self.memoria_temporal[identificador_memoria]
+	def getNumTweetsRTCassandra(self):
+		return self.cassandra_spark.getNumTweetsRTCS()
 
-		query ="SELECT id_twitter FROM tweets WHERE orig_tweet = 0;"
-		try:
-			rows = self.session_cassandra.execute(query)
-			contador = 0
-			for row in rows:
-				contador += 1
-			self.memoria_temporal[identificador_memoria] = contador
-			return contador
-		except Exception, e:
-			print str(e)
-			return False
-
-	def getNumTweetsSiRTCassandra(self):
-		query ="SELECT count(*) FROM tweets LIMIT 100000;"
-		try:
-			rows = self.session_cassandra.execute(query)
-			num = rows[0][0]
-			
-			return num - self.getNumTweetsNoRTCassandra()
-		except Exception, e:
-			print str(e)
-			return False
+	def getNumTweetsMediaCassandra(self):
+		return self.cassandra_spark.getNumTweetsMediaCS()
 
 
 	"""Fin estadisticas"""
@@ -265,10 +266,11 @@ if __name__ == '__main__':
 	print consultas.getTweetsTopicsCassandra("galletas", use_max_id=True, max_id=631260309026553856, limit=100)[0]
 	print "test de getIDsTweetsTrainCassandra"
 	print consultas.getIDsTweetsTrainCassandra("galletas", 100)[0]
-	print "test de getNumTweetsNoRTCassandra"
-	print consultas.getNumTweetsNoRTCassandra()
-	print "test de getNumTweetsSiRTCassandra"
-	print consultas.getNumTweetsSiRTCassandra()
+	tiempo_inicio = time.time()
+	print "test de getNumTweetsRTCassandra"
+	print consultas.getNumTweetsRTCassandra()
+	tiempo_fin = time.time()
+	print tiempo_fin - tiempo_inicio
 
 
 	testCompleto = False

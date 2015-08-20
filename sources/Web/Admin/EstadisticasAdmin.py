@@ -29,7 +29,7 @@ class EstadisticasAdmin(WebPageAdmin):
 
 		mid += '''
 					<div class="contenedor-estadistica contenedor-pie">	
-					<p class="titulo-estadistica">Número de Tweets</p>
+					<p class="titulo-estadistica">Número de Tweets son RT</p>
 						<div id="canvas-holder">
 							<canvas id="chart-numTweetsRT" width="300" height="300"/>
 						</div>
@@ -92,13 +92,14 @@ class EstadisticasAdmin(WebPageAdmin):
 
 		objJson = []
 		objJson.append({})
-		objJson[0]["value"] = self.consultas.getNumTweetsNoRT()
+		no_rt, si_rt = self.consultas.getNumTweetsRT()
+		objJson[0]["value"] = no_rt
 		objJson[0]["color"] = '#949FB1'
 		objJson[0]["highlight"] = '#A8B3C5'
 		objJson[0]["label"] = 'Tweets que nos son RT'
 
 		objJson.append({})
-		objJson[1]["value"] = self.consultas.getNumTweetsSiRT()
+		objJson[1]["value"] = si_rt
 		objJson[1]["color"] = '#46BFBD'
 		objJson[1]["highlight"] = '#5AD3D1'
 		objJson[1]["label"] = 'Tweets que son RT'
@@ -119,13 +120,14 @@ class EstadisticasAdmin(WebPageAdmin):
 
 		objJson = []
 		objJson.append({})
-		objJson[0]["value"] = self.consultas.getNumTweetsNoMedia()
+		no_media , si_media = self.consultas.getNumTweetsMedia()
+		objJson[0]["value"] = no_media
 		objJson[0]["color"] = '#949FB1'
 		objJson[0]["highlight"] = '#A8B3C5'
 		objJson[0]["label"] = 'No tienen Multimedia'
 
 		objJson.append({})
-		objJson[1]["value"] = self.consultas.getNumTweetsSiMedia()
+		objJson[1]["value"] = si_media
 		objJson[1]["color"] = '#46BFBD'
 		objJson[1]["highlight"] = '#5AD3D1'
 		objJson[1]["label"] = 'Tienen Multimedia'

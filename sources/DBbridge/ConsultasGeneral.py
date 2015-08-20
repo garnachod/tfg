@@ -2,6 +2,7 @@ from PostgreSQL.ConexionSQL import ConexionSQL
 from Cassandra.ConexionCassandra import ConexionCassandra
 from ConsultasSQL import ConsultasSQL
 from ConsultasCassandra import ConsultasCassandra
+from collections import namedtuple
 
 class ConsultasGeneral(ConsultasSQL, ConsultasCassandra): 
 	"""docstring for ConsultasGeneral"""
@@ -82,16 +83,32 @@ class ConsultasGeneral(ConsultasSQL, ConsultasCassandra):
 			print str(e)
 			return False
 
-	def getTweetsAndClassTrain(self, id_lista):
-		query = "SELECT status, clase FROM tweets as t, tweets_entrenamiento as tw WHERE t.id_twitter = tw.id_tweet and tw.id_lista = %s and tw.clase != 'no_usar'"
-		try:
-			self.cur.execute(query, [id_lista, ])
-			rows = self.cur.fetchall()
+	def getIDsANDClassEntrenamiento(self, identificador_lista):
+		query = "SELECT id_tweet, clase FROM tweets_entrenamiento WHERE id_lista = %s AND clase != 'no_usar';"
 
+		try:
+			self.cur.execute(query, [identificador_lista, ])
+			rows = self.cur.fetchall()
+			
 			return rows
 		except Exception, e:
 			print str(e)
 			return False
+
+	def getTweetsAndClassTrain(self, id_lista):
+		if self.cassandra_active:
+			Row = namedtuple('Row', 'status, clase')
+			tweets = self.getIDsANDClassEntrenamiento(id_lista)
+			retorno = []
+			for tweet in tweets:
+				status = self.getTweetStatusCassandra(tweet[0])
+				row = Row(status, tweet[1])
+				retorno.append(row)
+
+			return retorno
+		else:
+			return self.getTweetsAndClassTrainSQL(id_lista)
+
 
 	def creaListaEntrenamiento(self, nombre, id_usuario):
 		query = """INSERT INTO listas_entrenamiento (nombre, id_username) VALUES (%s, %s)"""

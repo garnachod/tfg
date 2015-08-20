@@ -83,21 +83,13 @@ class ConsultasWeb(ConsultasGeneral):
 	def getTweetByID(self, identificador):
 		pass
 
-	#TODO Cassandra 
+
 	def getTweetsEntrenamientoListar(self, identificador):
-		query = """SELECT t.status, t.favorite_count, t.retweet_count, t.is_retweet, t.media_url, u.screen_name, t.id_twitter, te.clase 
-				FROM tweets as t, users as u, tweets_entrenamiento as te , listas_entrenamiento as li
-				WHERE te.clase != 'no_usar' and li.id = id_lista and li.id = %s and te.id_tweet = t.id_twitter and u.id_twitter = t.tuser order by te.id DESC;
-				"""
-		
-		try:
-			self.cur.execute(query, [identificador, ])
-			rows = self.cur.fetchall()
-			
-			return rows
-		except Exception, e:
-			print str(e)
-			return False
+		if self.cassandra_active:
+			#necesita una lista de tweets con la clase
+			return self.getTweetsEntrenamientoListarCassandra(self.getIDsANDClassEntrenamiento(identificador))
+		else:
+			return self.getTweetsEntrenamientoListarSQL(identificador)
 
 
 	def getTweetsTopics(self, topics, use_max_id=False, max_id=0, limit=100):
@@ -197,42 +189,21 @@ class ConsultasWeb(ConsultasGeneral):
 			print str(e)
 			return False
 
-	#seccion de estadisticas TODO Cassandra
-	def getNumTweetsNoRT(self):
+	#seccion de estadisticas
+	def getNumTweetsRT(self):
 		if self.cassandra_active:
-			return self.getNumTweetsNoRTCassandra()
+			return self.getNumTweetsRTCassandra()
 		else:
-			return self.getNumTweetsNoRTSQL()
+			return self.getNumTweetsNoRTSQL(), self.getNumTweetsSiRTSQL()
 		
 
-	def getNumTweetsSiRT(self):
+	def getNumTweetsMedia(self):
 		if self.cassandra_active:
-			return self.getNumTweetsSiRTCassandra()
+			return self.getNumTweetsMediaCassandra()
 		else:
-			return self.getNumTweetsSiRTSQL()
+			return self.getNumTweetsSiMediaSQL() , self.getNumTweetsNoMedia()
 
-	def getNumTweetsNoMedia(self):
-		query ="SELECT count(id_twitter) FROM tweets WHERE media_url is NULL and is_retweet = FALSE;"
-		try:
-			self.cur.execute(query)
-			num = self.cur.fetchone()[0]
-			
-			return num
-		except Exception, e:
-			print str(e)
-			return False
-
-	def getNumTweetsSiMedia(self):
-		query ="SELECT count(id_twitter) FROM tweets WHERE media_url is NOT NULL and is_retweet = FALSE;"
-		try:
-			self.cur.execute(query)
-			num = self.cur.fetchone()[0]
-			
-			return num
-		except Exception, e:
-			print str(e)
-			return False
-
+	#seccion de estadisticas continuacion TODO Cassandra
 	def getPorcentajeFalloTrainTweets(self):
 		query = "SELECT porcentaje_fallo FROM entrenamientos WHERE tipo = 'tweet' order by fecha DESC LIMIT 1"
 		try:

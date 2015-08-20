@@ -37,7 +37,7 @@ class LanzarEntrenamiento(object):
 
 		mid = '<h3 style="text-align: left;" >Lanzar entrenamiento Tweets</h3>'
 
-		rows = self.consultas.getListasEntrenamiento()
+		rows = self.consultas.getListasEntrenamiento(session['user_id'])
 		for row in rows:
 			mid += '<p><a class="boton-general" href="/lanzar_entrenamientos?id_entr='+str(row[0])+'">' + row[1] +'</a></p>'
 

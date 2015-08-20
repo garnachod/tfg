@@ -19,8 +19,8 @@ class EntrenamientoTweets(object):
 		identificador = self.consultas.creaEntrenamientoRetID("tweet", id_lista_entrenamiento)
 		if identificador == -1:
 			return 'ERR'
-		ficheroARFF = "MachineLearning/historial_entrenamiento/tweet_" + str(identificador) + ".arff"
-		ficheroJSON = "MachineLearning/historial_entrenamiento/tweet_" + str(identificador) + ".json"
+		ficheroARFF = "sources/MachineLearning/historial_entrenamiento/tweet_" + str(identificador) + ".arff"
+		ficheroJSON = "sources/MachineLearning/historial_entrenamiento/tweet_" + str(identificador) + ".json"
 		self.lanzarPrivate(identificador, ficheroARFF, ficheroJSON, id_lista_entrenamiento)
 
 

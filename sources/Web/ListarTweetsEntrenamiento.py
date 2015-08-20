@@ -25,7 +25,7 @@ class ListarTweetsEntrenamiento(object):
 		self.head.activaMenu()
 
 	def toString(self, identificador = -1):
-		cadena = '<!DOCTYPE html>\n<html>'
+		cadena = "<!DOCTYPE html>\n<html>"
 		cadena += self.head.toString()
 
 		cadena += '<body>'
@@ -52,6 +52,9 @@ class ListarTweetsEntrenamiento(object):
 				link = '/ver_entrena_tweets?id_lista=' + str(row[0])
 				mid += '<p><a href="'+link+'" class="boton-general">' + row[1] + '</a></p>'
 		else:
+			############################
+			# TODO esa lista es del usuario?
+			############################
 			tweets = self.consultas.getTweetsEntrenamientoListar(identificador)
 			mid += '<h3 style="text-align:  left;">tweets</h3>'
 			if tweets == False:
@@ -61,7 +64,7 @@ class ListarTweetsEntrenamiento(object):
 				clase = self.privateTweetDBGetClass(tweet)
 				if clase == 'no_relevante':
 					mid += '<div id="'+ str(self.privateTweetDBGetId(tweet))+ '" class="no_relevante">'
-					mid += Tweet.imprimeTweett(tweet, False)
+					mid += Tweet.imprimeTweett(tweet, False)			
 					mid += '<div style="text-align:center;">'
 					mid += '<a href="javascript:votar.cambiarVotoID('+str(self.privateTweetDBGetId(tweet)) +')" class="boton-general" style="margin-bottom: 10px;">Cambiar voto</a>'
 					mid += '</div>'
@@ -74,13 +77,13 @@ class ListarTweetsEntrenamiento(object):
 					mid += '</div>'
 					mid += '</div>'
 
-
-		cadena += SupportWeb.addGeneralStructureMid(mid)
-
+		mid = str(SupportWeb.addGeneralStructureMid(mid).encode('utf8'))
+		cadena_fin = cadena + mid
+		
 		menu = self.head.getMenuInstance()
-		cadena += menu.toStringContenido()
-		cadena += '</body></html>'
-		return cadena
+		cadena_fin += menu.toStringContenido()
+		cadena_fin += '</body></html>'
+		return cadena_fin
 
 
 	def privateTweetDBGetClass(self, tweet):

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from Head import Head
 class WebPage(object):
 	"""docstring for WebPage"""

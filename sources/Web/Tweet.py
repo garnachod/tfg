@@ -27,6 +27,7 @@ class Tweet(object):
 			else:
 				cadena += palabra + " "
 
+
 		cadena += '</div>'
 		cadena += '<div class="contenedor-rf">'
 		cadena += '<span class="fav-count">'
@@ -86,6 +87,9 @@ class Tweet(object):
 	@staticmethod
 	def imprimeTweettMedia(media):
 		cadena = ''
+
+		if media is None:
+			return cadena
 
 		if '.jpg' in media or '.png' in media:
 			cadena += '<div class="cont-multi">'
