@@ -1,4 +1,5 @@
 from cassandra.cluster import Cluster
+from Config.Conf import Conf
 
 class ConexionCassandra(): 
 	"""docstring for ConexionCassandra"""
@@ -9,7 +10,7 @@ class ConexionCassandra():
 		def __init__(self):
 			#self.conn = psycopg2.connect(database="twitter", user="usrtwitter", password="postgres_tfg", host="localhost")
 			cluster_cass = Cluster()
-			self.session = cluster_cass.connect('twitter')
+			self.session = cluster_cass.connect(Conf().getCassandraKeyspace())
 
 		def getSession(self):
 			""" Test method, return singleton conexion"""
