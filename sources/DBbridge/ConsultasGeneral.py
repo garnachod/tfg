@@ -380,3 +380,24 @@ class ConsultasGeneral(ConsultasSQL, ConsultasCassandra):
 			return self.setLastTweetCollectedScreenNameCassandra(screen_name, maximo)
 		else:
 			return self.setLastTweetCollectedScreenNameSQL(screen_name, maximo)
+
+
+	def getQueryFromSearchID(self, searchID):
+		query = "SELECT search_string FROM app_searches where id = %s;"
+		try:
+			self.cur.execute(query, [searchID, ])
+			row = self.cur.fetchone()
+
+			return row[0]
+		except Exception, e:
+			print str(e)
+			return False
+
+	def getUserIDByScreenName(self, twitterUser):
+		if twitterUser[0] == '@':
+			twitterUser = twitterUser[1:]
+
+		if self.cassandra_active:
+			return self.getUserIDByScreenNameCassandra(twitterUser)
+		else:
+			return self.getUserIDByScreenNameSQL(twitterUser)

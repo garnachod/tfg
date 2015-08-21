@@ -71,15 +71,6 @@ class ConsultasWeb(ConsultasGeneral):
 			return self.getTweetsUsuarioSQL(twitterUser, use_max_id, max_id, limit)
 
 
-	def getUserIDByScreenName(self, twitterUser):
-		if twitterUser[0] == '@':
-			twitterUser = twitterUser[1:]
-
-		if self.cassandra_active:
-			return self.getUserIDByScreenNameCassandra(twitterUser)
-		else:
-			return self.getUserIDByScreenNameSQL(twitterUser)
-
 	def getTweetByID(self, identificador):
 		pass
 
