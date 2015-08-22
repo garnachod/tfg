@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from DBbridge.ConsultasWeb import ConsultasWeb
 from UserHeader import UserHeader
-from flask import Flask, session, request
+from flask import session, request
 from Head import Head
 from MenuSlide import MenuSlide
 from SupportWeb import SupportWeb

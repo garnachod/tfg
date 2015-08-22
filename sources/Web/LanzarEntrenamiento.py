@@ -5,7 +5,7 @@ from UserHeader import UserHeader
 from DBbridge.ConsultasWeb import ConsultasWeb
 from MachineLearning.EntrenamientoTweets import EntrenamientoTweets
 from MachineLearning.EntrenamientoTweets import EntrenamientoTweets_ASINC
-from flask import Flask, session
+from flask import session
 from SupportWeb import SupportWeb
 import json
 

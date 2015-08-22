@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask import Flask, session, request, redirect
+from flask import session, request, redirect
 from Head import Head
 from DBbridge.ConsultasWeb import ConsultasWeb
 import hashlib

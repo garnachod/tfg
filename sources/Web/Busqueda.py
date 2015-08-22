@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask import Flask, session, request, redirect
+from flask import session, request, redirect
 from Head import Head
 from UserHeader import UserHeader
 from DBbridge.ConsultasWeb import ConsultasWeb
@@ -53,6 +53,10 @@ class Busqueda(WebPageMenu):
 		cadena += '</div>'
 
 		cadena += '<div id="tweets" style="text-align:left;">'
+		cadena += '</div>'
+
+		cadena += '<div>'
+		cadena += '<a href="" id="cargar-mas" class="boton-cargar-mas">Cargar más</a>'
 		cadena += '</div>'
 
 		return SupportWeb.addGeneralStructureMid(cadena)

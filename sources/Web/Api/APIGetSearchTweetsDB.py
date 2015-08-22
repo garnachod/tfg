@@ -16,14 +16,15 @@ class APIGetSearchTweetsDB(object):
       search_id = request.form['search_id']
       usr_id = session['user_id']
       num_tweets = request.form['num_tweets']
-      print num_tweets
+      #print num_tweets
       tipo_busqueda = request.form['tipo_busqueda']
 
       
       if 'max_id' in request.form:
-         max_id = request.form['max_id']
+         max_id = long(request.form['max_id'])
+         if max_id == 0:
+            max_id = None
       else:
-
           max_id = None
       
       usr_id = session['user_id']
@@ -46,7 +47,7 @@ class APIGetSearchTweetsDB(object):
          useMaxID = False
 
       if num_tweets is not None:
-         try:
+         try: 
             num_tweets = int(num_tweets)
          except Exception, e:
             return self.error()

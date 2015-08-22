@@ -163,3 +163,19 @@ h3{
 	margin-right: auto;
 }
 
+.boton-cargar-mas{
+	width: 100%;
+	background-color: #0A8A8A;
+	color: #FFFFFF;
+	margin-top: 30px;
+	padding: 10px 0px;
+	display:inline-block;
+	text-decoration: none;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+}
+
+.boton-cargar-mas:hover{
+	background-color: #095e59;
+}

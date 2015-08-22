@@ -2,6 +2,10 @@ jQuery( document ).ready(function( $ ) {
 // Code using $ as usual goes here.
 	busqueda.inicializa();
 	busqueda.doSearchSinc();
+	$('#cargar-mas').click(function(event){
+		event.preventDefault();
+		busqueda.doSearchSinc();
+	});
 });
 
 
@@ -12,6 +16,7 @@ var allTweets = {
 	numTweetsShow: 0,
 	numTweetsSinc: 0,
 	numTweetsASinc: 0,
+	min_id: 0,
 	frame: null,
 
 	inicializa:function(){
@@ -25,6 +30,13 @@ var allTweets = {
 			allTweets.numTweetsSinc++;
 			Tweet.contructorFromJSON(tweets[i]);
 			$('#tweets').append(Tweet.toHTML(true));
+			id_tweet = tweets[i].id_tweet;
+
+			if(allTweets.min_id == 0){
+				allTweets.min_id = id_tweet;
+			}else if (allTweets.min_id > id_tweet) {
+				allTweets.min_id = id_tweet;
+			}
 		};
 	},
 	pushTweetsAsinc:function(tweets){
@@ -33,6 +45,9 @@ var allTweets = {
 			allTweets.listTweetsASinc.push(tweets[i]);
 			allTweets.numTweetsASinc++;
 		};
+	},
+	getMenorIdTweetsSinc:function(){
+		return allTweets.min_id;
 	}
 
 };
@@ -42,6 +57,7 @@ var busqueda = {
 	urlSearchAsinc: '',
 	urlSearchSinc: '',
 	progressBar:null,
+	active_cargar_mas:false,
 
 
 	inicializa: function(){
@@ -57,6 +73,7 @@ var busqueda = {
     		strokeWidth: 3,
     	
 		});
+		busqueda.active_cargar_mas = true;
 	},
 	doSearchAsinc:function(){
 		busqueda.progressBar.set(0);
@@ -76,22 +93,23 @@ var busqueda = {
 	},
 
 	doSearchSinc:function(){
-		if(lastTweet == -1){
-			var consulta = $.post(
-				busqueda.urlSearchSinc,
-				{
-					num_tweets: 100,
-					tipo_busqueda: tipo,
-					search_id: searchID
-				},
-				busqueda.onSuccesSinc, "json");
-		}else{
-
+		if(!busqueda.active_cargar_mas){
+			return;
 		}
+	
+		var consulta = $.post(
+			busqueda.urlSearchSinc,
+			{
+				num_tweets: 50,
+				tipo_busqueda: tipo,
+				search_id: searchID,
+				max_id:allTweets.getMenorIdTweetsSinc()
+			},
+			busqueda.onSuccesSinc, "json");
+		busqueda.active_cargar_mas = false;
 		consulta.fail(busqueda.onFail);
 		
 	},
-
 	onSucces: function(data){
 		console.log('post done');
 		if(data.status == "true"){
@@ -111,6 +129,7 @@ var busqueda = {
 	onSuccesSinc: function(data){
 		console.log('post done');
 		if(data.status == "true"){
+			busqueda.active_cargar_mas = true;
 			var tweets = data.tweets;
 			allTweets.pushTweetsSinc(tweets);
 

@@ -18,9 +18,10 @@ class SparkContexto():
 			 .set("spark.executor.memory", "100m")
 			 .setSparkHome(Conf().getSparkHome()))
 			self.sc = SparkContext(conf = self.conf)
-
+			
 		def getContexto(self):
 			return self.sc
+			#return None
 
 
 	# storage for the instance reference

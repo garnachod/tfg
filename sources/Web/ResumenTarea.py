@@ -4,7 +4,7 @@ from MenuSlide import MenuSlide
 from UserHeader import UserHeader
 from DBbridge.ConsultasWeb import ConsultasWeb
 from MachineLearning.ClasificadorTweets import ClasificadorTweets
-from flask import Flask, session
+from flask import session
 from Tweet import Tweet
 from SupportWeb import SupportWeb
 from WebPageMenu import WebPageMenu

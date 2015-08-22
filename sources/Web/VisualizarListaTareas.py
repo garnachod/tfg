@@ -3,7 +3,7 @@ from Head import Head
 from MenuSlide import MenuSlide
 from UserHeader import UserHeader
 from DBbridge.ConsultasWeb import ConsultasWeb
-from flask import Flask, session
+from flask import session
 from SupportWeb import SupportWeb
 from WebPageMenu import WebPageMenu
 

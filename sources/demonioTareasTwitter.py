@@ -21,12 +21,12 @@ class App():
 
         self.stdin_path = '/dev/null'
 
-        self.stdout_path = '/dev/tty'
+        #self.stdout_path = '/dev/tty'
 
-        self.stderr_path = '/dev/tty'
-        #self.stdout_path = '/dev/null'
+        #self.stderr_path = '/dev/tty'
+        self.stdout_path = '/dev/null'
 
-        #self.stderr_path = '/dev/null'
+        self.stderr_path = '/dev/null'
 
         #Se define la ruta del archivo pid del demonio.
 

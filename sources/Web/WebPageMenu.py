@@ -2,7 +2,7 @@
 from WebPage import WebPage
 from DBbridge.ConsultasWeb import ConsultasWeb
 from UserHeader import UserHeader
-from flask import Flask, session
+from flask import session
 
 class WebPageMenu(WebPage):
 	"""docstring for WebPageMenu"""

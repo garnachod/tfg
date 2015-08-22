@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask import Flask, session, request, redirect
+from flask import session, request, redirect
 from Web.Api.APIGetTweetTrain import APIGetTweetTrain 
 from Web.Api.APISetTweetTrain import APISetTweetTrain
 from Web.Api.APIGetSearchTweetsDB import APIGetSearchTweetsDB
