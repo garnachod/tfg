@@ -1,9 +1,9 @@
 from TareaAnalisisPalabrasK import TareaAnalisisPalabrasK
 from DBbridge.ConsultasGeneral import ConsultasGeneral
 from DBbridge.EscritorTweets import EscritorTweets
-from DBbridge.ConexionSQL import ConexionSQL
+from DBbridge.EscritorTweetsCassandra import EscritorTweetsCassandra
+from DBbridge.EscritorBusquedaTweets import EscritorBusquedaTweets
 from SocialAPI.TwitterAPI.RecolectorTweetsUser import RecolectorTweetsUser
-from SocialAPI.TwitterAPI.RecolectorTweetsTags import RecolectorTweetsTags
 from MachineLearning.ClasificadorTweets import ClasificadorTweets
 
 
@@ -15,9 +15,15 @@ class TareaAnalisisPalabrasUsr(TareaAnalisisPalabrasK):
 
 	def doSearch(self):
 		cadenaBusqueda, user_id = self.consultas.getBusquedaFromIdBusqueda(self.search_id)
+		
 		escritorList = []
-		escritorList.append(EscritorTweets(self.searchID))
-		escritorList.append(EscritorBusquedaTweets(self.searchID))
+		if self.cassandra_active:
+			escritorList.append(EscritorTweetsCassandra(self.search_id))
+		else:
+			escritorList.append(EscritorTweets(self.search_id))
+		escritorList.append(EscritorBusquedaTweets(self.search_id))
+
 		recolector = RecolectorTweetsUser(escritorList)
 		recolector.recolecta(cadenaBusqueda)
+
 		return True
