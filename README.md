@@ -5,7 +5,8 @@ Aplicación web:
 * Clasificación Automática
 * Estadisticas sencillas
 
-##### Arrancar el sistema
+##### Arrancar el sistema (Pff si alguien quiere hacerlo que me pregunte)
+#### No Actualizado
 * Cambiar la información de conexión en DBbrige/ConexionSQL.py
 * Ejecutar DBbrige/CreaTablas.py se crea un usuario por defecto, se puede cambiar si no se conoce la contraseña
 	* En test hay un fichero para crear la hash de la contraseña
@@ -25,22 +26,20 @@ Aplicación web:
 	* Tiene análisis de grafos
 	* pagerank <- https://github.com/apache/spark/blob/master/examples/src/main/python/pagerank.py
 
-* Neo4j <- base de datos, centrada en grafos (SIGUENTE PASO)
-	* interesante si no se desea crear o usar una herramienta de visualización de grafos(Brown Dispatching)
-
-* visualización de grafos:
-	* por ejemplo...
-	* http://arborjs.org/
-	* http://sigmajs.org/
+* Neo4j <- base de datos, centrada en grafos (Funcionando 22 Agosto)
+	* Se va a usar una libreria de visualización de grafos JS
+		* por ejemplo...
+		* http://arborjs.org/
+		* http://sigmajs.org/
+	* Va algo lento en las inserciones
 
 * Mejores clasificadores para texto:
 	* Que le follen a tf-idf, Paragraph vector (doc2vec) + lo que sea
 
 
-* Búsquedas en tiempo real al estilo TweetDeck pero con clasificación automática.(MUY IMPORTANTE)
+* Búsquedas en tiempo real al estilo TweetDeck pero con clasificación automática.(MUY IMPORTANTE) (Siguente paso :-( JavaScriptCaca)
 
-
-##Posibles puntos (menos probables o al menos complicados de integrar):
+##Posibles puntos (Poco a poco...):
 * clasificación de imágenes <- CAFFE
 * clasificación de sentimientos <- http://nlp.stanford.edu/sentiment/code.html
 * clasificación de sentimientos <- https://github.com/nltk/nltk/wiki/Sentiment-Analysis
