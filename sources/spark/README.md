@@ -12,3 +12,9 @@
 
 ## Testeamos que todo haya salido bien
 * ./bin/run-example SparkPi 10
+
+
+## Variable del sistema
+* sudo gedit /etc/profile
+* export SPARK_HOME=/home/dani/spark/spark-1.4.0
+* export PATH=$PATH:$SPARK_HOME

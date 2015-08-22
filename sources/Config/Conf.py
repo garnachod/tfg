@@ -16,6 +16,8 @@ class Conf():
 			self.abspath = '/home/dani/tfg/sources'
 			#SPARK
 			self.spark_home = '/home/dani/spark/spark-1.4.0'
+			#Neo4j
+			self.neo4j_password = 'tfg_neo4j'
 
 		def getCassandraKeyspace(self):
 			return self.cassandra_keyspace
@@ -26,6 +28,9 @@ class Conf():
 		def getSQLInfo(self):
 			infoSQL = namedtuple('InfoSQL', 'database, user, password, host')
 			return infoSQL(self.sql_database, self.sql_user, self.sql_password, self.sql_host)
+
+		def  getNeo4jPassword(self):
+			return self.neo4j_password
 
 
 	# storage for the instance reference

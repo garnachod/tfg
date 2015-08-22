@@ -6,3 +6,15 @@
 * apt-get install install neo4j
 * pip install py2neo
 
+## Pasos a continuacion
+* Abrir el buscador
+* http://localhost:7474
+* te pedirá cambiar la contraseña
+* Ya se puede usar si cambias la contraseña en Config/Conf.py
+
+## Pintar el grafo
+* MATCH (n) return n
+
+
+## Ejemplo de visualización
+![Alt text](../DesignImages/graph.png?raw=true "Diseño de clases")

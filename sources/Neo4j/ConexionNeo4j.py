@@ -1,4 +1,5 @@
 from py2neo import Graph,authenticate
+from Config.Conf import Conf
 
 class ConexionNeo4j(object):
 	"""docstring for ConexionNeo4j"""
@@ -9,7 +10,7 @@ class ConexionNeo4j(object):
 		def __init__(self):
 			#remote_graph = Graph("http://remotehost.com:6789/db/data/")
 			#secure_graph = Graph("https://arthur:excalibur@camelot:1150/db/data/")
-			authenticate("localhost:7474", "neo4j", "tfg_neo4j")
+			authenticate("localhost:7474", "neo4j", Conf().getNeo4jPassword())
 			self.graph = Graph()
 			
 		def getGraph(self):
