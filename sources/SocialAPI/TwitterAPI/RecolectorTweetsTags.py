@@ -5,7 +5,7 @@ class RecolectorTweetsTags(RecolectorTweetsUser):
 	"""docstring for RecolectorTweetsTags"""
 	def __init__(self, escritor):
 		super(RecolectorTweetsTags, self).__init__(escritor)
-		self.authorizator.set_limit_api(450)
+		self.authorizator.set_limit_api(430)
 		self.tipo_id = 2
 		self.inicializa()
 
@@ -41,7 +41,7 @@ class RecolectorTweetsTags(RecolectorTweetsUser):
 				arrayFinal = []
 				
 			#limite puesto por defecto
-			if cont > 4000:
+			if cont > 2000:
 				break
 
 

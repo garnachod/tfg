@@ -95,6 +95,19 @@ class ConsultasCassandraSpark(object):
 			print str(e)
 			return False
 
+	def getTweetContainsTextCS(self, text):
+		query = "SELECT status, orig_tweet FROM tweets;"
+
+		try:
+			rows = self.session_cassandra.execute(query)
+			rows_paralelas = self.sc.parallelize(rows)
+			filtro_si_text = lambda x: [x[0]] if text in x[0] and x[1] == 0 else []
+		
+			return rows_paralelas.flatMap(filtro_si_text).collect()
+		except Exception, e:
+			print str(e)
+			return False
+
 if __name__ == '__main__':
 	ccs = ConsultasCassandraSpark()
 	tiempo_inicio = time.time()
@@ -109,6 +122,12 @@ if __name__ == '__main__':
 	print ccs.getAverageRTMediaCS()
 	tiempo_fin = time.time()
 	print tiempo_fin - tiempo_inicio
+	tiempo_inicio = time.time()
+	print ccs.getTweetContainsTextCS(':-(')
+	tiempo_fin = time.time()
+	print tiempo_fin - tiempo_inicio
+	#for item in ccs.getTweetContainsText(':-('):
+	#	print item
 	#time.sleep(200)
 	exit()
 	"""

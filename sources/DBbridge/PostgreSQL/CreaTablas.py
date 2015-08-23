@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
+import os
+import sys
+lib_path = os.path.abspath('../../')
+sys.path.append(lib_path)
 from ConexionSQL import ConexionSQL
+
 
 def crea_tablas():
     conSql = ConexionSQL()
@@ -245,7 +250,7 @@ def crea_tablas_close():
 if __name__ == "__main__":
     debug = True
     if debug:
-        crea_tabla_MLT()
+        #crea_tabla_MLT()
         crea_tokens_count()
     else:
         crea_tablas()
