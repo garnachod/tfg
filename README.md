@@ -5,15 +5,18 @@ Aplicación web:
 * Clasificación Automática
 * Estadisticas sencillas
 
-##### Arrancar el sistema (Pff si alguien quiere hacerlo que me pregunte)
-#### No Actualizado
-* Cambiar la información de conexión en DBbrige/ConexionSQL.py
-* Ejecutar DBbrige/CreaTablas.py se crea un usuario por defecto, se puede cambiar si no se conoce la contraseña
+#### Arrancar el sistema
+##### Actualizado (23 Agosto)
+* Cambiar la información de conexiones en Config/Conf.py
+* Ejecutar DBbrige/PostgreSQL/CreaTablas.py se crea un usuario por defecto (que hay que editar)
 	* En test hay un fichero para crear la hash de la contraseña
+* Ejecutar DBbrige/Cassandra/CreaTablas.py
+* Ejecutar Neo4j/CreaRelaciones.py
 * Arrancar la aplicación con runserver.py
 * Poner en el navegador localhost:5000
 * Iniciar sesión con el usuario por defecto
 * En la interfaz de administrador, introducir una apiKey de twitter
+* Ir a demonio si se necesita el Daemon de tareas en segundo plano para más info
 
 
 #TFM
