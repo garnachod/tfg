@@ -15,7 +15,7 @@ class Conf():
 			#app
 			self.abspath = '/home/dani/tfg/sources'
 			#SPARK
-			self.spark_home = '/home/dani/spark/spark-1.4.0'
+			self.spark_home = '/home/dani/spark-1.4.0'
 			#Neo4j
 			self.neo4j_password = 'tfg_neo4j'
 

@@ -226,6 +226,9 @@ class ConsultasCassandra(object):
 			print "getAllTweetsStatusCassandra"
 			print e
 
+	def getAllTweetsNoRtStatusFiltrLangCassandra(self, lang):
+		return self.cassandra_spark.getAllTweetsNoRtStatusFiltrLangCS(lang)
+
 	"""estadisticas"""
 	def getNumTweetsRTCassandra(self):
 		return self.cassandra_spark.getNumTweetsRTCS()

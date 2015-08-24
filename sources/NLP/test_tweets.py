@@ -39,7 +39,7 @@ if __name__ == '__main__':
 
 	total_start = time.time()
 
-	dbow = True
+	dbow = False
 	if dbow:
 		model = Doc2Vec(min_count=1, window=10, size=dimension, sample=1e-3, negative=5, dm=0 ,workers=6, alpha=0.04)
 		

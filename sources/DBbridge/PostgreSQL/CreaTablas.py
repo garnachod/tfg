@@ -248,7 +248,7 @@ def crea_tablas_close():
 	conn.close()
 
 if __name__ == "__main__":
-    debug = True
+    debug = False
     if debug:
         #crea_tabla_MLT()
         crea_tokens_count()

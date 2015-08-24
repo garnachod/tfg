@@ -12,7 +12,7 @@ import time
 import random
 
 
-def guardaYBusca():
+def guarda():
 	lista_descarga = [':-)', ':)',':-(', ':(']
 	random.shuffle(lista_descarga)
 	escritorList = []
@@ -25,36 +25,37 @@ def guardaYBusca():
 	print "Tiempo recolección:"
 	print time.time() - tiempo_rec
 
+def buscaDB():
 	cs = ConsultasCassandraSpark()
 	fOut_pos = codecs.open("tweets_pos.txt", "w", "utf-8")
 	fOut_neg = codecs.open("tweets_neg.txt", "w", "utf-8")
 
-	for tweet in cs.getTweetContainsTextCS(':-)'):
+	for tweet in cs.getTweetContainsTextAndLangCS(':-)', 'es'):
 		tweet = tweet.replace("\n", ".")
 		fOut_pos.write(tweet)
 		fOut_pos.write("\n")
 
-	for tweet in cs.getTweetContainsTextCS(':)'):
+	for tweet in cs.getTweetContainsTextAndLangCS(':)', 'es'):
 		tweet = tweet.replace("\n", ".")
 		fOut_pos.write(tweet)
 		fOut_pos.write("\n")
 
-	for tweet in cs.getTweetContainsTextCS(';)'):
+	for tweet in cs.getTweetContainsTextAndLangCS(';)', 'es'):
 		tweet = tweet.replace("\n", ".")
 		fOut_pos.write(tweet)
 		fOut_pos.write("\n")
 
-	for tweet in cs.getTweetContainsTextCS(':-('):
+	for tweet in cs.getTweetContainsTextAndLangCS(':-(', 'es'):
 		tweet = tweet.replace("\n", ".")
 		fOut_neg.write(tweet)
 		fOut_neg.write("\n")
 
-	for tweet in cs.getTweetContainsTextCS(':('):
+	for tweet in cs.getTweetContainsTextAndLangCS(':(', 'es'):
 		tweet = tweet.replace("\n", ".")
 		fOut_neg.write(tweet)
 		fOut_neg.write("\n")
 
-	for tweet in cs.getTweetContainsTextCS(';('):
+	for tweet in cs.getTweetContainsTextAndLangCS(';(', 'es'):
 		tweet = tweet.replace("\n", ".")
 		fOut_neg.write(tweet)
 		fOut_neg.write("\n")
@@ -64,8 +65,10 @@ def guardaYBusca():
 
 if __name__ == '__main__':
 	
-	for i in range(20):
+	for i in range(120):
 		print i
-		guardaYBusca()
+		guarda()
 		print "Esperando para la siguente ejecucion 5 minutos:"
 		time.sleep(60*5)
+
+	#buscaDB()

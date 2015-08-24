@@ -3,7 +3,7 @@ from gensim.models.doc2vec import TaggedDocument
 from gensim.models import Doc2Vec
 
 if __name__ == '__main__':
-	palabra_compara = "minecraft"
+	palabra_compara = "juego"
 	model = Doc2Vec.load('tweet_dm.d2v')
 	tuplas = model.most_similar(positive=[palabra_compara], topn=50)
 

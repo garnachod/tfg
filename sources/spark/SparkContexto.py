@@ -13,9 +13,9 @@ class SparkContexto():
 		"""docstring for __impl"""
 		def __init__(self):
 			self.conf = (SparkConf()
-			 .setMaster("local[4]")
+			 .setMaster("local[6]")
 			 .setAppName("My app")
-			 .set("spark.executor.memory", "100m")
+			 .set("spark.executor.memory", "1g")
 			 .setSparkHome(Conf().getSparkHome()))
 			self.sc = SparkContext(conf = self.conf)
 			
