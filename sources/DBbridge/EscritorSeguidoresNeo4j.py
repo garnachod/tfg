@@ -1,6 +1,6 @@
 from Escritor import Escritor
 from Neo4j.ConexionNeo4j import ConexionNeo4j
-from py2neo import Node, Relationship
+from py2neo import Node, Relationship, cypher
 from ConsultasGeneral import ConsultasGeneral
 import time 
 
@@ -10,8 +10,11 @@ class EscritorSeguidoresNeo4j(Escritor):
 		super(EscritorSeguidoresNeo4j, self).__init__(searchID)
 		self.graph = ConexionNeo4j().getGraph()
 		self.consultas = ConsultasGeneral()
+
 		
 	def escribe(self, data):
+		nodos_crear = []
+		relaciones_crear = []
 		## datos y filtros antes de realizar las escrituras
 		query = self.consultas.getQueryFromSearchID(self.searchID)
 		if query == False:
@@ -20,42 +23,44 @@ class EscritorSeguidoresNeo4j(Escritor):
 		if query[0] == "@":
 			query = query[1:]
 
-		user_id = self.consultas.getUserIDByScreenName(query)
+		user_id = -1
+		try:
+			user_id = long(query)
+			print user_id
+		except Exception, e:
+			user_id = self.consultas.getUserIDByScreenName(query)
 		
 		if user_id == -1 or user_id is None:
 			return
+		
 		##################################################
 		## usuario a crear relaciones
-		user_node = self.graph.find_one('user',
-                             property_key='id_twitter',
-                             property_value=user_id)
-		if user_node is None:
-			try:
-				user_node = Node("user", id_twitter=user_id)
-				self.graph.create(user_node)
-			except Exception, e:
-				print e
+		nodos_crear.append(user_id)
+		
 		################################
 		## Bucle que recorre todos los seguidores
 		for identificador in data:
-			## nodo seguidor
-			follower_node = self.graph.find_one('user',
-                             property_key='id_twitter',
-                             property_value=identificador)
+			nodos_crear.append(identificador)
+			
+		self.write(nodos_crear, data, user_id)
 
-			if follower_node is None:
-				try:
-					follower_node = Node("user", id_twitter=identificador)
-					self.graph.create(follower_node)
-				except Exception, e:
-					print e
-			#########################
-			## Una vez tenemos los nodos se crea el camino si no existe
-			follower_follow_user = self.graph.match_one(start_node=follower_node, end_node=user_node)
-			if follower_follow_user is None:
-				follower_follow_user = Relationship(follower_node, "FOLLOW", user_node, since=time.time())
-				try:
-					self.graph.create_unique(follower_follow_user)
-				except Exception, e:
-					print e
-			###########################################################
+	def write(self, nodos_crear, todos_nodos_ids, nodo_principal_id):
+		tx = self.graph.cypher.begin()
+		
+		for nodoCrea in nodos_crear:
+			query = "MERGE (n:user {id_twitter:" +str(nodoCrea) +"})"
+			tx.append(query)
+		tx.process()
+		tx.commit()
+
+		#########################
+		## Una vez tenemos los nodos se crea el camino si no existe
+		print "usuarios creados"
+		
+		tx = self.graph.cypher.begin()
+		for identificador in todos_nodos_ids:
+			query = "MATCH (np { id_twitter: "+str(nodo_principal_id)+" }),(nf { id_twitter: "+str(identificador)+"}) MERGE (nf)-[r:FOLLOW]->(np) ON CREATE SET r.since = timestamp()" 
+			#query = "MATCH (np { id_twitter: "+str(nodo_principal_id)+" }),(nf { id_twitter: "+str(identificador)+"}) CREATE UNIQUE (nf)-[r:FOLLOW {since:"+str(time.time())+"}]->(np)"			
+			tx.append(query)
+		tx.process()
+		tx.commit()

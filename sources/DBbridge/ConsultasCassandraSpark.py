@@ -7,6 +7,7 @@ sys.path.append(lib_path)
 
 from Cassandra.ConexionCassandra import ConexionCassandra
 from spark.SparkContexto import SparkContexto
+from blist import blist
 import time
 
 
@@ -24,9 +25,15 @@ class ConsultasCassandraSpark(object):
 
 		try:
 			rows = self.session_cassandra.execute(query)
-			rows_paralelas = self.sc.parallelize(rows)
-			filtro_lang = lambda x: [x[0]] if lang == x[1] else []
-			return rows_paralelas.flatMap(filtro_lang).collect()
+			retorno = blist([])
+			for row in rows:
+				if row[1] == lang:
+					retorno.append(row[0])
+
+			return retorno
+			#rows_paralelas = self.sc.parallelize(rows)
+			#filtro_lang = lambda x: [x[0]] if lang == x[1] else []
+			#return rows_paralelas.flatMap(filtro_lang).collect()
 		except Exception, e:
 			print "getAllTweetsStatusCassandra"
 			print e
