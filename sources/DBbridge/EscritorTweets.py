@@ -1,5 +1,6 @@
 from Escritor import Escritor
 from PostgreSQL.ConexionSQL import ConexionSQL
+import json
 class EscritorTweets(Escritor):
 	"""docstring for EscritorTweets"""
 	def __init__(self, searchID):

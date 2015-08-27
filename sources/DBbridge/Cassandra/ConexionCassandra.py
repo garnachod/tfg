@@ -1,3 +1,8 @@
+import os
+import sys
+lib_path = os.path.abspath('/home/dani/tfg/sources')
+sys.path.append(lib_path)
+
 from cassandra.cluster import Cluster
 from Config.Conf import Conf
 

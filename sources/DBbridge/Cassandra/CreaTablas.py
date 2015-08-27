@@ -40,7 +40,7 @@ def creaTweets(session):
     		 ', longitude FLOAT'
              ', lucene TEXT'
              ', PRIMARY KEY (tuser, id_twitter)'
-             ');'
+             ')WITH CLUSTERING ORDER BY (id_twitter DESC);'
              
     )
     session.execute(query)
@@ -69,22 +69,32 @@ def creaIndexTweet(session):
 
     query = "CREATE INDEX indx_id_twitter ON tweets (id_twitter);"
     session.execute(query)
+    query = "CREATE INDEX indx_orig_tweet ON tweets (orig_tweet);"
+    session.execute(query)
+    query = "CREATE INDEX indx_lang ON tweets (lang);"
+    session.execute(query)
 
 
-def creaIndexTweetFecha(session):
-    pass
+def debug_func(session):
+    query = "select * from system.schema_columnfamilies where keyspace_name = 'twitter';"
+    print session.execute(query)
 
 
 def clean(session):
     session.execute("DROP TABLE Tweets;")
     session.execute("DROP TABLE users;")
+def clean_tweets(session):
+    session.execute("DROP TABLE Tweets;")
+
     
 if __name__ == '__main__':
     cluster = Cluster()
     session = cluster.connect('twitter')
-    debug = False
+    debug = True
     if debug:
-        creaIndexTweetFecha(session)
+        clean_tweets(session)
+        creaTweets(session)
+        creaIndexTweet(session)
     else:
         clean(session)
         creaUsersTwitter(session)

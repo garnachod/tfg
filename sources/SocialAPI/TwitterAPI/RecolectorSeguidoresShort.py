@@ -75,13 +75,11 @@ class RecolectorSeguidoresShort(Recolector):
 
 		try:
 			retorno = self.twitter.get_followers_ids(user_id=identificador, cursor=self.cursor, count='5000')
-			self.authorizator.add_query_to_key(self.tipo_id)
-
 			if len(retorno["ids"]) == 0:
 				return []
 
 			return retorno
 		except Exception, e:
-			print e
+			self.authorizator.add_query_to_key(self.tipo_id)
 			return []
 

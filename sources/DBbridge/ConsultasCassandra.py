@@ -226,6 +226,26 @@ class ConsultasCassandra(object):
 			print "getAllTweetsStatusCassandra"
 			print e
 
+	def getAllIDsTweets(self):
+		query = "SELECT id_twitter FROM tweets;"
+		try:
+			rows = self.session_cassandra.execute(query)
+			retorno = blist([])
+			for row in rows:
+				retorno.append(row[0])
+			return retorno
+		except Exception, e:
+			print "getAllIDsTweets"
+			print e
+
+	def getAllStatusAndIDUser(self):
+		query = "SELECT status, tuser FROM tweets;"
+		try:
+			return self.session_cassandra.execute(query)
+		except Exception, e:
+			print "getAllStatusAndIDUser"
+			print e
+
 	def getAllTweetsNoRtStatusFiltrLangCassandra(self, lang):
 		return self.cassandra_spark.getAllTweetsNoRtStatusFiltrLangCS(lang)
 
@@ -263,12 +283,12 @@ class ConsultasCassandra(object):
 if __name__ == '__main__':
 	consultas = ConsultasCassandra()
 	print "test de getUserIDByScreenNameCassandra"
-	print consultas.getUserIDByScreenNameCassandra("WillyrexYT")
+	print consultas.getUserIDByScreenNameCassandra("p_molins")
 	print "test de getTweetsUsuarioCassandra"
 	print consultas.getTweetsUsuarioCassandra("WillyrexYT", limit=10000)[0]
 	print consultas.getTweetsUsuarioCassandra("WillyrexYT", use_max_id=True, max_id=611207358266544128, limit=10000)[0]
-	#print "test de setLastTweetCollectedScreenNameCassandra"
-	#print consultas.setLastTweetCollectedScreenNameCassandra("WillyrexYT", 0)
+	print "test de setLastTweetCollectedScreenNameCassandra"
+	print consultas.setLastTweetCollectedScreenNameCassandra("WillyrexYT", 0)
 	print "test de getLastTweetCollectedScreenNameCassandra"
 	print consultas.getLastTweetCollectedScreenNameCassandra("WillyrexYT")
 	print "test de getUserByIDLargeCassandra"

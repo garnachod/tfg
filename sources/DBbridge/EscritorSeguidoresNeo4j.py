@@ -47,20 +47,24 @@ class EscritorSeguidoresNeo4j(Escritor):
 	def write(self, nodos_crear, todos_nodos_ids, nodo_principal_id):
 		tx = self.graph.cypher.begin()
 		
-		for nodoCrea in nodos_crear:
+		for i, nodoCrea in enumerate(nodos_crear):
 			query = "MERGE (n:user {id_twitter:" +str(nodoCrea) +"})"
 			tx.append(query)
+			if i % 100 == 0:
+				tx.process()
 		tx.process()
 		tx.commit()
 
 		#########################
 		## Una vez tenemos los nodos se crea el camino si no existe
-		print "usuarios creados"
+		#print "usuarios creados"
 		
 		tx = self.graph.cypher.begin()
-		for identificador in todos_nodos_ids:
+		for i, identificador in enumerate(todos_nodos_ids):
 			query = "MATCH (np { id_twitter: "+str(nodo_principal_id)+" }),(nf { id_twitter: "+str(identificador)+"}) MERGE (nf)-[r:FOLLOW]->(np) ON CREATE SET r.since = timestamp()" 
 			#query = "MATCH (np { id_twitter: "+str(nodo_principal_id)+" }),(nf { id_twitter: "+str(identificador)+"}) CREATE UNIQUE (nf)-[r:FOLLOW {since:"+str(time.time())+"}]->(np)"			
 			tx.append(query)
+			if i % 50 == 0:
+				tx.process()
 		tx.process()
 		tx.commit()

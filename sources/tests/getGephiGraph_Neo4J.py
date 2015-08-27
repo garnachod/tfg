@@ -16,7 +16,7 @@ if __name__ == '__main__':
 		fOutNodes.write(str(objeto[0].properties["id_twitter"]))
 		fOutNodes.write("\n")
 	
-
+	"""MATCH (a)-[r:FOLLOW]->(u:user {id_twitter : 2383366169}) return u, r, a"""
 	query = "MATCH (a)-[r]->(b) return a,r,b"
 	objetos = grafo.cypher.execute(query)
 	fOutEdges.write("source;target\n")

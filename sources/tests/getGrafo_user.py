@@ -22,14 +22,14 @@ if __name__ == '__main__':
 	objetos = grafo.cypher.execute(query)
 	for i, objeto in enumerate(objetos):
 		id_consulta = objeto[0].properties["id_twitter"]
+		if i < 34:
+			continue
 		searchID = consultas.setAppSearchAndGetId(id_consulta, 1)
 		escritores = [EscritorSeguidoresNeo4j(searchID)]
 		recolector = RecolectorSeguidoresShort(escritores)
 		print "Recolectando: " + str(id_consulta) + "    " + str(i)
-		if i > 20:
-			exit()
 		recolector.recolecta(id_user=id_consulta)
 		print "Durmiendo"
-		time.sleep(60)
+		time.sleep(65)
 
 	
