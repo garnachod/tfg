@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+import os
+import sys
+lib_path = os.path.abspath('../')
+sys.path.append(lib_path)
 from DBbridge.EscritorTweetsCassandra import EscritorTweetsCassandra
 from SocialAPI.TwitterAPI.RecolectorTweetsUser import RecolectorTweetsUser
 from DBbridge.Cassandra.ConexionCassandra import ConexionCassandra
@@ -10,7 +15,7 @@ if __name__ == '__main__':
 	escritorList.append(EscritorTweetsCassandra(-1))
 	recolector = RecolectorTweetsUser(escritorList)
 	tiempo_inicio = time()
-	recolector.recolecta("intel")
+	#recolector.recolecta("intel")
 	tiempo_fin = time()
 	print "tiempo recoleccion y escritura"
 	print  tiempo_fin - tiempo_inicio
@@ -23,7 +28,7 @@ if __name__ == '__main__':
 	#print session.execute(luceneQuery)
 
 
-	testCompleto = False
+	testCompleto = True
 	if testCompleto:
 		arrayUsuarios = ["WillyrexYT", "Alvaro845", "Thetoretegg", "Fernanfloo", "Nestle_es", "yuyacst", "AlexMonthy", "Wigetta", "Xodaaaa", "Gameloft_Spain", "NexxuzHD", "AudazCarlos", "xPekeLoL", "steam_games", "vegetta777", "bysTaXx", "bysTaXx", "PlayStationES", "mangelrogel", "Outconsumer"]
 		tiempo_total = 30 * 60 #30 minutos

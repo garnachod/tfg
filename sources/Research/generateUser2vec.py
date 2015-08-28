@@ -92,7 +92,7 @@ if __name__ == '__main__':
 			model.alpha = next_alpha
 			print "tiempo de la epoca " + str(epoch) +": " + str(end - start)
 
-		model.save('./tweet_dm.d2v')
+		model.save('/media/dani/data/trainedVecsTBYUser/tweet_dm.d2v')
 	
 	total_end = time.time()
 

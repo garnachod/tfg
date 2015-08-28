@@ -10,7 +10,7 @@ from gensim.models import Doc2Vec
 
 if __name__ == '__main__':
 	user_compara = "230377004"
-	model = Doc2Vec.load('tweet_dm.d2v')
+	model = Doc2Vec.load('/media/dani/data/trainedVecsTBYUser/tweet_dm.d2v')
 	tuplas = model.docvecs.most_similar(positive=[user_compara], topn=50)
 
 	mayor_long = 0
