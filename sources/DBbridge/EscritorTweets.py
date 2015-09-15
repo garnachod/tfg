@@ -1,6 +1,7 @@
 from Escritor import Escritor
 from PostgreSQL.ConexionSQL import ConexionSQL
 import json
+import datetime
 class EscritorTweets(Escritor):
 	"""docstring for EscritorTweets"""
 	def __init__(self, searchID):
@@ -20,8 +21,8 @@ class EscritorTweets(Escritor):
 				self.escribeTweet(tweet, hash_id)
 			else:
 				db_id = self.getUserByAPIUserID(id_api_twitter)
-				if db_id != -1:
-					self.actualizaUsuario(tweet["user"])
+				if db_id != -1: 
+					#self.actualizaUsuario(tweet["user"])
 					self.escribeTweet(tweet, db_id)
 				else:
 					db_id = self.insertaUsuario(tweet["user"])
@@ -33,9 +34,10 @@ class EscritorTweets(Escritor):
 		id_api_twitter = tweet["id"]
 		db_id = self.getTweetSiExisteAPIID(id_api_twitter)
 		if db_id != -1:
-			self.actualizaTweet(tweet)
+			#self.actualizaTweet(tweet)
+			pass
 		else:
-			db_id = self.insertaTweet(tweet, userid)
+			db_id = self.insertaTweet(tweet)
 			#self.insertaJoinTable(self.searchID, db_id)
 
 		
@@ -70,13 +72,37 @@ class EscritorTweets(Escritor):
 			return -1
 		
 
-	def insertaTweet(self, tweet, userid):
+	def insertaTweet(self, data):
+		created_at = datetime.datetime.strptime(data["created_at"], '%a %b %d %H:%M:%S +0000 %Y')
+		identificador = data["id"]
+		text = data["text"]
+		lang = data["lang"]
+		user_id = data["user"]["id"]
+		#Controla si existen RTs dentro del Tweet
+		retweet_count = 0
+		if "retweet_count" in data:
+			retweet_count = data["retweet_count"]
+		#Controla si existen FAVs dentro del Tweet
+		favorite_count = 0
+		if "favorite_count" in data:
+			favorite_count = data["favorite_count"]
+		
+		#Controla si es RT para almacenar la informacion
+		is_rt = False
+		rt_id = 0
+		if "retweeted_status" in data:
+			is_rt = True
+			rt_id = data["retweeted_status"]["id"]
+
+		media = ""
+
+
 		query = """INSERT INTO tweets (id_twitter, status, tuser, created_at, lang, is_retweet, orig_tweet, favorite_count, retweet_count, media_url) 
 				   VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id_twitter;"""
 		#query = "INSERT INTO tweets_entrenamiento (id_tweet,clase) VALUES (%s,%s);"
 		try:
 
-			self.cur.execute(query, [tweet["id"], tweet["text"][:160], userid, tweet["created_at"],tweet["lang"][:3], tweet["retweet"],tweet["orig_tweet"],tweet["favorite_count"],tweet["retweet_count"],tweet["media_url"]])
+			self.cur.execute(query, [identificador, text[:160], user_id, created_at,lang[:3], is_rt, rt_id,favorite_count,retweet_count,media])
 			Id = self.cur.fetchone()[0]
 			self.conn.commit()
 
@@ -124,12 +150,24 @@ class EscritorTweets(Escritor):
 			return -1
 		
 
-	def insertaUsuario(self, usuario):
+	def insertaUsuario(self, data):
+		identificador = data["id"]
+		#name
+		name = data["name"]
+		#screen name
+		screen_name = data["screen_name"]
+		#location
+		location = data["location"]
+		#followers_count
+		followers_count = data["followers_count"]
+		#created_at
+		created_at = datetime.datetime.strptime(data["created_at"], '%a %b %d %H:%M:%S +0000 %Y')
+
 		query = """INSERT INTO users (id_twitter, name, screen_name, followers, location, created_at) 
 				   VALUES (%s, %s, %s, %s, %s, %s) RETURNING id_twitter;"""
 		#query = "INSERT INTO tweets_entrenamiento (id_tweet,clase) VALUES (%s,%s);"
 		try:
-			self.cur.execute(query, [usuario["id"], usuario["name"][:20], usuario["screen_name"][:15], usuario["followers_count"], usuario["location"][:50], usuario["created_at"]])
+			self.cur.execute(query, [identificador, name[:20], screen_name[:15], followers_count, location[:50], created_at])
 			Id = self.cur.fetchone()[0]
 			self.conn.commit()
 
@@ -142,6 +180,7 @@ class EscritorTweets(Escritor):
 
 	def actualizaUsuario(self, usuario):
 		#update
+
 		query = """UPDATE users SET name=%s, followers=%s, location=%s WHERE id_twitter=%s;"""
 		try:
 			self.cur.execute(query, [usuario["name"][:20], usuario["followers_count"], usuario["location"][:50], usuario["id"]])

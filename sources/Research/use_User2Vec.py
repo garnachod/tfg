@@ -9,9 +9,12 @@ from gensim.models.doc2vec import TaggedDocument
 from gensim.models import Doc2Vec
 
 if __name__ == '__main__':
-	user_compara = "230377004"
+	user_compara = "CiberPoliEs"
+	cs = ConsultasCassandra()
+	id_compara = str(cs.getUserIDByScreenNameCassandra(user_compara))
+
 	model = Doc2Vec.load('/media/dani/data/trainedVecsTBYUser/tweet_dm.d2v')
-	tuplas = model.docvecs.most_similar(positive=[user_compara], topn=50)
+	tuplas = model.docvecs.most_similar(positive=[id_compara], topn=50)
 
 	mayor_long = 0
 	for palabra, coseno in tuplas:
@@ -23,7 +26,7 @@ if __name__ == '__main__':
 	print "DM"
 	print "USUARIO" + ":" + espacios[:mayor_long-len("USUARIO")]+ "Coseno"
 
-	cs = ConsultasCassandra()
+	
 	for user_id, coseno in tuplas:
 		screen_name = cs.getUserByIDShortCassandra(long(user_id)).screen_name
 		print screen_name + ":" + espacios[:mayor_long-len(screen_name)]+ str(coseno)
