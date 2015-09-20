@@ -24,6 +24,6 @@ class TareaAnalisisPalabrasUsr(TareaAnalisisPalabrasK):
 		escritorList.append(EscritorBusquedaTweets(self.search_id))
 
 		recolector = RecolectorTweetsUser(escritorList)
-		recolector.recolecta(cadenaBusqueda)
+		recolector.recolecta(query=cadenaBusqueda)
 
 		return True

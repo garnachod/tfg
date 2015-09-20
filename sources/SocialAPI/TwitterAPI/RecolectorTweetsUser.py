@@ -9,7 +9,7 @@ class RecolectorTweetsUser(Recolector):
 	"""docstring for RecolectorTweetsUser"""
 	def __init__(self, escritor):
 		super(RecolectorTweetsUser, self).__init__(escritor)
-		self.authorizator = GetAuthorizations(300)
+		self.authorizator = GetAuthorizations(290)
 		self.twitter = None
 		self.apoyo = ApoyoTwitter()
 		self.tipo_id = 1
@@ -22,20 +22,28 @@ class RecolectorTweetsUser(Recolector):
 		api_key, access_token = self.authorizator.get_twython_token()
 		self.twitter = Twython(api_key, access_token=access_token)
 
-	def recolecta(self, query, identificador=-1):
+	def recolecta(self, query=None, identificador=-1):
 		arrayFinal = []
+
+		if query is None and identificador == -1:
+			raise Exception('Al menos debe haber un parametro usable')
 
 		if query is not None:
 			if query[0] == '@':
 				query = query[1:]
 
-		minimo = self.apoyo.getLastTweetCollected(query)
+		minimo = self.apoyo.getLastTweetCollected(screen_name=query, identificador=identificador)
 		maximo = 0
 		maximoGlobal = long(0)
 
 		cont = 0
+		flag_fin = False
 		while True:
-			statuses = self.privateRealizaConsulta(query, identificador=identificador, maxi=maximo, mini=minimo)
+			try:
+				statuses = self.privateRealizaConsulta(query=query, identificador=identificador, maxi=maximo, mini=minimo)
+			except Exception, e:
+				flag_fin = True
+				statuses = []
 			
 			if len(statuses) == 0:
 				break
@@ -66,7 +74,11 @@ class RecolectorTweetsUser(Recolector):
 		#	print tipo + "\t" + str(self.tiempos_por_escritor[tipo])
 		
 		if maximoGlobal != 0:
-			self.apoyo.setLastUserTweet(query, maximoGlobal)
+			self.apoyo.setLastUserTweet(maximoGlobal, screen_name=query, identificador=identificador)
+
+
+		if flag_fin == True:
+			raise Exception('LIMITE')
 
 	def guarda(self, arrayDatos):
 		for escritor in self.escritores:
@@ -100,25 +112,43 @@ class RecolectorTweetsUser(Recolector):
 		return maximo
 
 
-	def privateRealizaConsulta(self, query, identificador=-1, maxi=0, mini=0):
+	def privateRealizaConsulta(self, query=None, identificador=-1, maxi=0, mini=0):
 		#TODO busquedas por identificador
 		if self.authorizator.is_limit_api(self.tipo_id):
-				return []
+			raise Exception('LIMITE')
 
+		count = '200'
 		try:
 			if maxi == 0 and mini == 0: 
-				retorno = self.twitter.get_user_timeline(screen_name=query, count='200')
+				if query is not None:
+					retorno = self.twitter.get_user_timeline(screen_name=query, count=count)
+				else:
+					retorno = self.twitter.get_user_timeline(user_id=identificador, count=count)
+
 			elif maxi == 0 and mini > 0:
-				retorno = self.twitter.get_user_timeline(screen_name=query, since_id=mini, count='200')
+				if query is not None:
+					retorno = self.twitter.get_user_timeline(screen_name=query, since_id=mini, count=count)
+				else:
+					retorno = self.twitter.get_user_timeline(user_id=identificador, since_id=mini, count=count)
+
 			elif maxi > 0 and mini == 0:
-				retorno = self.twitter.get_user_timeline(screen_name=query, max_id=maxi, count='200')
+				if query is not None:
+					retorno = self.twitter.get_user_timeline(screen_name=query, max_id=maxi, count=count)
+				else:
+					retorno = self.twitter.get_user_timeline(user_id=identificador, max_id=maxi, count=count)
+
 			else:
-				retorno = self.twitter.get_user_timeline(screen_name=query, max_id=maxi, since_id=mini, count='200')
+				if query is not None:
+					retorno = self.twitter.get_user_timeline(screen_name=query, max_id=maxi, since_id=mini, count=count)
+				else:
+					retorno = self.twitter.get_user_timeline(user_id=identificador, max_id=maxi, since_id=mini, count=count)
 
 			self.authorizator.add_query_to_key(self.tipo_id)
 			return retorno
 		except Exception, e:
 			print e
+			if "429" in str(e):
+				raise Exception('LIMITE')
 			return []
 			
 

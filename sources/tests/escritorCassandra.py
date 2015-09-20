@@ -15,7 +15,8 @@ if __name__ == '__main__':
 	escritorList.append(EscritorTweetsCassandra(-1))
 	recolector = RecolectorTweetsUser(escritorList)
 	tiempo_inicio = time()
-	#recolector.recolecta("intel")
+	recolector.recolecta(query="intel")
+	recolector.recolecta(identificador=2383366169)
 	tiempo_fin = time()
 	print "tiempo recoleccion y escritura"
 	print  tiempo_fin - tiempo_inicio
@@ -28,7 +29,7 @@ if __name__ == '__main__':
 	#print session.execute(luceneQuery)
 
 
-	testCompleto = True
+	testCompleto = False
 	if testCompleto:
 		arrayUsuarios = ["WillyrexYT", "Alvaro845", "Thetoretegg", "Fernanfloo", "Nestle_es", "yuyacst", "AlexMonthy", "Wigetta", "Xodaaaa", "Gameloft_Spain", "NexxuzHD", "AudazCarlos", "xPekeLoL", "steam_games", "vegetta777", "bysTaXx", "bysTaXx", "PlayStationES", "mangelrogel", "Outconsumer"]
 		tiempo_total = 30 * 60 #30 minutos
