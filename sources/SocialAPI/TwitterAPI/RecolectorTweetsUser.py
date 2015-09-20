@@ -22,17 +22,20 @@ class RecolectorTweetsUser(Recolector):
 		api_key, access_token = self.authorizator.get_twython_token()
 		self.twitter = Twython(api_key, access_token=access_token)
 
-	def recolecta(self, query):
+	def recolecta(self, query, identificador=-1):
 		arrayFinal = []
-		if query[0] == '@':
-			query = query[1:]
+
+		if query is not None:
+			if query[0] == '@':
+				query = query[1:]
+
 		minimo = self.apoyo.getLastTweetCollected(query)
 		maximo = 0
 		maximoGlobal = long(0)
 
 		cont = 0
 		while True:
-			statuses = self.privateRealizaConsulta(query, maxi=maximo, mini=minimo)
+			statuses = self.privateRealizaConsulta(query, identificador=identificador, maxi=maximo, mini=minimo)
 			
 			if len(statuses) == 0:
 				break
@@ -97,7 +100,8 @@ class RecolectorTweetsUser(Recolector):
 		return maximo
 
 
-	def privateRealizaConsulta(self, query, maxi=0, mini=0):
+	def privateRealizaConsulta(self, query, identificador=-1, maxi=0, mini=0):
+		#TODO busquedas por identificador
 		if self.authorizator.is_limit_api(self.tipo_id):
 				return []
 
