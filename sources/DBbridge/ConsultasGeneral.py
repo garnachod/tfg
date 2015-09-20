@@ -371,6 +371,13 @@ class ConsultasGeneral(ConsultasSQL, ConsultasCassandra):
 		else:
 			return self.getLastTweetCollectedScreenNameSQL(screen_name)
 
+	def getLastTweetCollectedIdentificador(self, identificador):
+		if self.cassandra_active:
+			return self.getLastTweetCollectedIdentificadorCassandra(identificador)
+		#else:
+		#	return self.getLastTweetCollectedScreenNameSQL(screen_name)
+		else:
+			raise Exception('No implementado')
 
 	def setLastTweetCollectedScreenName(self, screen_name, maximo):
 		if screen_name[0] == '@':
@@ -380,6 +387,14 @@ class ConsultasGeneral(ConsultasSQL, ConsultasCassandra):
 			return self.setLastTweetCollectedScreenNameCassandra(screen_name, maximo)
 		else:
 			return self.setLastTweetCollectedScreenNameSQL(screen_name, maximo)
+
+	def setLastTweetCollectedIdentificador(self, identificador, maximo):
+		if self.cassandra_active:
+			return self.setLastTweetCollectedIdentificadorCassandra(identificador, maximo)
+		#else:
+		#	return self.setLastTweetCollectedScreenNameSQL(screen_name, maximo)
+		else:
+			raise Exception('No implementado')
 
 
 	def getQueryFromSearchID(self, searchID):

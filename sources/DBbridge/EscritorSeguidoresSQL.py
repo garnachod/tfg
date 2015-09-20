@@ -1,7 +1,7 @@
 from Escritor import Escritor
 from PostgreSQL.ConexionSQL import ConexionSQL
 
-class EscritorSeguidores(Escritor):
+class EscritorSeguidoresSQL(Escritor):
 	"""docstring for EscritorSeguidores"""
 	def __init__(self, searchID):
 		super(EscritorSeguidores, self).__init__(searchID)

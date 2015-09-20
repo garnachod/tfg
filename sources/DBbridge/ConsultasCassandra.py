@@ -87,12 +87,32 @@ class ConsultasCassandra(object):
 			print "getLastTweetCollectedScreenNameCassandra"
 			print e
 			return 0
+
+	def getLastTweetCollectedIdentificadorCassandra(self, twitterUser):
+		query = """SELECT last_tweet_collected FROM users WHERE id_twitter = %s LIMIT 1;"""
+		try:
+			rows = self.session_cassandra.execute(query, [twitterUser])
+			if len(rows) == 0:
+				return 0
+
+			ltc = rows[0].last_tweet_collected
+			if ltc is None:
+				return 0
+
+			return long(ltc)
+		except Exception, e:
+			print "getLastTweetCollectedScreenNameCassandra"
+			print e
+			return 0
 	
 	def setLastTweetCollectedScreenNameCassandra(self, twitterUser, maximo):
 		user_id = self.getUserIDByScreenNameCassandra(twitterUser)
+		self.setLastTweetCollectedIdentificadorCassandra(user_id, maximo)
+
+	def setLastTweetCollectedIdentificadorCassandra(self, twitterUser, maximo):
 		query = "UPDATE users SET last_tweet_collected = %s WHERE id_twitter = %s;"
 		try:
-			self.session_cassandra.execute(query, (maximo, user_id))
+			self.session_cassandra.execute(query, (maximo, twitterUser))
 			return True
 		except Exception, e:
 			print "setLastTweetCollectedScreenNameCassandra"

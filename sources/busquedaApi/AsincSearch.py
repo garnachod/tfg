@@ -27,7 +27,7 @@ class AsincSearch(threading.Thread):
 			escritorList.append(EscritorTweetsCassandra(self.searchID))
 			escritorList.append(EscritorBusquedaTweets(self.searchID))
 			recolector = RecolectorTweetsUser(escritorList)
-			recolector.recolecta(self.texto)
+			recolector.recolecta(query=self.texto)
 
 			fin = time.time()
 			self.consultas.setAppSearchTime(self.searchID, fin - inicio)
