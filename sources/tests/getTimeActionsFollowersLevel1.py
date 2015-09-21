@@ -22,7 +22,8 @@ if __name__ == '__main__':
 
 
 	consultas = ConsultasWeb()
-	fOut = open("salida.csv", "w")
+	fOut_tweets = open("salida_tweets.csv", "w")
+	fOut_rts = open("salida_rts.csv", "w")
 	#recogida de cassandra
 	for identificador in identificadores:
 		screen_name = consultas.getScreenNameByUserID(identificador)
@@ -35,26 +36,39 @@ if __name__ == '__main__':
 		#############
 
 		#inicializamos a 0
-		horas = []
+		horas_tweet = []
+		count_tweets = 0
+		horas_rts = []
+		count_rts = 0
 		nFragmentosPorHora = 4
 		nFragmentosSemanales = 7 * 24 * nFragmentosPorHora
 		for i in range(nFragmentosSemanales):
-			horas.append(0.0)
+			horas_tweet.append(0.0)
+			horas_rts.append(0.0)
 
 		for tweet in tweets:
 			index = (tweet.created_at.weekday() + 1) * (tweet.created_at.hour + 1) * (math.ceil(tweet.created_at.minute / (60/nFragmentosPorHora)) + 1)
-			horas[int(index)-1] += 1
+			if tweet.orig_tweet == 0:
+				horas_tweet[int(index)-1] += 1
+				count_tweets += 1
+			else:
+				horas_rts[int(index)-1] += 1
+				count_rts += 1
 			#print tweet.created_at.weekday()
 			#print tweet.created_at.hour
 			#print tweet.created_at.minute
 			#print math.ceil(tweet.created_at.minute / (60/nFragmentosPorHora))
 
 		for i in range(nFragmentosSemanales):
-			if horas[i] != 0.0:
-				horas[i] = horas[i] / len(tweets)
+			if horas_tweet[i] != 0.0:
+				horas_tweet[i] = horas_tweet[i] / count_tweets
+			if horas_rts[i] != 0.0:
+				horas_rts[i] = horas_rts[i] / count_rts
 
-			fOut.write(str(horas[i]) + ";")
-		fOut.write("\n")
+			fOut_tweets.write(str(horas_tweet[i]) + ";")
+			fOut_rts.write(str(horas_rts[i]) + ";")
+		fOut_tweets.write("\n")
+		fOut_rts.write("\n")
 			
 
 		
