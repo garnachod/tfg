@@ -28,15 +28,15 @@ class ConsultasCassandra(object):
 
 		user = self.getUserByIDShortCassandra(user_id)
 
-		Row = namedtuple('Row', 'status, favorite_count, retweet_count, orig_tweet, media_urls, screen_name, profile_img, id_twitter')
+		Row = namedtuple('Row', 'status, favorite_count, retweet_count, orig_tweet, media_urls, screen_name, profile_img, id_twitter, created_at')
 		if use_max_id:
-			query = """SELECT status, favorite_count, retweet_count, orig_tweet, media_urls, id_twitter  FROM tweets WHERE tuser = %s AND id_twitter < %s ORDER BY id_twitter DESC LIMIT %s;"""
+			query = """SELECT status, favorite_count, retweet_count, orig_tweet, media_urls, id_twitter, created_at  FROM tweets WHERE tuser = %s AND id_twitter < %s ORDER BY id_twitter DESC LIMIT %s;"""
 
 			try:
 				retorno = blist([])
 				rows = self.session_cassandra.execute(query, [user_id, max_id, limit])
 				for row in rows:
-					nuevaFila = Row(row.status, row.favorite_count, row.retweet_count, row.orig_tweet, row.media_urls, user.screen_name, user.profile_img, row.id_twitter)
+					nuevaFila = Row(row.status, row.favorite_count, row.retweet_count, row.orig_tweet, row.media_urls, user.screen_name, user.profile_img, row.id_twitter, row.created_at)
 					retorno.append(nuevaFila)
 				return retorno
 			except Exception, e:
@@ -44,13 +44,13 @@ class ConsultasCassandra(object):
 				print e
 				return []
 		else:
-			query = """SELECT status, favorite_count, retweet_count, orig_tweet, media_urls, id_twitter FROM tweets WHERE tuser = %s ORDER BY id_twitter DESC LIMIT %s;"""
+			query = """SELECT status, favorite_count, retweet_count, orig_tweet, media_urls, id_twitter, created_at FROM tweets WHERE tuser = %s ORDER BY id_twitter DESC LIMIT %s;"""
 
 			try:
 				retorno = blist([])
 				rows = self.session_cassandra.execute(query, [user_id, limit])
 				for row in rows:
-					nuevaFila = Row(row.status, row.favorite_count, row.retweet_count, row.orig_tweet, row.media_urls, user.screen_name, user.profile_img, row.id_twitter)
+					nuevaFila = Row(row.status, row.favorite_count, row.retweet_count, row.orig_tweet, row.media_urls, user.screen_name, user.profile_img, row.id_twitter, row.created_at)
 					retorno.append(nuevaFila)
 				return retorno
 			except Exception, e:
@@ -66,6 +66,19 @@ class ConsultasCassandra(object):
 				return None
 
 			return long(rows[0].id_twitter)
+		except Exception, e:
+			print "getUserIDByScreenNameCassandra"
+			print e
+			return None
+
+	def getScreenNameByUserIDCassandra(self, user_id):
+		query = """SELECT screen_name FROM users WHERE id_twitter = %s LIMIT 1;"""
+		try:
+			rows = self.session_cassandra.execute(query, [user_id])
+			if len(rows) == 0:
+				return None
+
+			return rows[0].screen_name
 		except Exception, e:
 			print "getUserIDByScreenNameCassandra"
 			print e
@@ -264,7 +277,9 @@ class ConsultasCassandra(object):
 			return self.session_cassandra.execute(query)
 		except Exception, e:
 			print "getAllStatusAndIDUser"
-			print e
+			print 
+
+
 
 	def getAllTweetsNoRtStatusFiltrLangCassandra(self, lang):
 		return self.cassandra_spark.getAllTweetsNoRtStatusFiltrLangCS(lang)
@@ -283,6 +298,7 @@ class ConsultasCassandra(object):
 	def getAverageRTMediaByScreenNameCassandra(self, screen_name):
 		user_id = self.getUserIDByScreenNameCassandra(screen_name)
 		return self.cassandra_spark.getAverageRTMediaByIDUserCS(user_id)
+
 
 
 

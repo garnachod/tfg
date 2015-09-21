@@ -67,6 +67,13 @@ class ConsultasGeneral(ConsultasSQL, ConsultasCassandra):
 		else:
 			return self.getTweetStatusSQL(identificador)
 
+	def getScreenNameByUserID(self, identificador):
+		if self.cassandra_active:
+			return self.getScreenNameByUserIDCassandra(identificador)
+		else:
+			raise Exception('No implementado')
+
+
 
 	def getIDTweetsTrainList(self, id_lista_entrenamiento):
 		query = """SELECT id_tweet FROM tweets_entrenamiento as tw WHERE tw.clase != 'no_usar' AND tw.id_lista = %s;"""
