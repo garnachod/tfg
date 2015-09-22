@@ -140,7 +140,11 @@ def contacto():
 @app.route('/planificartarea')
 def planificartarea():
 	if 'username' in session:
-		return planificartarea_web.toString()
+		try:
+			return planificartarea_web.toString()
+		except Exception, e:
+			print e
+			return redirect('/err?code=5')
 	else:
 		return redirect('/err?code=5')
 

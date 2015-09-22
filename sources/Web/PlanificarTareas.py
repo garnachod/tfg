@@ -63,7 +63,7 @@ class PlanificarTareas(WebPageMenu):
   									<p style="text-align: left;">
 	  									<select name="lista_entrenamiento" id="lista_entrenamiento" style="width:339px; margin-left: 70px;">
   					'''
-  		rows = self.consultas.getListasEntrenamiento()
+  		rows = self.consultas.getListasEntrenamiento(session['user_id'])
 		for row in rows:
 			mid += '<option value="'+str(row[0])+'">' + row[1] +'</option>'
 
