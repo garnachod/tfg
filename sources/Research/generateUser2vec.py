@@ -41,8 +41,8 @@ class LabeledLineSentence(object):
 #raise NotImplementedError( "Should have implemented this" )
 
 if __name__ == '__main__':
-	dimension = 100
-	sentences = LabeledLineSentence("/media/dani/data/tweetsByUser.txt")
+	dimension = 200
+	sentences = LabeledLineSentence("/media/dani/tweetsByUser.txt")
 
 	total_start = time.time()
 
@@ -92,7 +92,7 @@ if __name__ == '__main__':
 			model.alpha = next_alpha
 			print "tiempo de la epoca " + str(epoch) +": " + str(end - start)
 
-		model.save('/media/dani/data/trainedVecsTBYUser/tweet_dm.d2v')
+		model.save('/media/dani/trainedVecsTBYUser/tweet_dm.d2v')
 	
 	total_end = time.time()
 

@@ -16,8 +16,9 @@ if __name__ == '__main__':
 
 	testCompleto = True
 	if testCompleto:
-		arrayUsuarios = ["LuthFlanagan", "i_3g0", "Dacosta_R", "Cobb314", "CiberPoliES", "MBia9", "rigugi", "SonyDeckard", "BridgesRalph", "iN0r1", "mrufian", "pedaguitu"]
-		tiempo_total = 10 * 60 
+		#arrayUsuarios = ["LuthFlanagan", "i_3g0", "Dacosta_R", "Cobb314", "CiberPoliES", "MBia9", "rigugi", "SonyDeckard", "BridgesRalph", "iN0r1", "mrufian", "pedaguitu", "Coordinadora25S", "IkariunVenus", "rosinimavi"]
+		arrayUsuarios = ["abumohand2233", "preadesu_A_S", "isis1440", "2a56yamen", "dbdulh222098aa1", "7aderr", "H_ALSUBAEY", "Taxigate", "iiiisiiiiis", "actelt14", "jarraah_31"]
+		tiempo_total = 1 * 60 
 		for i, usuario in enumerate(arrayUsuarios):
 			print usuario
 			recolector.recolecta(usuario)
