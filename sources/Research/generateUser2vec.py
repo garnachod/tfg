@@ -41,7 +41,7 @@ class LabeledLineSentence(object):
 #raise NotImplementedError( "Should have implemented this" )
 
 if __name__ == '__main__':
-	dimension = 100
+	dimension = 50
 	sentences = LabeledLineSentence("/media/dani/data/tweetsByUser.txt")
 
 	total_start = time.time()
@@ -72,8 +72,8 @@ if __name__ == '__main__':
 	dm = True
 	if dm:
 		#model = Doc2Vec(min_count=1, window=10, size=dimension, sample=1e-3, negative=5, workers=6, dm_mean=1, alpha=0.04)
-		model = Doc2Vec(min_count=1, window=10, size=dimension, sample=1e-3, negative=5, workers=6, alpha=0.04)
-		#model = Doc2Vec(min_count=1, window=10, size=dimension, sample=1e-3, negative=5, workers=6, alpha=0.04, dm_concat=1)
+		#model = Doc2Vec(min_count=1, window=10, size=dimension, sample=1e-3, negative=5, workers=8, alpha=0.04)
+		model = Doc2Vec(min_count=1, window=10, size=dimension, sample=1e-3, negative=5, workers=8, alpha=0.04, dm_concat=1)
 		#
 		print "inicio vocab"
 		model.build_vocab(sentences.to_array())

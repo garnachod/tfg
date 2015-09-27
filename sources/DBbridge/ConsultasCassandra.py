@@ -284,6 +284,23 @@ class ConsultasCassandra(object):
 	def getAllTweetsNoRtStatusFiltrLangCassandra(self, lang):
 		return self.cassandra_spark.getAllTweetsNoRtStatusFiltrLangCS(lang)
 
+	
+	def getFollowersByUserID(self, user_id):
+		query = "SELECT followers FROM users WHERE id_twitter = %s;"
+		try:
+			return self.session_cassandra.execute(query, [user_id])
+		except Exception, e:
+			print "getFollowersByUserID"
+			print e
+
+	def getFollowingByUserID(self, user_id):
+		query = "SELECT following FROM users WHERE id_twitter = %s;"
+		try:
+			return self.session_cassandra.execute(query, [user_id])
+		except Exception, e:
+			print "getFollowingByUserID"
+			print e
+
 	"""estadisticas"""
 	def getNumTweetsRTCassandra(self):
 		return self.cassandra_spark.getNumTweetsRTCS()
@@ -347,6 +364,10 @@ if __name__ == '__main__':
 	print tiempo_fin - tiempo_inicio
 	print "test de getAverageRTMediaByScreenNameCassandra"
 	print consultas.getAverageRTMediaByScreenNameCassandra("WillyrexYT")
+
+	print "Test de seguidores y siguiendo"
+	print consultas.getFollowersByUserID(2383366169)
+	print consultas.getFollowingByUserID(2383366169)
 
 
 	testCompleto = False

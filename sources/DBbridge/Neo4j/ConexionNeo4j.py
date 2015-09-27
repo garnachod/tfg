@@ -1,5 +1,11 @@
-from py2neo import Graph,authenticate
+#import os
+#import sys
+#lib_path = os.path.abspath('/home/dani/tfg/sources')
+#sys.path.append(lib_path)
+
 from Config.Conf import Conf
+from py2neo import Graph,authenticate
+
 
 class ConexionNeo4j(object):
 	"""docstring for ConexionNeo4j"""
