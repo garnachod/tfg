@@ -114,20 +114,22 @@ class EscritorTweetsUsersCassandra(Escritor):
 		location = data["location"]
 		#followers_count
 		followers_count = data["followers_count"]
+		#friends_count
+		friends_count = data["friends_count"]
 		#created_at
 		created_at = datetime.datetime.strptime(data["created_at"], '%a %b %d %H:%M:%S +0000 %Y')
 		#url_img_user
 		url_img_user = data["profile_image_url_https"]
 
-		query = """INSERT INTO users (id_twitter, name, screen_name, created_at, followers, location, profile_img)
-				   VALUES (%s, %s, %s, %s, %s,%s,%s)
+		query = """INSERT INTO users (id_twitter, name, screen_name, created_at, followers, location, profile_img, following)
+				   VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
 				"""
 		try:
 			if self.asinc:
 				self.session.execute_async(query,
-					(identificador, name, screen_name, created_at, followers_count, location, url_img_user))
+					(identificador, name, screen_name, created_at, followers_count, location, url_img_user, friends_count))
 			else:
 				self.session.execute(query,
-					(identificador, name, screen_name, created_at, followers_count, location, url_img_user))
+					(identificador, name, screen_name, created_at, followers_count, location, url_img_user, friends_count))
 		except Exception, e:
 			print e

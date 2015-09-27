@@ -7,6 +7,7 @@ def creaUsersTwitter(session):
              ', name varchar'
              ', screen_name varchar'
              ', followers int'
+             ', following int'
              ', location varchar'
              ', created_at timestamp '
              ', profile_img varchar'
@@ -86,15 +87,23 @@ def clean(session):
 def clean_tweets(session):
     session.execute("DROP TABLE Tweets;")
 
+
+def alterTableUser(session):
+	#friends_count
+	query = "ALTER TABLE users ADD following int;"
+	session.execute(query)
+	
+
     
 if __name__ == '__main__':
     cluster = Cluster()
     session = cluster.connect('twitter')
     debug = True
     if debug:
-        clean_tweets(session)
-        creaTweets(session)
-        creaIndexTweet(session)
+    	alterTableUser(session)
+        #clean_tweets(session)
+        #creaTweets(session)
+        #creaIndexTweet(session)
     else:
         clean(session)
         creaUsersTwitter(session)
