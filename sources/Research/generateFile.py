@@ -61,7 +61,7 @@ def cleanLine(line):
 	return line
 
 if __name__ == '__main__':
-	namefile = "/media/dani/tweetsBin.b"
+	namefile = "/media/dani/data/tweetsBin.b"
 	tweets = pickle.load(open(namefile, "rb"))
 	usuariosDic = {}
 
@@ -73,7 +73,7 @@ if __name__ == '__main__':
 		else:
 			usuariosDic[tuser] = [status]
 
-	fout = codecs.open("/media/dani/tweetsByUser.txt", "w", "utf-8")
+	fout = codecs.open("/media/dani/data/tweetsByUser.txt", "w", "utf-8")
 	for tuser in usuariosDic:
 		fout.write(str(tuser))
 		fout.write("\n")

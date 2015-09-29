@@ -10,7 +10,7 @@ import time
 
 if __name__ == '__main__':
 	consultas = ConsultasWeb()
-	usuario = "@p_molins"
+	usuario = "@Yihad_Global"
 	#usuario = "@Dowrow"
 	searchID = consultas.setAppSearchAndGetId(usuario, 1)
 	

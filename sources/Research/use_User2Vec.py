@@ -9,7 +9,7 @@ from gensim.models.doc2vec import TaggedDocument
 from gensim.models import Doc2Vec
 
 if __name__ == '__main__':
-	user_compara = "rosinimavi"
+	user_compara = "carfergue"
 	cs = ConsultasCassandra()
 	id_compara = str(cs.getUserIDByScreenNameCassandra(user_compara))
 
