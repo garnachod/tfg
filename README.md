@@ -36,6 +36,9 @@ Aplicación web:
 		* http://sigmajs.org/
 	* Va algo lento en las inserciones
 
+* Algoritmos de grafos (EN USO 3 Octubre) :
+	* Librería: networkx
+
 * Mejores clasificadores para texto:
 	* Que le follen a tf-idf, Paragraph vector (doc2vec) + lo que sea
 
