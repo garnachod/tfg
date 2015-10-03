@@ -59,10 +59,11 @@ class RecolectorSiguiendoShort(Recolector):
 
 	def privateRealizaConsultaById(self, identificador):
 		if self.authorizator.is_limit_api(self.tipo_id):
-				return []
+			return []
 
 		try:
 			retorno = self.twitter.get_friends_ids(user_id=identificador, cursor=self.cursor, count='5000')
+			self.authorizator.add_query_to_key(self.tipo_id)
 			if len(retorno["ids"]) == 0:
 				return []
 

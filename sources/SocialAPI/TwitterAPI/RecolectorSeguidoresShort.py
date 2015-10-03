@@ -21,7 +21,6 @@ class RecolectorSeguidoresShort(Recolector):
 
 	def recolecta(self, query=None, id_user = -1):
 		self.cursor = -1
-		arrayUsuarios = []
 
 		if query is None and id_user == -1:
 			raise Exception('Al menos debe haber un parametro usable')
@@ -64,6 +63,7 @@ class RecolectorSeguidoresShort(Recolector):
 
 		try:
 			retorno = self.twitter.get_followers_ids(user_id=identificador, cursor=self.cursor, count='5000')
+			self.authorizator.add_query_to_key(self.tipo_id)
 			if len(retorno["ids"]) == 0:
 				return []
 

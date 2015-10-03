@@ -147,6 +147,7 @@ class RecolectorTweetsUser(Recolector):
 			return retorno
 		except Exception, e:
 			print e
+			self.authorizator.add_query_to_key(self.tipo_id)
 			if "429" in str(e):
 				raise Exception('LIMITE')
 			return []
