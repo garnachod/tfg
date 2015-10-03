@@ -18,3 +18,6 @@ class ApoyoTwitter(object):
 			return self.consultas.setLastTweetCollectedScreenName(screen_name, maximo)
 		else:
 			return self.consultas.setLastTweetCollectedIdentificador(identificador, maximo)
+
+	def getUserIDByScreenName(self, screen_name):
+		return self.consultas.getUserIDByScreenName(screen_name)

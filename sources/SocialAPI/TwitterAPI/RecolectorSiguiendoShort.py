@@ -24,50 +24,38 @@ class RecolectorSiguiendoShort(Recolector):
 		arrayUsuarios = []
 
 		if query is None and id_user == -1:
-			return
+			raise Exception('Al menos debe haber un parametro usable')
 
 		if query is not None:
 			if query[0] == '@':
 				query = query[1:]
 
-			while True:
-				retorno = self.privateRealizaConsulta(query)
-				if retorno == []:
-					return
+			id_user = self.apoyo.getUserIDByScreenName(query)
+			if id_user == None:
+				raise Exception('El usuario debe estar en la base de datos')
+			
+		
+		while True:
+			retorno = self.privateRealizaConsultaById(id_user)
+			if retorno == []:
+				return
 
-				#self.cursor = retorno["next_cursor"]
-				break
-		else:
-			while True:
-				retorno = self.privateRealizaConsultaById(id_user)
-				if retorno == []:
-					return
+			#TODO
+			#self.cursor = retorno["next_cursor"]
+			break
 
-				#self.cursor = retorno["next_cursor"]
-				break
+		
+		#se almacenan las relaciones en una tupla (usuario1, usuario2)
+		#esto quiere decir que el usuario1 sigue al usuario2.
+		lista_relaciones = []
+		for identificador in retorno["ids"]:
+			lista_relaciones.append((id_user, identificador))
 
-		print len(retorno["ids"])
-		self.guarda(retorno["ids"])
+		self.guarda(lista_relaciones)
 
 	def guarda(self, arrayDatos):
 		for escritor in self.escritores:
 			escritor.escribe(arrayDatos)
-
-	def privateRealizaConsulta(self, query):
-		if self.authorizator.is_limit_api(self.tipo_id):
-				return []
-
-		try:
-			retorno = self.twitter.get_friends_ids(screen_name=query, cursor=self.cursor, count='5000')
-			self.authorizator.add_query_to_key(self.tipo_id)
-
-			if len(retorno["ids"]) == 0:
-				return []
-
-			return retorno
-		except Exception, e:
-			print e
-			return []
 
 	def privateRealizaConsultaById(self, identificador):
 		if self.authorizator.is_limit_api(self.tipo_id):
@@ -82,4 +70,3 @@ class RecolectorSiguiendoShort(Recolector):
 		except Exception, e:
 			self.authorizator.add_query_to_key(self.tipo_id)
 			return []
-

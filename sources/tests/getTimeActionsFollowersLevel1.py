@@ -11,12 +11,14 @@ import math
 
 
 if __name__ == '__main__':
-	user_id = 2383366169 #p_molins en otros test hacerlo con la cadena
+	consultas = ConsultasWeb()
+	user_id = consultas.getUserIDByScreenName("p_molins")
+	
 	consultasGrafo = ConsultasNeo4j()
 	
 	identificadores = consultasGrafo.getListaIDsSeguidoresByUserID(user_id)
 	
-	consultas = ConsultasWeb()
+	
 	fOut_tweets = open("salida_tweets.csv", "w")
 	fOut_rts = open("salida_rts.csv", "w")
 	#recogida de cassandra
@@ -38,8 +40,8 @@ if __name__ == '__main__':
 		nFragmentosPorHora = 4
 		nFragmentosSemanales = 7 * 24 * nFragmentosPorHora
 		for i in range(nFragmentosSemanales):
-			horas_tweet.append(0.0)
-			horas_rts.append(0.0)
+			horas_tweet.append(0)
+			horas_rts.append(0)
 
 		for tweet in tweets:
 			index = (tweet.created_at.weekday() + 1) * (tweet.created_at.hour + 1) * (math.ceil(tweet.created_at.minute / (60/nFragmentosPorHora)) + 1)
@@ -49,19 +51,17 @@ if __name__ == '__main__':
 			else:
 				horas_rts[int(index)-1] += 1
 				count_rts += 1
-			#print tweet.created_at.weekday()
-			#print tweet.created_at.hour
-			#print tweet.created_at.minute
-			#print math.ceil(tweet.created_at.minute / (60/nFragmentosPorHora))
+
+
+		fOut_tweets.write(screen_name + ";")
+		fOut_rts.write(screen_name + ";")
+		fOut_tweets.write(str(count_tweets) + ";")
+		fOut_rts.write(str(count_rts) + ";")
 
 		for i in range(nFragmentosSemanales):
-			if horas_tweet[i] != 0.0:
-				horas_tweet[i] = horas_tweet[i] / count_tweets
-			if horas_rts[i] != 0.0:
-				horas_rts[i] = horas_rts[i] / count_rts
-
 			fOut_tweets.write(str(horas_tweet[i]) + ";")
 			fOut_rts.write(str(horas_rts[i]) + ";")
+
 		fOut_tweets.write("\n")
 		fOut_rts.write("\n")
 			

@@ -5,6 +5,7 @@ lib_path = os.path.abspath('../')
 sys.path.append(lib_path)
 from DBbridge.EscritorTweetsCassandra import EscritorTweetsCassandra
 from DBbridge.ConsultasCassandra import ConsultasCassandra
+from DBbridge.ConsultasNeo4j import ConsultasNeo4j
 from SocialAPI.TwitterAPI.RecolectorTweetsUser import RecolectorTweetsUser
 from DBbridge.Cassandra.ConexionCassandra import ConexionCassandra
 from DBbridge.Neo4j.ConexionNeo4j import ConexionNeo4j
@@ -36,19 +37,10 @@ def recopila(lista_ids):
 
 if __name__ == '__main__':
 	consultas = ConsultasCassandra()
-	user_id = consultas.getUserIDByScreenNameCassandra("Yihad_Global")
-	print user_id
-	#user_id = 2383366169 #p_molins en otros test hacerlo con la cadena
-	grafo = ConexionNeo4j().getGraph()
+	user_id = consultas.getUserIDByScreenNameCassandra("p_molins")
 
-	queryNeo4j = "MATCH (a)-[r:FOLLOW]->(u:user {id_twitter : "+ str(user_id) +"}) return a"
-	print queryNeo4j
-	nodos = grafo.cypher.execute(queryNeo4j)
-	identificadores = []
-	for nodo in nodos:
-		identificadores.append(long(nodo[0].properties["id_twitter"]))
-
-	
+	consultasGrafo = ConsultasNeo4j()
+	identificadores = consultasGrafo.getListaIDsSeguidoresByUserID(user_id)
 
 	recopila(identificadores)
 
