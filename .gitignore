@@ -1,2 +1,4 @@
 *.pyc
 Conf.py
+*.swp
+*.py~
