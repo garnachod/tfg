@@ -11,7 +11,7 @@ import time
 
 if __name__ == '__main__':
 	consultas = ConsultasWeb()
-	usuario = "@garnachod"
+	usuario = "@Taxigate"
 	#usuario = "@Dowrow"
 	
 
@@ -20,7 +20,7 @@ if __name__ == '__main__':
 	escritores = [EscritorTweetsCassandra(-1)]
 	escritores.append(EscritorFavoritosNeo4j(-1))
 	recolector = RecolectorFavoritosUser(escritores)
-	recolector.recolecta(query=usuario)
+	recolector.recolecta(query=usuario, complete=True)
 
 	fin = time.time()
 	print fin - inicio

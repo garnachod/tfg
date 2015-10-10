@@ -37,7 +37,7 @@ def recopila(lista_ids):
 
 if __name__ == '__main__':
 	consultas = ConsultasCassandra()
-	user_id = consultas.getUserIDByScreenNameCassandra("p_molins")
+	user_id = consultas.getUserIDByScreenNameCassandra("Taxigate")
 
 	consultasGrafo = ConsultasNeo4j()
 	identificadores = consultasGrafo.getListaIDsSeguidoresByUserID(user_id)

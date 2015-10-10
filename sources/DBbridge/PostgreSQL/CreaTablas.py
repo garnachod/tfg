@@ -142,6 +142,7 @@ def crea_tareas():
              ', id_search integer REFERENCES app_searches(id)'
              ', tiempo_inicio timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP '
              ', tiempo_fin timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP '
+             ', ejecutar_cada_minutos int NOT NULL DEFAULT 5 '
              ', id_lista_entrenamiento int'
              ');'
              )
@@ -248,10 +249,11 @@ def crea_tablas_close():
 	conn.close()
 
 if __name__ == "__main__":
-    debug = False
+    debug = True
     if debug:
         #crea_tabla_MLT()
-        crea_tokens_count()
+        crea_tareas()
+        #crea_tokens_count()
     else:
         crea_tablas()
         temp_crea_tablas()

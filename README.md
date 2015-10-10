@@ -1,3 +1,9 @@
+#Estadisticas Actualizadas
+===
+* Número de usuarios: 1546805
+* Número de Tweets: 3771892
+
+
 #TFG
 ===
 Aplicación web:

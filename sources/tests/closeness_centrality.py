@@ -13,7 +13,8 @@ if __name__ == '__main__':
 	consultasGrafo = ConsultasNeo4j()
 	identificadores = consultasGrafo.getListaIDsSeguidoresByUserID(user_id)
 
-	G=nx.DiGraph()
+	#G=nx.DiGraph()
+	G=nx.Graph()
 	G.add_node(user_id)
 	for ide in identificadores:
 		G.add_node(ide)
@@ -21,7 +22,7 @@ if __name__ == '__main__':
 		ident2 = consultasGrafo.getListaIDsSeguidoresByUserID(ide)
 		for ide2 in ident2:
 			G.add_node(ide2)
-			G.add_edge(ide2,ide)
+			G.add_edge(ide2, ide)
 
 
 	print "closeness_centrality"
