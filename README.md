@@ -1,7 +1,7 @@
 #Estadisticas Actualizadas
 ===
-* Número de usuarios: 1546805
-* Número de Tweets: 3771892
+* Número de usuarios: 1575624
+* Número de Tweets: 4523243
 
 
 #TFG
@@ -44,6 +44,11 @@ Aplicación web:
 
 * Algoritmos de grafos (EN USO 3 Octubre) :
 	* Librería: networkx
+
+* Optimización de calculo de cosenos:
+	* Annoy: https://github.com/spotify/annoy
+	* Velocidad: 1s vs 2-3 minutos antes
+	* TODO: Comprobar que los resultados son iguales
 
 * Mejores clasificadores para texto:
 	* Que le follen a tf-idf, Paragraph vector (doc2vec) + lo que sea

@@ -369,6 +369,7 @@ class ConsultasCassandra(object):
 if __name__ == '__main__':
 	consultas = ConsultasCassandra()
 	print consultas.getNumTweetsCassandra()
+	print consultas.getNumUsersCassandra()
 	exit()
 	print "test de getUserIDByScreenNameCassandra"
 	print consultas.getUserIDByScreenNameCassandra("p_molins")
