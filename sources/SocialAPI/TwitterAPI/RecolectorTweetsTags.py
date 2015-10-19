@@ -41,7 +41,7 @@ class RecolectorTweetsTags(RecolectorTweetsUser):
 				arrayFinal = []
 				
 			#limite puesto por defecto
-			if cont > 2000:
+			if cont > 200000:
 				break
 
 

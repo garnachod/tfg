@@ -14,6 +14,7 @@ class EscritorSeguidoresNeo4j(Escritor):
 
 		
 	def escribe(self, data):
+		print len(data)
 		nodos_crear = []
 		for usuario1, usuario2 in data:
 			if str(usuario1) in self.nodos_creados_historico:
@@ -49,11 +50,11 @@ class EscritorSeguidoresNeo4j(Escritor):
 		tx = self.graph.cypher.begin()
 		i = 0 
 		for usuario1, usuario2 in relaciones:
-			query = "MATCH (np { id_twitter: "+str(usuario2)+" }),(nf { id_twitter: "+str(usuario1)+"}) MERGE (nf)-[r:FOLLOW]->(np) ON CREATE SET r.since = timestamp()" 
+			query = "MATCH (np:user { id_twitter: "+str(usuario2)+" }),(nf:user { id_twitter: "+str(usuario1)+"}) MERGE (nf)-[r:FOLLOW]->(np) ON CREATE SET r.since = timestamp()" 
 			#query = "MATCH (np { id_twitter: "+str(nodo_principal_id)+" }),(nf { id_twitter: "+str(identificador)+"}) CREATE UNIQUE (nf)-[r:FOLLOW {since:"+str(time.time())+"}]->(np)"			
 			i += 1
 			tx.append(query)
-			if i % 50 == 0:
+			if i % 100 == 0:
 				tx.process()
 		tx.process()
 		tx.commit()

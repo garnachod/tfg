@@ -22,11 +22,18 @@ class ConsultasCassandra(object):
 		self.memoria_temporal = {}
 		
 	def getTweetsUsuarioCassandra(self, twitterUser, use_max_id=False, max_id=0, limit=1000):
-		user_id = self.getUserIDByScreenNameCassandra(twitterUser)
+		user_id = None
+		try:
+			user_id = long(twitterUser)
+		except Exception, e:
+			user_id = self.getUserIDByScreenNameCassandra(twitterUser)
+
 		if user_id is None:
 			return []
 
 		user = self.getUserByIDShortCassandra(user_id)
+		if user == None:
+			return []
 
 		Row = namedtuple('Row', 'status, favorite_count, retweet_count, orig_tweet, media_urls, screen_name, profile_img, id_twitter, created_at')
 		if use_max_id:

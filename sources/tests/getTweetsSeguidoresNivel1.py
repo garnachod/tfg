@@ -7,8 +7,6 @@ from DBbridge.EscritorTweetsCassandra import EscritorTweetsCassandra
 from DBbridge.ConsultasCassandra import ConsultasCassandra
 from DBbridge.ConsultasNeo4j import ConsultasNeo4j
 from SocialAPI.TwitterAPI.RecolectorTweetsUser import RecolectorTweetsUser
-from DBbridge.Cassandra.ConexionCassandra import ConexionCassandra
-from DBbridge.Neo4j.ConexionNeo4j import ConexionNeo4j
 import datetime
 from time import time, sleep
 
@@ -37,11 +35,11 @@ def recopila(lista_ids):
 
 if __name__ == '__main__':
 	consultas = ConsultasCassandra()
-	user_id = consultas.getUserIDByScreenNameCassandra("Taxigate")
+	user_id = consultas.getUserIDByScreenNameCassandra("Braun")
 
 	consultasGrafo = ConsultasNeo4j()
 	identificadores = consultasGrafo.getListaIDsSeguidoresByUserID(user_id)
-
+	print len(identificadores)
 	recopila(identificadores)
 
 
