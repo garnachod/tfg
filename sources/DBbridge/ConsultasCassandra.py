@@ -22,11 +22,18 @@ class ConsultasCassandra(object):
 		self.memoria_temporal = {}
 		
 	def getTweetsUsuarioCassandra(self, twitterUser, use_max_id=False, max_id=0, limit=1000):
-		user_id = self.getUserIDByScreenNameCassandra(twitterUser)
+		user_id = None
+		try:
+			user_id = long(twitterUser)
+		except Exception, e:
+			user_id = self.getUserIDByScreenNameCassandra(twitterUser)
+
 		if user_id is None:
 			return []
 
 		user = self.getUserByIDShortCassandra(user_id)
+		if user == None:
+			return []
 
 		Row = namedtuple('Row', 'status, favorite_count, retweet_count, orig_tweet, media_urls, screen_name, profile_img, id_twitter, created_at')
 		if use_max_id:
@@ -167,6 +174,14 @@ class ConsultasCassandra(object):
 			print "getUserByIDLargeCassandra"
 			print str(e)
 			return False
+
+	def getTweetUserByTweetIDCassandra(self , identificador):
+		query = "SELECT tuser FROM tweets WHERE id_twitter = %s LIMIT 1;"
+		try:
+			return self.session_cassandra.execute(query, [identificador])[0].tuser
+		except Exception, e:
+			print "getAllTweetsStatusCassandra"
+			print e
 
 	def getTweetByIDLargeCassandra(self, identificador):
 		query = """SELECT status, favorite_count, retweet_count, orig_tweet, media_urls, tuser, id_twitter FROM tweets WHERE id_twitter = %s LIMIT 1;"""
@@ -316,6 +331,31 @@ class ConsultasCassandra(object):
 		user_id = self.getUserIDByScreenNameCassandra(screen_name)
 		return self.cassandra_spark.getAverageRTMediaByIDUserCS(user_id)
 
+	def getNumTweetsCassandra(self):
+		query = "SELECT id_twitter FROM tweets;"
+		try:
+			rows = self.session_cassandra.execute(query)
+			contador = 0
+			for row in rows:
+				contador += 1
+
+			return contador
+		except Exception, e:
+			print "getNumTweetsCassandra"
+			print e
+
+	def getNumUsersCassandra(self):
+		query = "SELECT id_twitter FROM users;"
+		try:
+			rows = self.session_cassandra.execute(query)
+			contador = 0
+			for row in rows:
+				contador += 1
+
+			return contador
+		except Exception, e:
+			print "getNumUsersCassandra"
+			print e
 
 
 
@@ -335,6 +375,9 @@ class ConsultasCassandra(object):
 
 if __name__ == '__main__':
 	consultas = ConsultasCassandra()
+	print consultas.getNumTweetsCassandra()
+	print consultas.getNumUsersCassandra()
+	exit()
 	print "test de getUserIDByScreenNameCassandra"
 	print consultas.getUserIDByScreenNameCassandra("p_molins")
 	print "test de getTweetsUsuarioCassandra"

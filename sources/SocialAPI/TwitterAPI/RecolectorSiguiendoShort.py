@@ -3,13 +3,13 @@ from ApoyoTwitter import ApoyoTwitter
 from getAuthorizations import GetAuthorizations
 from twython import Twython
 
-class RecolectorSeguidoresShort(Recolector):
+class RecolectorSiguiendoShort(Recolector):
 	def __init__(self, escritores):
-		super(RecolectorSeguidoresShort, self).__init__(escritores)
+		super(RecolectorSiguiendoShort, self).__init__(escritores)
 		self.authorizator = GetAuthorizations(15)
 		self.twitter = None
 		self.apoyo = ApoyoTwitter()
-		self.tipo_id = 4
+		self.tipo_id = 5
 		self.inicializa()
 		self.cursor = -1
 		
@@ -21,6 +21,7 @@ class RecolectorSeguidoresShort(Recolector):
 
 	def recolecta(self, query=None, id_user = -1):
 		self.cursor = -1
+		arrayUsuarios = []
 
 		if query is None and id_user == -1:
 			raise Exception('Al menos debe haber un parametro usable')
@@ -48,21 +49,20 @@ class RecolectorSeguidoresShort(Recolector):
 		#esto quiere decir que el usuario1 sigue al usuario2.
 		lista_relaciones = []
 		for identificador in retorno["ids"]:
-			lista_relaciones.append((identificador, id_user))
+			lista_relaciones.append((id_user, identificador))
 
 		self.guarda(lista_relaciones)
 
 	def guarda(self, arrayDatos):
 		for escritor in self.escritores:
 			escritor.escribe(arrayDatos)
-			
 
 	def privateRealizaConsultaById(self, identificador):
 		if self.authorizator.is_limit_api(self.tipo_id):
-				return []
+			return []
 
 		try:
-			retorno = self.twitter.get_followers_ids(user_id=identificador, cursor=self.cursor, count='5000')
+			retorno = self.twitter.get_friends_ids(user_id=identificador, cursor=self.cursor, count='5000')
 			self.authorizator.add_query_to_key(self.tipo_id)
 			if len(retorno["ids"]) == 0:
 				return []
@@ -71,4 +71,3 @@ class RecolectorSeguidoresShort(Recolector):
 		except Exception, e:
 			self.authorizator.add_query_to_key(self.tipo_id)
 			return []
-

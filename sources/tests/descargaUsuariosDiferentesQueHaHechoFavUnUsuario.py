@@ -4,11 +4,12 @@ import sys
 lib_path = os.path.abspath('../')
 sys.path.append(lib_path)
 from DBbridge.EscritorTweetsCassandra import EscritorTweetsCassandra
+from SocialAPI.TwitterAPI.RecolectorTweetsUser import RecolectorTweetsUser
+from DBbridge.ConsultasWeb import ConsultasWeb
 from DBbridge.ConsultasCassandra import ConsultasCassandra
 from DBbridge.ConsultasNeo4j import ConsultasNeo4j
-from SocialAPI.TwitterAPI.RecolectorTweetsUser import RecolectorTweetsUser
-import datetime
 from time import time, sleep
+
 
 
 def recopila(lista_ids):
@@ -34,12 +35,27 @@ def recopila(lista_ids):
 	recopila(ids_no_recopilados)
 
 if __name__ == '__main__':
-	consultas = ConsultasCassandra()
-	user_id = consultas.getUserIDByScreenNameCassandra("Braun")
-
+	consultas = ConsultasWeb()
+	user_id = consultas.getUserIDByScreenName("Taxigate")
+	
 	consultasGrafo = ConsultasNeo4j()
-	identificadores = consultasGrafo.getListaIDsSeguidoresByUserID(user_id)
-	print len(identificadores)
-	recopila(identificadores)
+	identificadores = consultasGrafo.getListaIDsFavsByUserID(user_id)
+
+	cs = ConsultasCassandra()
+
+	usuarios = {}
+	for identificador in identificadores:
+		idUser = cs.getTweetUserByTweetIDCassandra(identificador)
+		strIdUser = str(idUser)
+		if strIdUser in usuarios:
+			usuarios[strIdUser] += 1
+		else:
+			usuarios[strIdUser] = 1
 
 
+	user_list = []
+	for usuario in usuarios:
+		user_list.append(long(usuario))
+	
+	recopila(user_list)
+		

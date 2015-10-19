@@ -8,7 +8,7 @@ import pickle
 
 
 if __name__ == '__main__':
-	namefile = "/media/dani/tweetsBin.b"
+	namefile = "/media/dani/data/tweetsBin.b"
 	cons = ConsultasCassandra()
 	rows = cons.getAllStatusAndIDUser()
 	objToPickle = []

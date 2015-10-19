@@ -33,23 +33,13 @@ if __name__ == '__main__':
 		#############
 
 		#inicializamos a 0
-		horas_tweet = []
 		count_tweets = 0
-		horas_rts = []
 		count_rts = 0
-		nFragmentosPorHora = 4
-		nFragmentosSemanales = 7 * 24 * nFragmentosPorHora
-		for i in range(nFragmentosSemanales):
-			horas_tweet.append(0)
-			horas_rts.append(0)
 
 		for tweet in tweets:
-			index = (tweet.created_at.weekday() + 1) * (tweet.created_at.hour + 1) * (math.ceil(tweet.created_at.minute / (60/nFragmentosPorHora)) + 1)
 			if tweet.orig_tweet == 0:
-				horas_tweet[int(index)-1] += 1
 				count_tweets += 1
 			else:
-				horas_rts[int(index)-1] += 1
 				count_rts += 1
 
 
@@ -58,9 +48,11 @@ if __name__ == '__main__':
 		fOut_tweets.write(str(count_tweets) + ";")
 		fOut_rts.write(str(count_rts) + ";")
 
-		for i in range(nFragmentosSemanales):
-			fOut_tweets.write(str(horas_tweet[i]) + ";")
-			fOut_rts.write(str(horas_rts[i]) + ";")
+		for tweet in tweets:
+			if tweet.orig_tweet == 0:
+				fOut_tweets.write(str(tweet.created_at) + ";")
+			else:
+				fOut_rts.write(str(tweet.created_at) + ";")
 
 		fOut_tweets.write("\n")
 		fOut_rts.write("\n")

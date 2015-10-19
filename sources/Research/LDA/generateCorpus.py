@@ -1,35 +1,33 @@
 # -*- coding: utf-8 -*-
 import os
 import sys
-lib_path = os.path.abspath('../')
+lib_path = os.path.abspath('../../')
 sys.path.append(lib_path)
 from DBbridge.ConsultasCassandra import ConsultasCassandra
-import pickle
+from DBbridge.ConsultasNeo4j import ConsultasNeo4j
 import codecs
 import re
 
-""" \r u'\u000D'"""
-""" NEXT LINE: U+0085"""
-""" Line Separator: U+2028 """
-""" Paragraph Separator, U+2029 """
 
 re_urls = re.compile(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+')
 re_hastag = re.compile(r'\#[0-9a-zA-Z]+')
-re_tuser = re.compile(r'^@[a-zA-Z0-9_]+')
+re_tuser = re.compile(r'@[a-zA-Z0-9_]+')
 
 def cleanLine(line):
-	line = re_urls.sub(" URL ", line)
-	line = re_hastag.sub(" HASTAG ", line)
-	line = re_tuser.sub(" USER ", line)
-	line = line.replace("?", " QUESTION ")
-	line = line.replace("!", " EXCLAMATION ")
-	line = line.replace("...", " DOTDOTDOT ")
+	line = re_urls.sub(" ", line)
+	line = re_hastag.sub(" ", line)
+	line = re_tuser.sub(" ", line)
+	line = line.replace("?", " ")
+	line = line.replace("!", " ")
+	line = line.replace("...", " ")
 	#line = line.replace(".", " DOT ")
 	#line = line.replace(",", " COMMA ")
 	line = line.replace(".", " ")
 	line = line.replace(",", " ")
 	line = line.replace("/", " ")
 	line = line.replace("\\", " ")
+	line = line.replace("\"", " ")
+	line = line.replace("\'", " ")
 	line = line.replace("-", " ")
 	line = line.replace(")", " ")
 	line = line.replace("(", " ")
@@ -37,6 +35,7 @@ def cleanLine(line):
 	line = line.replace(":", " ")
 	line = line.replace(u"’", " ")
 	line = line.replace(u"‘", " ")
+	line = line.replace(u"…", " ")
 	line = line.replace("+", " ")
 	line = line.replace("_", " ")
 	line = line.replace(u"´", " ")
@@ -60,29 +59,28 @@ def cleanLine(line):
 
 	return line
 
+
 if __name__ == '__main__':
-	namefile = "/media/dani/data/tweetsBin.b"
-	tweets = pickle.load(open(namefile, "rb"))
-	usuariosDic = {}
+	consultas = ConsultasCassandra()
+	user_id = consultas.getUserIDByScreenNameCassandra("Braun")
 
-	for tweet in tweets:
-		tuser = tweet.tuser
-		status = tweet.status
-		if tuser in usuariosDic:
-			usuariosDic[tuser].append(status)
-		else:
-			usuariosDic[tuser] = [status]
+	consultasGrafo = ConsultasNeo4j()
+	identificadores = consultasGrafo.getListaIDsSeguidoresByUserID(user_id)
 
-	fout = codecs.open("/media/dani/data/tweetsByUser.txt", "w", "utf-8")
-	for tuser in usuariosDic:
-		fout.write(str(tuser))
-		fout.write("\n")
-		
-		for tweet in usuariosDic[tuser]:
-			texto = tweet.replace("\n", ". ").replace("\r", ". ").replace(u"\u0085", ". ").replace(u"\u2028", ". ").replace(u"\u2029", ". ")
-			fout.write(cleanLine(texto))
-			fout.write(" ")
 
-		fout.write("\n")
+	fout = codecs.open("lowcorpus.txt", "w", "utf-8")
+	for identificador in identificadores:
+		tweets = consultas.getTweetsUsuarioCassandra(long(identificador), limit=10000)
+		if len(tweets) > 1:
+			for tweet in tweets:
+				texto = tweet.status.replace("\n", ". ").replace("\r", ". ").replace(u"\u0085", ". ").replace(u"\u2028", ". ").replace(u"\u2029", ". ")
+				texto = texto.lower()
+				palabras = cleanLine(texto).split()
+				if len(palabras) > 2:
+					for palabra in palabras:
+						if len(palabra) > 2:
+							fout.write(palabra)
+							fout.write(" ")
+			fout.write("\n")
 
 	fout.close()

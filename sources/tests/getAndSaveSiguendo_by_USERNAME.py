@@ -5,13 +5,12 @@ lib_path = os.path.abspath('../')
 sys.path.append(lib_path)
 from DBbridge.ConsultasWeb import ConsultasWeb
 from DBbridge.EscritorSeguidoresNeo4j import EscritorSeguidoresNeo4j
-from SocialAPI.TwitterAPI.RecolectorSeguidoresShort import RecolectorSeguidoresShort
+from SocialAPI.TwitterAPI.RecolectorSiguiendoShort import RecolectorSiguiendoShort
 import time
 
 if __name__ == '__main__':
 	consultas = ConsultasWeb()
-	usuario = "@Braun"
-	#usuario = "@Taxigate"
+	usuario = "@Taxigate"
 	#usuario = "@Dowrow"
 	searchID = consultas.setAppSearchAndGetId(usuario, 1)
 	
@@ -19,7 +18,7 @@ if __name__ == '__main__':
 	inicio = time.time()
 
 	escritores = [EscritorSeguidoresNeo4j(searchID)]
-	recolector = RecolectorSeguidoresShort(escritores)
+	recolector = RecolectorSiguiendoShort(escritores)
 	recolector.recolecta(query=usuario)
 
 	fin = time.time()
