@@ -41,10 +41,10 @@ class RecolectorTweetsTags(RecolectorTweetsUser):
 				arrayFinal = []
 				
 			#limite puesto por defecto
-			if cont > 200000:
+			if cont > 20000:
 				break
 
-
+		print cont
 		#fin del while
 		#tiempo_baseDatos_ini = time()
 		self.guarda(arrayFinal)

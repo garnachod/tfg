@@ -70,4 +70,8 @@ class RecolectorSiguiendoShort(Recolector):
 			return retorno
 		except Exception, e:
 			self.authorizator.add_query_to_key(self.tipo_id)
+			print e
+			if "429" in str(e):
+				raise Exception('LIMITE')
+
 			return []

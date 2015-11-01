@@ -92,4 +92,6 @@ class RecolectorFavoritosUser(Recolector):
 			if "429" in str(e):
 				raise Exception('LIMITE')
 
+			return []
+
 

@@ -16,5 +16,9 @@
 * MATCH (n) return n
 
 
+## Problemas de rendimiento
+* http://neo4j.com/docs/stable/performance-guide.html
+
+
 ## Ejemplo de visualización
 ![Alt text](../DesignImages/graph.png?raw=true "Diseño de clases")

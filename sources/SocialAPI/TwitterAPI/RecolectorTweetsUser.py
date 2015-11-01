@@ -138,6 +138,9 @@ class RecolectorTweetsUser(Recolector):
 					retorno = self.twitter.get_user_timeline(user_id=identificador, max_id=maxi, count=count)
 
 			else:
+				if mini > maxi:
+					return []
+					
 				if query is not None:
 					retorno = self.twitter.get_user_timeline(screen_name=query, max_id=maxi, since_id=mini, count=count)
 				else:
