@@ -24,6 +24,8 @@ Aplicación web:
 * En la interfaz de administrador, introducir una apiKey de twitter
 * Ir a demonio si se necesita el Daemon de tareas en segundo plano para más info
 
+@rodil: LOGRO DESBLOQUEADOOOOOOO!!!!! 
+@alex: LOGRO DESBLOQUEADOOOOOOO!!!!! 
 
 #TFM
 ===
@@ -61,5 +63,7 @@ Aplicación web:
 * clasificación de sentimientos <- http://nlp.stanford.edu/sentiment/code.html
 * clasificación de sentimientos <- https://github.com/nltk/nltk/wiki/Sentiment-Analysis
 * clasificación de sentimientos <- http://textblob.readthedocs.org/en/dev/quickstart.html#sentiment-analysis
+
+
 
 
