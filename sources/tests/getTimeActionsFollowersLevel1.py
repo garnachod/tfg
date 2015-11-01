@@ -53,14 +53,14 @@ if __name__ == '__main__':
 				count_rts += 1
 
 
-		fOut_tweets.write(screen_name + ";")
-		fOut_rts.write(screen_name + ";")
-		fOut_tweets.write(str(count_tweets) + ";")
-		fOut_rts.write(str(count_rts) + ";")
+		fOut_tweets.write(screen_name + ",")
+		fOut_rts.write(screen_name + ",")
+		fOut_tweets.write(str(count_tweets) + ",")
+		fOut_rts.write(str(count_rts) + ",")
 
 		for i in range(nFragmentosSemanales):
-			fOut_tweets.write(str(horas_tweet[i]) + ";")
-			fOut_rts.write(str(horas_rts[i]) + ";")
+			fOut_tweets.write(str(horas_tweet[i]) + ",")
+			fOut_rts.write(str(horas_rts[i]) + ",")
 
 		fOut_tweets.write("\n")
 		fOut_rts.write("\n")

@@ -12,7 +12,7 @@ import math
 
 if __name__ == '__main__':
 	consultas = ConsultasWeb()
-	user_id = consultas.getUserIDByScreenName("p_molins")
+	user_id = consultas.getUserIDByScreenName("Braun")
 	
 	consultasGrafo = ConsultasNeo4j()
 	
@@ -43,17 +43,27 @@ if __name__ == '__main__':
 				count_rts += 1
 
 
-		fOut_tweets.write(screen_name + ";")
-		fOut_rts.write(screen_name + ";")
-		fOut_tweets.write(str(count_tweets) + ";")
-		fOut_rts.write(str(count_rts) + ";")
-
-		for tweet in tweets:
+		fOut_tweets.write(screen_name + ",")
+		fOut_rts.write(screen_name + ",")
+		fOut_tweets.write(str(count_tweets) + ",")
+		fOut_rts.write(str(count_rts) + ",")
+		
+		primer_tweet = False
+		primer_rt = False
+		for i, tweet in enumerate(tweets):
 			if tweet.orig_tweet == 0:
-				fOut_tweets.write(str(tweet.created_at) + ";")
+				if primer_tweet == False:
+					fOut_tweets.write(str(tweet.created_at))
+					primer_tweet = True
+				else:
+					fOut_tweets.write("," + str(tweet.created_at))
 			else:
-				fOut_rts.write(str(tweet.created_at) + ";")
-
+				if primer_rt == False:
+					fOut_rts.write(str(tweet.created_at))
+					primer_rt = True
+				else:
+					fOut_rts.write("," + str(tweet.created_at))
+					
 		fOut_tweets.write("\n")
 		fOut_rts.write("\n")
 			

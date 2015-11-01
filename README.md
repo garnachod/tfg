@@ -25,7 +25,7 @@ Aplicación web:
 * Ir a demonio si se necesita el Daemon de tareas en segundo plano para más info
 
 @rodil: LOGRO DESBLOQUEADOOOOOOO!!!!! 
-
+@alex: LOGRO DESBLOQUEADOOOOOOO!!!!! 
 
 #TFM
 ===
