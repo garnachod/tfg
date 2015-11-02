@@ -26,6 +26,8 @@ class ConsultasCassandra(object):
 		try:
 			user_id = long(twitterUser)
 		except Exception, e:
+			if twitterUser[0] == "@":
+				twitterUser = twitterUser[1:]
 			user_id = self.getUserIDByScreenNameCassandra(twitterUser)
 
 		if user_id is None:

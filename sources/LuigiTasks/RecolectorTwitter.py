@@ -193,7 +193,7 @@ class RecolectorFavoritosTwitter(luigi.Task):
 		
 class TestRecolectorFavoritosTwitter(luigi.Task):
 	def requires(self):
-		return [RecolectorFavoritosTwitter(usuario) for usuario in ["@garnachod", "@p_molins", 2383366169]]
+		return [RecolectorFavoritosTwitter(usuario) for usuario in ["@garnachod"]]
 
 	def run(self):
 		with self.output().open('w') as out_file:
@@ -286,7 +286,7 @@ class RecolectorTweetsSeguidoresTwitter(luigi.Task):
 
 class TestRecolectorTweetsSeguidoresTwitter(luigi.Task):
 	def requires(self):
-		return RecolectorTweetsSiguendoTwitter("@p_molins")
+		return RecolectorTweetsSeguidoresTwitter("@p_molins")
 
 	def run(self):
 		with self.output().open('w') as out_file:
@@ -294,6 +294,98 @@ class TestRecolectorTweetsSeguidoresTwitter(luigi.Task):
 			
 	def output(self):
 		return luigi.LocalTarget('tasks/TestRecolectorTweetsSeguidoresTwitter()')
+
+class RecolectorFavoritosSeguidoresTwitter(luigi.Task):
+	"""
+		Recolecta en un primer momento los siguiendo de un usuario
+		a continuacion descarga todos los tweets de esos siguiendo
+	"""
+	usuario = luigi.Parameter()
+
+	def output(self):
+		return luigi.LocalTarget('tasks/RecolectorFavoritosSeguidoresTwitter(%s)'%self.usuario)
+
+	def requires(self):
+		return [RecolectorSeguidoresTwitter(self.usuario), RecolectorUsuarioTwitter(self.usuario)]
+
+	def run(self):
+		consultasNeo4j = ConsultasNeo4j()
+		consultasCassandra = ConsultasCassandra()
+
+		# si no es un identificador, se intenta conseguir desde cassandra
+		identificador = 0
+		try:
+			identificador = long(self.usuario)
+		except Exception, e:
+			if self.usuario[0] == "@":
+				self.usuario = self.usuario[1:]
+			identificador = consultasCassandra.getUserIDByScreenNameCassandra(self.usuario)
+
+		#solo puede no existir ese identificador si es privado, pero debemos controlarlo
+		if identificador > 0:
+			seguidores = consultasNeo4j.getListaIDsSeguidoresByUserID(identificador)
+			for seguidor in seguidores:
+				yield RecolectorFavoritosTwitter(seguidor)
+
+		with self.output().open('w') as out_file:
+			out_file.write("OK")
+
+class TestRecolectorFavoritosSeguidoresTwitter(luigi.Task):
+	def requires(self):
+		return RecolectorFavoritosSeguidoresTwitter("@p_molins")
+
+	def run(self):
+		with self.output().open('w') as out_file:
+			out_file.write("OK")
+			
+	def output(self):
+		return luigi.LocalTarget('tasks/TestRecolectorFavoritosSeguidoresTwitter()')
+		
+class RecolectorFavoritosSiguiendoTwitter(luigi.Task):
+	"""
+		Recolecta en un primer momento los siguiendo de un usuario
+		a continuacion descarga todos los tweets de esos siguiendo
+	"""
+	usuario = luigi.Parameter()
+
+	def output(self):
+		return luigi.LocalTarget('tasks/RecolectorFavoritosSiguiendoTwitter(%s)'%self.usuario)
+
+	def requires(self):
+		return [RecolectorSiguiendoTwitter(self.usuario), RecolectorUsuarioTwitter(self.usuario)]
+
+	def run(self):
+		consultasNeo4j = ConsultasNeo4j()
+		consultasCassandra = ConsultasCassandra()
+
+		# si no es un identificador, se intenta conseguir desde cassandra
+		identificador = 0
+		try:
+			identificador = long(self.usuario)
+		except Exception, e:
+			if self.usuario[0] == "@":
+				self.usuario = self.usuario[1:]
+			identificador = consultasCassandra.getUserIDByScreenNameCassandra(self.usuario)
+
+		#solo puede no existir ese identificador si es privado, pero debemos controlarlo
+		if identificador > 0:
+			seguidores = consultasNeo4j.getListaIDsSiguendoByUserID(identificador)
+			for seguidor in seguidores:
+				yield RecolectorFavoritosTwitter(seguidor)
+
+		with self.output().open('w') as out_file:
+			out_file.write("OK")
+
+class TestRecolectorFavoritosSiguiendoTwitter(luigi.Task):
+	def requires(self):
+		return RecolectorFavoritosSiguiendoTwitter("@p_molins")
+
+	def run(self):
+		with self.output().open('w') as out_file:
+			out_file.write("OK")
+			
+	def output(self):
+		return luigi.LocalTarget('tasks/TestRecolectorFavoritosSiguiendoTwitter()')
 		
 if __name__ == "__main__":
 	luigi.run()
