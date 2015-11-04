@@ -22,6 +22,20 @@ class ConsultasCassandra(object):
 		self.memoria_temporal = {}
 		
 	def getTweetsUsuarioCassandra(self, twitterUser, use_max_id=False, max_id=0, limit=1000):
+		"""
+			getTweetsUsuarioCassandra
+
+			Entrada:
+				twitterUser, puede ser un identificador o un string del estilo "@usuario" con o sin @
+				use_max_id, es por si se quiere hacer un filtro de tweets con id menor que el dado, si no se usa Cassandra tarda menos
+				max_id, solo se usará si use_max_id es True
+				limit, por defecto 1000 tweets, límite de tweets a retornar
+
+			salida:
+				lista tweets de un usuario de twitter, lista vacia si no existe el usuario
+
+		"""
+
 		user_id = None
 		try:
 			user_id = long(twitterUser)
@@ -37,15 +51,15 @@ class ConsultasCassandra(object):
 		if user == None:
 			return []
 
-		Row = namedtuple('Row', 'status, favorite_count, retweet_count, orig_tweet, media_urls, screen_name, profile_img, id_twitter, created_at')
+		Row = namedtuple('Row', 'status, favorite_count, retweet_count, orig_tweet, media_urls, screen_name, profile_img, id_twitter, created_at, lang')
 		if use_max_id:
-			query = """SELECT status, favorite_count, retweet_count, orig_tweet, media_urls, id_twitter, created_at  FROM tweets WHERE tuser = %s AND id_twitter < %s ORDER BY id_twitter DESC LIMIT %s;"""
+			query = """SELECT status, favorite_count, retweet_count, orig_tweet, media_urls, id_twitter, created_at, lang  FROM tweets WHERE tuser = %s AND id_twitter < %s ORDER BY id_twitter DESC LIMIT %s;"""
 
 			try:
 				retorno = blist([])
 				rows = self.session_cassandra.execute(query, [user_id, max_id, limit])
 				for row in rows:
-					nuevaFila = Row(row.status, row.favorite_count, row.retweet_count, row.orig_tweet, row.media_urls, user.screen_name, user.profile_img, row.id_twitter, row.created_at)
+					nuevaFila = Row(row.status, row.favorite_count, row.retweet_count, row.orig_tweet, row.media_urls, user.screen_name, user.profile_img, row.id_twitter, row.created_at, row.lang)
 					retorno.append(nuevaFila)
 				return retorno
 			except Exception, e:
@@ -53,13 +67,13 @@ class ConsultasCassandra(object):
 				print e
 				return []
 		else:
-			query = """SELECT status, favorite_count, retweet_count, orig_tweet, media_urls, id_twitter, created_at FROM tweets WHERE tuser = %s ORDER BY id_twitter DESC LIMIT %s;"""
+			query = """SELECT status, favorite_count, retweet_count, orig_tweet, media_urls, id_twitter, created_at, lang FROM tweets WHERE tuser = %s ORDER BY id_twitter DESC LIMIT %s;"""
 
 			try:
 				retorno = blist([])
 				rows = self.session_cassandra.execute(query, [user_id, limit])
 				for row in rows:
-					nuevaFila = Row(row.status, row.favorite_count, row.retweet_count, row.orig_tweet, row.media_urls, user.screen_name, user.profile_img, row.id_twitter, row.created_at)
+					nuevaFila = Row(row.status, row.favorite_count, row.retweet_count, row.orig_tweet, row.media_urls, user.screen_name, user.profile_img, row.id_twitter, row.created_at, row.lang)
 					retorno.append(nuevaFila)
 				return retorno
 			except Exception, e:
@@ -68,6 +82,10 @@ class ConsultasCassandra(object):
 				return []
 		
 	def getUserIDByScreenNameCassandra(self, twitterUser):
+		"""
+			Retorna el user_id asociado a un "usuario"
+			si no existe el usuario, retorna False
+		"""
 		query = """SELECT id_twitter FROM users WHERE screen_name = %s LIMIT 1;"""
 		try:
 			rows = self.session_cassandra.execute(query, [twitterUser])
@@ -81,6 +99,10 @@ class ConsultasCassandra(object):
 			return None
 
 	def getScreenNameByUserIDCassandra(self, user_id):
+		"""
+			dado un identificador, retona el screen_name de twitter,
+			Retona False si no se ha encontrado
+		"""
 		query = """SELECT screen_name FROM users WHERE id_twitter = %s LIMIT 1;"""
 		try:
 			rows = self.session_cassandra.execute(query, [user_id])
@@ -94,6 +116,13 @@ class ConsultasCassandra(object):
 			return None
 
 	def getLastTweetCollectedScreenNameCassandra(self, twitterUser):
+		"""
+			last_tweet_collected es una variable que se guarda para optimizar y mucho la descarga de usuarios 
+			simplemente hace un Get de la variable o 0 si nunca se ha descargado nada
+
+			Get by screen_name
+
+		"""
 		query = """SELECT last_tweet_collected FROM users WHERE screen_name = %s LIMIT 1;"""
 		try:
 			rows = self.session_cassandra.execute(query, [twitterUser])
@@ -111,6 +140,13 @@ class ConsultasCassandra(object):
 			return 0
 
 	def getLastTweetCollectedIdentificadorCassandra(self, twitterUser):
+		"""
+			last_tweet_collected es una variable que se guarda para optimizar y mucho la descarga de usuarios 
+			simplemente hace un Get de la variable o 0 si nunca se ha descargado nada
+
+			Get by id_twitter
+
+		"""
 		query = """SELECT last_tweet_collected FROM users WHERE id_twitter = %s LIMIT 1;"""
 		try:
 			rows = self.session_cassandra.execute(query, [twitterUser])
@@ -141,6 +177,62 @@ class ConsultasCassandra(object):
 			print e
 			return False
 
+	def getOrigTweetAndCreatedAtFromTweetsByUser(self, twitterUser, limit=10000):
+		"""
+			retorna un Array de objetos, estos objetos solo contienen el orig_tweet y created_at
+			permite que twitterUser sea del estilo "@usuario" o 123435345
+			Recordemos: 
+				created_at es un objeto dateTime
+				orig_tweet es 0 si es un tweet del usuario, otro identificador si es un RT
+		"""
+		#Traduce el usuario a user_id
+		user_id = None
+		try:
+			user_id = long(twitterUser)
+		except Exception, e:
+			if twitterUser[0] == "@":
+				twitterUser = twitterUser[1:]
+			user_id = self.getUserIDByScreenNameCassandra(twitterUser)
+
+		if user_id is None:
+			return []
+
+		#fin de la traduccion
+		query = """SELECT orig_tweet, created_at  FROM tweets WHERE tuser = %s ORDER BY id_twitter DESC LIMIT %s;"""
+		try:
+			rows = self.session_cassandra.execute(query, [user_id, limit])
+			if rows is not None:
+				return rows
+			else:
+				return []
+
+		except Exception, e:
+			print "getOrigTweetAndCreatedAtFromTweetsByUser"
+			print e
+			return []
+
+	def getOrigTweetAndCreatedAtFromTweetsByListIDSTweets(self, lista_tweets):
+		"""
+			retorna un Array de objetos, estos objetos solo contienen el orig_tweet y created_at
+			lista_tweets debe ser un array de identificadores de tweets
+			Recordemos: 
+				created_at es un objeto dateTime
+				orig_tweet es 0 si es un tweet del usuario, otro identificador si es un RT
+		"""
+		query = """SELECT orig_tweet, created_at  FROM tweets WHERE id_twitter = %s LIMIT 1;"""
+		try:
+			rows = []
+			for idtwitter in lista_tweets:
+				row = self.session_cassandra.execute(query, [idtwitter])
+				if row is not None:
+					rows.append(row[0])
+
+			return rows
+		except Exception, e:
+			print "getOrigTweetAndCreatedAtFromTweetsByUser"
+			print e
+			return []
+
 	def getTweetStatusCassandra(self, identificador):
 		query = "SELECT status FROM tweets WHERE id_twitter = %s LIMIT 1;"
 		try:
@@ -157,9 +249,11 @@ class ConsultasCassandra(object):
 		query = """SELECT name, screen_name, followers, location, created_at FROM users WHERE id_twitter = %s LIMIT 1;"""
 		try:
 			rows = self.session_cassandra.execute(query, [identificador])
-			row = rows[0]
-
-			return row
+			if rows is not None and len(rows) > 0:
+				row = rows[0]
+				return row
+			else:
+				return False
 		except Exception, e:
 			print "getUserByIDLargeCassandra"
 			print str(e)
@@ -169,11 +263,13 @@ class ConsultasCassandra(object):
 		query = """SELECT screen_name, profile_img FROM users WHERE id_twitter = %s LIMIT 1;"""
 		try:
 			rows = self.session_cassandra.execute(query, [identificador])
-			row = rows[0]
-
-			return row
+			if rows is not None and len(rows) > 0:
+				row = rows[0]
+				return row
+			else:
+				return False
 		except Exception, e:
-			print "getUserByIDLargeCassandra"
+			print "getUserByIDShortCassandra"
 			print str(e)
 			return False
 
@@ -182,7 +278,7 @@ class ConsultasCassandra(object):
 		try:
 			return self.session_cassandra.execute(query, [identificador])[0].tuser
 		except Exception, e:
-			print "getAllTweetsStatusCassandra"
+			print "getTweetUserByTweetIDCassandra"
 			print e
 
 	def getTweetByIDLargeCassandra(self, identificador):
