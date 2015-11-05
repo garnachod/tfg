@@ -38,7 +38,8 @@ class GeneradorTextoUsuario(luigi.Task):
 			for tweet in tweets:
 				tweetLimpio = LimpiadorTweets.clean(tweet.status)
 				tweetSinStopWords = LimpiadorTweets.stopWordsByLanguagefilter(tweetLimpio, tweet.lang)
-				out_file.write(tweetSinStopWords)
+				tweetStemmed = LimpiadorTweets.stemmingByLanguage(tweetSinStopWords, tweet.lang)
+				out_file.write(tweetStemmed)
 				out_file.write(u"\n")
 
 class TestGeneradorTextoUsuario(luigi.Task):
@@ -53,13 +54,17 @@ class TestGeneradorTextoUsuario(luigi.Task):
 		return luigi.LocalTarget('tasks/TestGeneradorTextoUsuario()')
 
 class GeneradorTextoSeguidoresUsuario(luigi.Task):
-	"""docstring for GeneradorTextoSeguidoresUsuario"""
+	"""
+		Uso:
+			PYTHONPATH='' luigi --module GeneradorDocumentosTwitter GeneradorTextoSeguidoresUsuario --usuario ...
+	"""
 	usuario = luigi.Parameter()
 
 	def output(self):
 		"""
 			Importante:
 				Aquí podemos ver como se genera un fichero utf-8 el Luigi, como son textos, lo necesitamos
+
 		"""
 		return luigi.LocalTarget(path='ficheros/GeneradorTextoSeguidoresUsuario(%s)'%self.usuario, format=luigi.format.TextFormat(encoding='utf8'))
 	

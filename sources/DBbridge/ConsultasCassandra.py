@@ -164,10 +164,24 @@ class ConsultasCassandra(object):
 			return 0
 	
 	def setLastTweetCollectedScreenNameCassandra(self, twitterUser, maximo):
+		"""
+			last_tweet_collected es una variable que se guarda para optimizar y mucho la descarga de usuarios,
+			simplemente hace un set de la variable
+
+			SET desde un screen_name
+
+			La logica final de este metodo depende de setLastTweetCollectedIdentificadorCassandra
+		"""
 		user_id = self.getUserIDByScreenNameCassandra(twitterUser)
 		self.setLastTweetCollectedIdentificadorCassandra(user_id, maximo)
 
 	def setLastTweetCollectedIdentificadorCassandra(self, twitterUser, maximo):
+		"""
+			last_tweet_collected es una variable que se guarda para optimizar y mucho la descarga de usuarios,
+			simplemente hace un set de la variable
+
+			SET desde un identificador de usuario
+		"""
 		query = "UPDATE users SET last_tweet_collected = %s WHERE id_twitter = %s;"
 		try:
 			self.session_cassandra.execute(query, (maximo, twitterUser))
@@ -234,6 +248,9 @@ class ConsultasCassandra(object):
 			return []
 
 	def getTweetStatusCassandra(self, identificador):
+		"""
+			retorna el status del tweet (el texto) dado el identificador del tweet
+		"""
 		query = "SELECT status FROM tweets WHERE id_twitter = %s LIMIT 1;"
 		try:
 			rows = self.session_cassandra.execute(query, [identificador])
@@ -246,6 +263,16 @@ class ConsultasCassandra(object):
 			return False
 
 	def getUserByIDLargeCassandra(self, identificador):
+		"""
+			Retorna la informacion de un usuario dado un identificador, sobre todo para la interfaz web
+
+			Esta informacion se compone de:
+				name
+				screen_name
+				followers
+				location
+				created_at
+		"""
 		query = """SELECT name, screen_name, followers, location, created_at FROM users WHERE id_twitter = %s LIMIT 1;"""
 		try:
 			rows = self.session_cassandra.execute(query, [identificador])
@@ -260,6 +287,14 @@ class ConsultasCassandra(object):
 			return False
 
 	def getUserByIDShortCassandra(self, identificador):
+		"""
+			Retorna la informacion de un usuario dado un identificador, sobre todo para la interfaz web
+
+			Esta informacion se compone de:
+				screen_name
+				profile_img
+		"""
+
 		query = """SELECT screen_name, profile_img FROM users WHERE id_twitter = %s LIMIT 1;"""
 		try:
 			rows = self.session_cassandra.execute(query, [identificador])
@@ -274,6 +309,9 @@ class ConsultasCassandra(object):
 			return False
 
 	def getTweetUserByTweetIDCassandra(self , identificador):
+		"""
+			Retorna el identificador de usuario dado un identificador de tweet
+		"""
 		query = "SELECT tuser FROM tweets WHERE id_twitter = %s LIMIT 1;"
 		try:
 			return self.session_cassandra.execute(query, [identificador])[0].tuser
@@ -282,6 +320,10 @@ class ConsultasCassandra(object):
 			print e
 
 	def getTweetByIDLargeCassandra(self, identificador):
+		"""
+			Retorna la informacion de un tweet completo junto con la informacion del usuario, 
+				dado un identificador de tweet
+		"""
 		query = """SELECT status, favorite_count, retweet_count, orig_tweet, media_urls, tuser, id_twitter FROM tweets WHERE id_twitter = %s LIMIT 1;"""
 		try:
 			rows = self.session_cassandra.execute(query, [identificador])
@@ -298,6 +340,12 @@ class ConsultasCassandra(object):
 
 	#TODO Problemas de seguridad?
 	def getTweetsTopicsCassandra(self, topics, use_max_id=False, max_id=0, limit=100):
+		"""
+			Realiza una consulta por topic en Cassandra lucene
+
+			El formato de tweet es el común:
+				status, favorite_count, retweet_count, orig_tweet, media_urls, screen_name, profile_img, id_twitter
+		"""
 		query = "SELECT status, favorite_count, retweet_count, orig_tweet, media_urls, tuser, id_twitter, created_at FROM tweets WHERE lucene =\'{"
 		if use_max_id:
 			query += "filter : {type:\"boolean\", must:["
@@ -329,6 +377,11 @@ class ConsultasCassandra(object):
 
 	#TODO Problemas de seguridad?
 	def getIDsTweetsTrainCassandra(self, topics, limit):
+		"""
+			Realiza una busqueda en Cassandra lucene de identificadores para hacer búsquedas por topics y entrenar en el tfg
+
+			Por ahora solo se usa en el TFG
+		"""
 		query = "SELECT id_twitter FROM tweets WHERE lucene =\'{"
 		query += """filter : {type:\"boolean\", must:[
 				   {type:"match", field:"orig_tweet", value:0} ] },"""
@@ -344,6 +397,9 @@ class ConsultasCassandra(object):
 
 
 	def getTweetsEntrenamientoListarCassandra(self, identificadores):
+		"""
+			Por ahora solo se usa en el tfg
+		"""
 		# entrada [[id_tweet, clase], ...]
 		Row = namedtuple('Row', 'status, favorite_count, retweet_count, orig_tweet, media_urls, screen_name, profile_img, id_twitter, clase')
 
@@ -364,6 +420,10 @@ class ConsultasCassandra(object):
 			return False
 
 	def getAllTweetsNoRtStatusCassandra(self):
+		"""
+			retorna todos los status de los tweets que no son RT
+			Para hacer NLP
+		"""
 		query = "SELECT status FROM tweets WHERE orig_tweet = 0;"
 
 		try:
@@ -373,6 +433,10 @@ class ConsultasCassandra(object):
 			print e
 
 	def getAllIDsTweets(self):
+		"""
+			Retorna todos los identificadores de todos los tweets,
+			Para hacer analisis internos de la base de datos
+		"""
 		query = "SELECT id_twitter FROM tweets;"
 		try:
 			rows = self.session_cassandra.execute(query)
@@ -385,6 +449,11 @@ class ConsultasCassandra(object):
 			print e
 
 	def getAllStatusAndIDUser(self):
+		"""
+			Retorna status y el identificador de usuario de todos los tweets.
+
+			Para hacer NLP dado un usuario
+		"""
 		query = "SELECT status, tuser FROM tweets;"
 		try:
 			return self.session_cassandra.execute(query)

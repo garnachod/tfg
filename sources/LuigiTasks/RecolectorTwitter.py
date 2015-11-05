@@ -65,6 +65,10 @@ class TestRecolectorUsuarioTwitter(luigi.Task):
 		return luigi.LocalTarget('tasks/TestRecolectorUsuarioTwitter()')
 
 class RecolectorSeguidoresTwitter(luigi.Task):
+	"""
+		Uso:
+			PYTHONPATH='' luigi --module RecolectorTwitter RecolectorSeguidoresTwitter --usuario ...
+	"""
 	usuario = luigi.Parameter()
 
 	def output(self):
@@ -253,6 +257,10 @@ class RecolectorTweetsSeguidoresTwitter(luigi.Task):
 	"""
 		Recolecta en un primer momento los siguiendo de un usuario
 		a continuacion descarga todos los tweets de esos siguiendo
+	"""
+	"""
+		Uso:
+			PYTHONPATH='' luigi --module RecolectorTwitter RecolectorTweetsSeguidoresTwitter --usuario ...
 	"""
 	usuario = luigi.Parameter()
 
