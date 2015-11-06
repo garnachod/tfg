@@ -207,7 +207,7 @@ class RelevanciaSeguidoresUsuarioAlTopic(luigi.Task):
 	def run(self):
 		header = True
 		#cargamos la matriz de correcion
-		matriz_texto = codecs.open("matrices_correcion/MatrizCorreccionMolins.csv", "r", "utf-8")
+		matriz_texto = codecs.open("/media/dani/data/betas/MatrizCorreccionMolinsV2.csv", "r", "utf-8")
 		matriz_diccionario = {}
 
 		for i, linea in enumerate(matriz_texto):
