@@ -281,3 +281,188 @@ class RelevanciaSeguidoresUsuarioByNameAlTopic(luigi.Task):
 					if usuario_screenName is not None:
 						out_file.write(usuario_screenName + ","+ str(peso)+ "\n")
 
+class FiltradoAccionesUsuariosTwitter(luigi.Task):
+
+	"""
+	Vamos a cribar la muestra de acciones para luego pasarsela a otra tarea de Luigi y que pinte la derivada discreta del acumulado.
+
+Entonces no hay que escupìr grafica.
+
+		Uso:
+			PYTHONPATH='' luigi --module Analiticas FiltradoAccionesUsuariosTwitter --usuario ...
+	"""
+
+	usuario = luigi.Parameter()
+
+	def output(self):
+		#la salida seria cadenaPuntos
+		return luigi.LocalTarget(path='graficas/FiltradoAccionesUsuariosTwitter(%s).html'%self.usuario, format=luigi.format.TextFormat(encoding='utf8'))
+
+	def requires(self):
+		return GeneradorEventosSeguidoresPuntosUsuario(self.usuario)
+
+	def run(self):
+		template = codecs.open("templates/TemplateGoogleChartsPoints.html", "r", "utf-8")
+		template_content = template.read()
+		template.close()
+		with self.output().open('w') as out_file:
+			ArrayPuntos = blist([])
+			with self.input().open('r') as in_file:
+				ArrayPuntosTotales = blist([])
+				with self.input().open('r') as in_file:
+					for line in in_file:
+						ArrayPuntosUsuario = []
+						puntos = line.replace("\n", "").split(",")[1:]
+						for punto in puntos:
+							microsegundo = (parser.parse(punto) - datetime.datetime.today()).total_seconds()
+							ArrayPuntosUsuario.append(microsegundo)
+
+						ArrayPuntosUsuarioSorted = sorted(ArrayPuntosUsuario)
+
+						TiempoCompara = None
+						for puntoUsuario in ArrayPuntosUsuarioSorted:
+							#if puntoUsuario > - (60*60*24*62):
+							if TiempoCompara is None:
+								TiempoCompara = puntoUsuario
+								ArrayPuntosTotales.append(TiempoCompara)
+							else:
+								if (TiempoCompara - puntoUsuario) > (-15 * 60):
+									pass
+								else:
+									ArrayPuntosTotales.append(puntoUsuario)
+									TiempoCompara = puntoUsuario
+
+			ArrayPuntos_sorted = sorted(ArrayPuntosTotales)
+			primerPunto = False
+
+			cadenaPuntos = u"["
+			rango = 20
+			for i in xrange(0, len(ArrayPuntos_sorted), rango):
+				if primerPunto == True:
+					#OJO: Aqui se lee cada accion dos veces, esto es ineficiente.					
+					cadenaPuntos += u",["+ str((ArrayPuntos_sorted[i]+ArrayPuntos_sorted[i-rango])/2 ) + "," + str(1/(ArrayPuntos_sorted[i]-ArrayPuntos_sorted[i-rango]) )  + u"]"
+				else:
+					cadenaPuntos += u"[0,0]"
+					primerPunto = True
+			cadenaPuntos += "]"
+			salida = template_content.replace("{{}}", cadenaPuntos)
+			out_file.write(salida)
+
+
+
+
+class FiltradoAccionesUsuariosMesesTwitter(luigi.Task):
+
+	"""
+	Vamos a cribar la muestra de acciones para luego pasarsela a otra tarea de Luigi y que pinte la derivada discreta del acumulado.
+
+Entonces no hay que escupìr grafica.
+
+		Uso:
+			PYTHONPATH='' luigi --module Analiticas FiltradoAccionesUsuariosMesesTwitter --usuario ...
+	"""
+
+	usuario = luigi.Parameter()
+
+	def output(self):
+		#la salida seria cadenaPuntos
+		return luigi.LocalTarget(path='graficas/FiltradoAccionesUsuariosMesesTwitter(%s).html'%self.usuario, format=luigi.format.TextFormat(encoding='utf8'))
+
+	def requires(self):
+		return GeneradorEventosSeguidoresPuntosUsuario(self.usuario)
+
+	def run(self):
+		template = codecs.open("templates/TemplateGoogleChartsPoints.html", "r", "utf-8")
+		template_content = template.read()
+		template.close()
+		with self.output().open('w') as out_file:
+			ArrayPuntos = blist([])
+			with self.input().open('r') as in_file:
+				ArrayPuntosTotales = blist([])
+				with self.input().open('r') as in_file:
+					for line in in_file:
+						ArrayPuntosUsuario = []
+						puntos = line.replace("\n", "").split(",")[1:]
+						for punto in puntos:
+							microsegundo = (parser.parse(punto) - datetime.datetime.today()).total_seconds()
+							ArrayPuntosUsuario.append(microsegundo)
+
+						ArrayPuntosUsuarioSorted = sorted(ArrayPuntosUsuario)
+
+						TiempoCompara = None
+						ArrayPuntosUsuarioSortedMes = []
+						for puntoUsuario in ArrayPuntosUsuarioSorted:
+							if puntoUsuario > - (60*60*24*15):
+								if TiempoCompara is None:
+									TiempoCompara = puntoUsuario
+									ArrayPuntosTotales.append(TiempoCompara)
+								else:
+									if (TiempoCompara - puntoUsuario) > (-15 * 60):
+										pass
+									else:
+										ArrayPuntosTotales.append(puntoUsuario)
+										TiempoCompara = puntoUsuario
+
+			ArrayPuntos_sorted = sorted(ArrayPuntosTotales)
+			primerPunto = False
+
+			cadenaPuntos = u"["
+			rango = 2
+			for i in xrange(0, len(ArrayPuntos_sorted), rango):
+				if primerPunto == True:
+					#OJO: Aqui se lee cada accion dos veces, esto es ineficiente.					
+					cadenaPuntos += u",["+ str((ArrayPuntos_sorted[i]+ArrayPuntos_sorted[i-rango])/2 ) + "," + str(1/(ArrayPuntos_sorted[i]-ArrayPuntos_sorted[i-rango]) )  + u"]"
+				else:
+					cadenaPuntos += u"[0,0]"
+					primerPunto = True
+			cadenaPuntos += "]"
+			salida = template_content.replace("{{}}", cadenaPuntos)
+			out_file.write(salida)
+
+
+
+
+class GraficaUsuariosDiaDerivadaTwitter(luigi.Task):
+
+	"""
+		Uso:
+			PYTHONPATH='' luigi --module Analiticas GraficaUsuariosDiaDerivadaTwitter --usuario ...
+	"""
+"""
+	usuario = luigi.Parameter()
+
+	def output(self):
+		return luigi.LocalTarget(path='graficas/GraficaUsuariosDiaDerivadaTwitter(%s).html'%self.usuario, format=luigi.format.TextFormat(encoding='utf8'))
+
+	def requires(self):
+		#Aqui queremos solo un par de meses.
+		return GeneradorEventosSeguidoresPuntosUsuario(self.usuario)
+
+	def run(self):
+		template = codecs.open("templates/TemplateGoogleChartsPoints.html", "r", "utf-8")
+		template_content = template.read()
+		template.close()
+		with self.output().open('w') as out_file:
+			ArrayPuntos = blist([])
+			with self.input().open('r') as in_file:
+				cadenaPuntos += u"["
+				for usuario in in_file:
+
+
+# Aqui queremos recorrer las acciones de cada usuario, ir metiendolas en 7 listas distintas (una para cada dia de la semana) de la siguiente forma:
+			for i in xrange(0, len(accionesusuarioporpornerlealgunnombre), rango):
+				if primerPunto == True:
+#OJO: Aqui se lee cada accion dos veces, esto es ineficiente.					
+					cadenaPuntos += u",["+ str((ArrayPuntos_sorted[i]+ArrayPuntos_sorted[i-rango])/2 ) + "," + str(1/(ArrayPuntos_sorted[i]-ArrayPuntos_sorted[i-rango]) )  + u"]"
+				else:
+					cadenaPuntos += u"[0,0]"
+					primerPunto = True
+
+
+
+				cadenaPuntos += "]"
+				salida = template_content.replace("{{}}", cadenaPuntos)
+				out_file.write(salida)
+
+
+"""

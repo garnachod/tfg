@@ -38,7 +38,7 @@ class EscritorSeguidoresNeo4j(Escritor):
 		for i, nodoCrea in enumerate(nodos_crear):
 			query = "MERGE (n:user {id_twitter:" +str(nodoCrea) +"})"
 			tx.append(query)
-			if i % 200 == 0:
+			if i % 100 == 0:
 				tx.process()
 		tx.process()
 		tx.commit()
@@ -54,7 +54,7 @@ class EscritorSeguidoresNeo4j(Escritor):
 			#query = "MATCH (np { id_twitter: "+str(nodo_principal_id)+" }),(nf { id_twitter: "+str(identificador)+"}) CREATE UNIQUE (nf)-[r:FOLLOW {since:"+str(time.time())+"}]->(np)"			
 			i += 1
 			tx.append(query)
-			if i % 200 == 0:
+			if i % 100 == 0:
 				tx.process()
 		tx.process()
 		tx.commit()

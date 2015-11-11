@@ -459,6 +459,19 @@ class ConsultasCassandra(object):
 			return self.session_cassandra.execute(query)
 		except Exception, e:
 			print "getAllStatusAndIDUser"
+			print
+
+	def getAllStatusAndIDUserFiltrateLang(self, lang):
+		"""
+			Retorna status y el identificador de usuario de todos los tweets.
+
+			Para hacer NLP dado un usuario
+		"""
+		query = "SELECT status, tuser, lang FROM tweets WHERE lang = %s;"
+		try:
+			return self.session_cassandra.execute(query, [lang])
+		except Exception, e:
+			print "getAllStatusAndIDUser"
 			print 
 
 
