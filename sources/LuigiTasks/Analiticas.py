@@ -5,6 +5,7 @@ lib_path = os.path.abspath('../')
 sys.path.append(lib_path)
 import luigi
 from GeneradorDocumentosTwitter import *
+from AnalisisTextos import *
 import codecs
 import random
 from dateutil import parser
@@ -198,7 +199,9 @@ class RelevanciaSeguidoresUsuarioAlTopic(luigi.Task):
 		#solo puede no existir ese identificador si es privado, pero debemos controlarlo
 		if identificador > 0:
 			seguidores = consultasNeo4j.getListaIDsSeguidoresByUserID(identificador)
-			return [GeneradorTextoUsuario(seguidor) for seguidor in seguidores]
+			arrayTareas = [GeneradorTextoUsuario(seguidor) for seguidor in seguidores]
+			arrayTareas.append(CreaMatrizCorreccionTwitterUser(self.usuario))
+			return arrayTareas
 		else:
 			return []
 
@@ -206,24 +209,25 @@ class RelevanciaSeguidoresUsuarioAlTopic(luigi.Task):
 
 	def run(self):
 		header = True
-		#cargamos la matriz de correcion
-		matriz_texto = codecs.open("/media/dani/data/betas/MatrizCorreccionMolinsV2.csv", "r", "utf-8")
 		matriz_diccionario = {}
+		#cargamos la matriz de correcion
+		for input in self.input():
+			if "MatrizCorreccion" in input.path:
+				with input.open('r') as matriz_texto:
+					for i, linea in enumerate(matriz_texto):
+						if i == 0:
+							if header:
+								continue
 
-		for i, linea in enumerate(matriz_texto):
-			if i == 0:
-				if header:
-					continue
+						if len(linea) < 10:
+							continue
 
-			if len(linea) < 10:
-				continue
+						columnas = linea.replace("\n", "").split(",")
 
-			columnas = linea.split(" ")
+						termino = columnas[0]
+						pesos = [float(x) for x in columnas[1:]]
 
-			termino = columnas[0].replace("\"", "").replace("terms.", "")
-			pesos = [float(x) for x in columnas[1:]]
-
-			matriz_diccionario[termino] = pesos
+						matriz_diccionario[termino] = pesos
 
 
 
@@ -236,18 +240,19 @@ class RelevanciaSeguidoresUsuarioAlTopic(luigi.Task):
 			usuarioLongitud = 0
 			usuarioId = input.path.replace("ficheros/GeneradorTextoUsuario(", "").replace(")", "")
 			with input.open('r') as in_file:
-				for linea in in_file:
-					linea = linea.replace("\n", "")
-					palabras = linea.split(" ")
-					for palabra in palabras:
-						if palabra in matriz_diccionario:
-							usuarioPeso += matriz_diccionario[palabra][indice]
-							usuarioLongitud += 1
+				if "MatrizCorreccion" not in input.path:
+					for linea in in_file:
+						linea = linea.replace("\n", "")
+						palabras = linea.split(" ")
+						for palabra in palabras:
+							if palabra in matriz_diccionario:
+								usuarioPeso += matriz_diccionario[palabra][indice]
+								usuarioLongitud += 1
 
-				if usuarioLongitud > 0:
-					usuarios.append((usuarioId, usuarioPeso/usuarioLongitud))
-				else:
-					usuarios.append((usuarioId, 0.0))
+					if usuarioLongitud > 0:
+						usuarios.append((usuarioId, usuarioPeso/usuarioLongitud))
+					else:
+						usuarios.append((usuarioId, 0.0))
 
 
 		usuarios_sorted = sorted(usuarios, key=lambda usuario: usuario[1], reverse=True)

@@ -11,7 +11,6 @@ from DBbridge.ConsultasCassandra import ConsultasCassandra
 from ProcesadoresTexto.LimpiadorTweets import LimpiadorTweets
 from RecolectorTwitter import *
 
-
 class GeneradorTextoUsuario(luigi.Task):
 	usuario = luigi.Parameter()
 
@@ -243,7 +242,42 @@ class GeneradorTextoCorpusIdioma(luigi.Task):
 	def output(self):
 		return luigi.LocalTarget(path='ficheros/GeneradorTextoCorpusIdioma(%s)'%self.idioma, format=luigi.format.TextFormat(encoding='utf8'))
 		
-	
+class GeneradorTextoCorpusIdiomaSinLem(luigi.Task):
+	"""docstring for GeneradorTextoCorpusIdiomaSinLem"""
+	"""
+		Uso:
+			PYTHONPATH='' luigi --module GeneradorDocumentosTwitter GeneradorTextoCorpusIdiomaSinLem --idioma ...
+	"""
+	idioma = luigi.Parameter(default="es")
+
+	def run(self):
+		consultasCassandra = ConsultasCassandra()
+		diccionarioUsuarios = {}
+
+		tweets = consultasCassandra.getAllStatusAndIDUserFiltrateLang(self.idioma)
+		for tweet in tweets:
+			strusuario = str(tweet.tuser)
+			
+			if strusuario not in diccionarioUsuarios:
+				diccionarioUsuarios[strusuario] = []
+
+			tweetLimpio = LimpiadorTweets.clean(tweet.status)
+			tweetSinStopWords = LimpiadorTweets.stopWordsByLanguagefilter(tweetLimpio, tweet.lang)
+
+			diccionarioUsuarios[strusuario].append(tweetSinStopWords)
+
+		with self.output().open('w') as out_file:
+			for usuario in diccionarioUsuarios:
+				for tweet in diccionarioUsuarios[usuario]:
+					out_file.write(tweet + u" ")
+
+				out_file.write(u"\n")
+
+
+
+	def output(self):
+		return luigi.LocalTarget(path='ficheros/GeneradorTextoCorpusIdiomaSinLem(%s)'%self.idioma, format=luigi.format.TextFormat(encoding='utf8'))
+		
 
 if __name__ == "__main__":
 	luigi.run()

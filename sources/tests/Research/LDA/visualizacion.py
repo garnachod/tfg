@@ -3,9 +3,9 @@ import gensim
 
 if __name__ == '__main__':
 
-	corpus = gensim.corpora.MmCorpus('test.mm')
+	corpus = gensim.corpora.MmCorpus('textos/corpus.mm')
 	dictionary = gensim.corpora.Dictionary.load("dictionary.dict")
-	lda = gensim.models.LdaModel.load('model.lda')
+	lda = gensim.models.LdaModel.load('textos/model.lda')
 
 	followers_data =  pyLDAvis.gensim.prepare(lda, corpus, dictionary)
 	print "guardando"
