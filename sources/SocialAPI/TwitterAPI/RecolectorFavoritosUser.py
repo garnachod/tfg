@@ -76,7 +76,7 @@ class RecolectorFavoritosUser(Recolector):
 	def privateRealizaConsulta(self, identificador, maximo=0):
 		count = 200
 		if self.authorizator.is_limit_api(self.tipo_id):
-			return []
+			raise Exception('LIMITE')
 
 		try:
 			if maximo == 0:

@@ -16,6 +16,7 @@ sudo apt-get install cassandra=2.1.8
  cd /usr/bin/
  ./cqlsh
  CREATE KEYSPACE twitter WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };
+ CREATE KEYSPACE instagram WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };
 ```
 
 ##### ya se pueden crear las "tablas"

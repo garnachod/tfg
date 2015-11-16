@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import os
 import sys
 lib_path = os.path.abspath('/home/dani/tfg/sources')
@@ -16,10 +17,15 @@ class ConexionCassandra():
 			#self.conn = psycopg2.connect(database="twitter", user="usrtwitter", password="postgres_tfg", host="localhost")
 			cluster_cass = Cluster()
 			self.session = cluster_cass.connect(Conf().getCassandraKeyspace())
+			self.session_instagram = cluster_cass.connect(Conf().getCassandraKeyspaceInstagram())
 
 		def getSession(self):
 			""" Test method, return singleton conexion"""
 			return self.session
+
+		def getSessionInstagram(self):
+			""" Test method, return singleton conexion"""
+			return self.session_instagram
 
 
 	# storage for the instance reference

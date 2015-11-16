@@ -7,6 +7,7 @@ class Conf():
 		def __init__(self):
 			#cassandra
 			self.cassandra_keyspace = 'twitter'
+			self.cassandra_keyspace_instagram = 'instagram'
 			#SQL
 			self.sql_database = 'twitter'
 			self.sql_user = 'tfg'
@@ -21,6 +22,9 @@ class Conf():
 
 		def getCassandraKeyspace(self):
 			return self.cassandra_keyspace
+
+		def getCassandraKeyspaceInstagram(self):
+			return self.cassandra_keyspace_instagram
 
 		def getSparkHome(self):
 			return self.spark_home
