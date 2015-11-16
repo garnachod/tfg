@@ -1,0 +1,30 @@
+<html>
+  <head>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load("visualization", "1.1", {packages:["corechart"]});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('number');
+        data.addColumn('number');
+
+       	//admite una matriz del estilo [[punto,altura],...,[punto, altura]]
+        var puntos = {{}};
+        for (var i = 0; i < puntos.length; i++)
+          data.addRow(puntos[i]);
+
+        var options = {
+          legend: 'none',
+          pointSize: 0.05,
+          //crosshair: { trigger: 'both' } // Display crosshairs on focus and selection.
+        };
+        var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+      }
+    </script>
+  </head>
+  <body>
+    <div id="chart_div" style="width: 2000px; height: 1500px;"></div>
+  </body>
+</html>
