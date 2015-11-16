@@ -123,23 +123,38 @@ class CreaMatrizCorreccionTwitterUser(luigi.Task):
 	def run(self):
 		nTopics = 100
 		lda = gensim.models.LdaModel.load('textos/model_p_molins.lda')
-		topic = lda.show_topic(0, topn=20)
+		
+		topic = lda.show_topic(0, topn=len(lda.state.sstats[0]))
 
 		corpus = gensim.corpora.MmCorpus('textos/corpus.mm')
 		dictionary = gensim.corpora.Dictionary.load("textos/dictionary.dict")
 		lda = gensim.models.LdaModel.load('textos/model.lda')
 
 		vectorTopic = [0.0 for i in range(0, nTopics)]
+		acumulado = 0.0
 		for tupla in topic:
 			vectorPalabra = []
-			idPalabra = dictionary.doc2bow([tupla[1]])[0][0]
+			idPalabra = False
+			try:
+				idPalabra = dictionary.doc2bow([tupla[1]])[0][0]
+			except Exception, e:
+				pass
+
+			if idPalabra == False:
+				continue
+
 			pesoPalabra = tupla[0]
+
+			acumulado += pesoPalabra
 
 			for indice in range(0, nTopics):
 				vectorPalabra.append(lda.state.sstats[indice][idPalabra]*pesoPalabra)
 
 			for i, elemento in enumerate(vectorPalabra):
 				vectorTopic[i] += elemento
+
+			if acumulado >= 0.9:
+				break
 
 		matrizIdentidad = numpy.zeros((nTopics, nTopics))
 		for i in range(0, nTopics):

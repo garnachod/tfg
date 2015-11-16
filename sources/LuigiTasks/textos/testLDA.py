@@ -24,7 +24,7 @@ if __name__ == '__main__':
 
 
 	print len(dictionary.items())
-	print lda.show_topic(0, topn=20)
+	print lda.show_topic(0, topn=100)
 	print dictionary.doc2bow(["no"])
 	print dictionary[0]
 	print len(lda.state.sstats[0])
