@@ -3,6 +3,7 @@ import os
 import sys
 lib_path = os.path.abspath('../../')
 sys.path.append(lib_path)
+from DBbridge.EscritorUsuariosInstagramCassandra import EscritorUsuariosInstagramCassandra
 
 from SocialAPI.Recolector import Recolector
 from GetAuthorizations import GetAuthorizations
@@ -48,8 +49,8 @@ class RecolectorUsuario(Recolector):
 				self.guarda(usuariosArray)
 
 	def guarda(self, arrayDatos):
-		if len(self.escritores) == 0:
-			print arrayDatos
+		#if len(self.escritores) == 0:
+		#	print arrayDatos
 
 		for escritor in self.escritores:
 			escritor.escribe(arrayDatos)
@@ -93,5 +94,5 @@ class RecolectorUsuario(Recolector):
 
 
 if __name__ == '__main__':
-	recolector = RecolectorUsuario([])
+	recolector = RecolectorUsuario([EscritorUsuariosInstagramCassandra(-1)])
 	recolector.recolecta("garnachod")

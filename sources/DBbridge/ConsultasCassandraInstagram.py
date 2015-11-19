@@ -59,3 +59,6 @@ class ConsultasCassandraInstagram(object):
 			print "getUserIDByScreenNameCassandra"
 			print e
 			return None
+
+if __name__ == '__main__':
+	print ConsultasCassandraInstagram().getUserLongByUserName("garnachod")

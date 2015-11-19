@@ -15,7 +15,7 @@ class ApoyoInstagram(object):
 		"""
 		id = self.consultas.getIDByUsername(username)
 		if id is not None:
-			return id
+			return id.id
 		else:
 			return False
 

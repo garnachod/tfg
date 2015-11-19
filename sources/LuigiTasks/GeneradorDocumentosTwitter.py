@@ -41,6 +41,35 @@ class GeneradorTextoUsuario(luigi.Task):
 				out_file.write(tweetStemmed)
 				out_file.write(u"\n")
 
+class GeneradorTextoUsuarioSinLem(luigi.Task):
+	usuario = luigi.Parameter()
+
+	def output(self):
+		return luigi.LocalTarget(path='ficheros/GeneradorTextoUsuarioSinLem(%s)'%self.usuario, format=luigi.format.TextFormat(encoding='utf8'))
+
+	def run(self):
+		"""
+		Realiza una busqueda en la base de datos
+
+		Recolecta los tweets de un usuario dado por nombre de usuario
+		o identificador, imprime cada tweet en una linea, han sido limpiados
+		"""
+		cs = ConsultasCassandra()
+
+		tweets = []
+		try:
+			tweets = cs.getTweetsUsuarioCassandra(self.usuario, limit=1000)
+		except Exception, e:
+			pass
+
+		#print len(self.output())
+		with self.output().open('w') as out_file:
+			for tweet in tweets:
+				tweetLimpio = LimpiadorTweets.clean(tweet.status)
+				tweetSinStopWords = LimpiadorTweets.stopWordsByLanguagefilter(tweetLimpio, tweet.lang)
+				out_file.write(tweetSinStopWords)
+				out_file.write(u"\n")
+
 class TestGeneradorTextoUsuario(luigi.Task):
 	def requires(self):
 		return GeneradorTextoUsuario("@p_molins")

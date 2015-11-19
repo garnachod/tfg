@@ -17,7 +17,7 @@ class ConsultasNeo4j(object):
 
 		return identificadores
 
-	def getListaIDsSiguendoByUserID(self, user_id):
+	def getListaIDsSiguiendoByUserID(self, user_id):
 		queryNeo4j = "MATCH (u:user {id_twitter : {ID}})-[r:FOLLOW]->(a) return a"
 		nodos = self.graph.cypher.execute(queryNeo4j, {"ID":user_id})
 		identificadores = blist([])

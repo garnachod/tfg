@@ -275,7 +275,7 @@ class RecolectorTweetsSiguendoTwitter(luigi.Task):
 
 		#solo puede no existir ese identificador si es privado, pero debemos controlarlo
 		if identificador > 0:
-			siguiendos = consultasNeo4j.getListaIDsSiguendoByUserID(identificador)
+			siguiendos = consultasNeo4j.getListaIDsSiguiendoByUserID(identificador)
 			for siguiendo in siguiendos:
 				yield RecolectorUsuarioTwitter(siguiendo)
 
@@ -417,7 +417,7 @@ class RecolectorFavoritosSiguiendoTwitter(luigi.Task):
 
 		#solo puede no existir ese identificador si es privado, pero debemos controlarlo
 		if identificador > 0:
-			seguidores = consultasNeo4j.getListaIDsSiguendoByUserID(identificador)
+			seguidores = consultasNeo4j.getListaIDsSiguiendoByUserID(identificador)
 			for seguidor in seguidores:
 				yield RecolectorFavoritosTwitter(seguidor)
 
@@ -465,7 +465,7 @@ class RecolectorTweetsSiguendoStreamTwitter(luigi.Task):
 
 		#solo puede no existir ese identificador si es privado, pero debemos controlarlo
 		if identificador > 0:
-			seguidores = consultasNeo4j.getListaIDsSiguendoByUserID(identificador)
+			seguidores = consultasNeo4j.getListaIDsSiguiendoByUserID(identificador)
 			escritorList = []
 			escritorList.append(EscritorTweetsCassandra(-1))
 			recolector = RecolectorTweetsUsersStream(escritorList)
