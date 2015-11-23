@@ -234,6 +234,93 @@ class CreaMatrizCorreccionTwitterUserPrimerTopic(luigi.Task):
 				out_file.write(dictionary[i] + "," + str(MatrizCorrecionFinal[0][i]))
 				out_file.write(u"\n")
 
+def Gram_Schmidt1(vecs, row_wise_storage=True):
+	"""
+	Apply the Gram-Schmidt orthogonalization algorithm to a set
+	of vectors. vecs is a two-dimensional array where the vectors
+	are stored row-wise, or vecs may be a list of vectors, where
+	each vector can be a list or a one-dimensional array.
+	An array basis is returned, where basis[i,:] (row_wise_storage
+	is True) or basis[:,i] (row_wise_storage is False) is the i-th
+	orthonormal vector in the basis.
+	This function does not handle null vectors, see Gram_Schmidt
+	for a (slower) function that does.
+	"""
+	from numpy.linalg import inv
+	from math import sqrt
+
+	vecs = numpy.asarray(vecs)  # transform to array if list of vectors
+	m, n = vecs.shape
+	basis = numpy.array(numpy.transpose(vecs))
+	eye = numpy.identity(n).astype(float)
+
+	basis[:,0] /= sqrt(numpy.dot(basis[:,0], basis[:,0]))
+	for i in range(1, m):
+		v = basis[:,i]/sqrt(numpy.dot(basis[:,i], basis[:,i]))
+		U = basis[:,:i]
+		P = eye - numpy.dot(U, numpy.dot(inv(numpy.dot(numpy.transpose(U), U)), numpy.transpose(U)))
+		basis[:, i] = numpy.dot(P, v)
+		basis[:, i] /= sqrt(numpy.dot(basis[:, i], basis[:, i]))
+
+	return numpy.transpose(basis) if row_wise_storage else basis
+
+def Gram_Schmidt(vecs, row_wise_storage=True, tol=1E-10,
+				 normalize=False, remove_null_vectors=False,
+				 remove_noise=False):
+	"""
+	Apply the Gram-Schmidt orthogonalization algorithm to a set
+	of vectors. vecs is a two-dimensional array where the vectors
+	are stored row-wise, or vecs may be a list of vectors, where
+	each vector can be a list or a one-dimensional array.
+	The argument tol is a tolerance for null vectors (the absolute
+	value of all elements must be less than tol to have a null
+	vector).
+	If normalize is True, the orthogonal vectors are normalized to form
+	an orthonormal basis.
+	If remove_null_vectors is True, all null vectors are removed from
+	the resulting basis.
+	If remove_noise is True, all elements whose absolute values are
+	less than tol are set to zero.
+	An array basis is returned, where basis[i,:] (row_wise_storage
+	is True) or basis[:,i] (row_wise_storage is False) is the i-th
+	orthogonal vector in the basis.
+	This function handles null vectors, see Gram_Schmidt1
+	for a (faster) function that does not.
+	"""
+	# The algorithm below views vecs as a matrix A with the vectors
+	# stored as columns:
+	vecs = numpy.asarray(vecs)  # transform to array if list of vectors
+	if row_wise_storage:
+		A = numpy.transpose(vecs).copy()
+	else:
+		A = vecs.copy()
+
+	m, n = A.shape
+	V = numpy.zeros((m,n))
+
+	for j in xrange(n):
+		v0 = A[:,j]
+		v = v0.copy()
+		for i in xrange(j):
+			vi = V[:,i]
+
+			if (abs(vi) > tol).any():
+				v -= (numpy.vdot(v0,vi)/numpy.vdot(vi,vi))*vi
+		V[:,j] = v
+
+	if remove_null_vectors:
+		indices = [i for i in xrange(n) if (abs(V[:,i]) < tol).all()]
+		V = V[ix_(range(m), indices)]
+
+	if normalize:
+		for j in xrange(V.shape[1]):
+			V[:,j] /= linalg.norm(V[:,j])
+
+	if remove_noise:
+		V = cut_noise(V, tol)
+
+	return numpy.transpose(V) if row_wise_storage else V
+
 
 class CreaMatrizCorreccionTwitterUserTodosTopics(luigi.Task):
 	"""docstring for CreaMatrizCorreccion"""
@@ -296,6 +383,10 @@ class CreaMatrizCorreccionTwitterUserTodosTopics(luigi.Task):
 
 			vectoresTopics.append(vectorTopic)
 
+		#print vectoresTopics
+		#vectoresTopicsGS = Gram_Schmidt(vectoresTopics)
+		#print vectoresTopicsGS
+
 		matrizIdentidad = numpy.zeros((nTopics, nTopics))
 		for i in range(0, nTopics):
 			matrizIdentidad[i][i] = 1.0
@@ -306,7 +397,9 @@ class CreaMatrizCorreccionTwitterUserTodosTopics(luigi.Task):
 				matrizIdentidad[i][j] = vectorTopic[i]
 
 		#print matrizIdentidad
-
+		matrizIdentidad = Gram_Schmidt(matrizIdentidad)
+		#print matrizIdentidad
+		"""
 		autovalores = numpy.linalg.eigvals(matrizIdentidad)
 		mayorAutovalor = autovalores[0]
 		menorAutovalor = autovalores[0]
@@ -320,7 +413,8 @@ class CreaMatrizCorreccionTwitterUserTodosTopics(luigi.Task):
 
 		print "K es:"
 		print mayorAutovalor/menorAutovalor
-
+		
+		exit()"""
 
 		matrizIdentidadInv = numpy.linalg.inv(matrizIdentidad)
 

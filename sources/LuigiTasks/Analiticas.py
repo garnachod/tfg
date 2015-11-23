@@ -371,6 +371,63 @@ class RelevanciaSeguidoresUsuarioTodosTopics(luigi.Task):
 					out_file.write(","+ str(peso))
 				out_file.write("\n")
 
+
+class RelevanciaSeguidoresUsuarioByNameAlTodosTopics(luigi.Task):
+	"""
+		Uso:
+			PYTHONPATH='' luigi --module Analiticas RelevanciaSeguidoresUsuarioByNameAlTodosTopics --usuario ... --matrizCorreccion ...
+	"""
+	usuario = luigi.Parameter()
+
+	def output(self):
+		return luigi.LocalTarget(path='relevancia/RelevanciaSeguidoresUsuarioByNameAlTodosTopics(%s)'%self.usuario)
+
+	def requires(self):
+		return RelevanciaSeguidoresUsuarioTodosTopics(self.usuario)
+
+	def run(self):
+		consultasCassandra = ConsultasCassandra()
+
+		with self.output().open('w') as out_file:
+			with self.input().open('r') as in_file:
+				for line in in_file:
+					elementos = line.replace("\n", "").split(",")
+					usuarioId = long(elementos[0])
+					pesos = elementos[1:]
+					usuario_screenName = consultasCassandra.getScreenNameByUserIDCassandra(usuarioId)
+					if usuario_screenName is not None:
+						out_file.write(usuario_screenName)
+						for peso in pesos:
+							out_file.write(',' + peso)
+
+						out_file.write("\n")
+
+class RelevanciaSeguidoresUsuarioByNameAlTodosTopicsJSON(luigi.Task):
+	"""
+		Uso:
+			PYTHONPATH='' luigi --module Analiticas RelevanciaSeguidoresUsuarioByNameAlTodosTopicsJSON --usuario ... --matrizCorreccion ...
+	"""
+	usuario = luigi.Parameter()
+
+	def output(self):
+		return luigi.LocalTarget(path='relevancia/RelevanciaSeguidoresUsuarioByNameAlTodosTopicsJSON(%s)'%self.usuario)
+
+	def requires(self):
+		return RelevanciaSeguidoresUsuarioByNameAlTodosTopics(self.usuario)
+
+	def run(self):
+		JsonObj = {}
+		with self.output().open('w') as out_file:
+			with self.input().open('r') as in_file:
+				for line in in_file:
+					elementos = line.replace("\n", "").split(",")
+					if len(elementos) > 1:
+						usuario = elementos[0]
+						pesos = [float(elemento) for elemento in elementos[1:]]
+						JsonObj[usuario] = pesos
+
+			out_file.write(json.dumps(JsonObj))
+
 class GraficaAccionesUsuariosMesesTwitter(luigi.Task):
 
 	"""
@@ -439,8 +496,6 @@ Entonces no hay que escupìr grafica.
 			salida = template_content.replace("{{}}", cadenaPuntos)
 			out_file.write(salida)
 
-
-############################################################################################### 12/11/15
 
 
 class GraficaAccionesModuloDiaTwitter(luigi.Task):
@@ -578,7 +633,7 @@ class GraficaAccionesModuloSemanaTwitterSmooth(luigi.Task):
 
 			#me esta dando fallo con cosas tipo rango 1 o 3 y smootrange 31 (ojo que para rango 40 y smoothrange 91 no falla)
 			ArrayPuntosDerivada = []
-			rango = 33
+			rango = 100
 			for i in xrange(0, len(ArrayPuntos_sorted), rango):
 				punto = (((ArrayPuntos_sorted[i]+ArrayPuntos_sorted[i-rango])/2 ), (1/(ArrayPuntos_sorted[i]-ArrayPuntos_sorted[i-rango])))
 				ArrayPuntosDerivada.append(punto)
@@ -614,13 +669,11 @@ class GraficaAccionesModuloSemanaTwitterSmooth(luigi.Task):
 			out_file.write(salida)
 
 
-######################################################## 16-11-15
 
 class HistogramaEventosSemanaTwitter(luigi.Task):
 
 	"""
-	A 16-11-15 a las 13:03 no funciona y me da errores raros, quedo a la espera de que los informaticos tengan tiempo.
-		Uso:
+			Uso:
 			PYTHONPATH='' luigi --module Analiticas HistogramaEventosSemanaTwitter --usuario ...
 	"""
 
@@ -646,7 +699,7 @@ class HistogramaEventosSemanaTwitter(luigi.Task):
 						ArrayPuntos.append(parser.parse(punto))
 
 			print "ok leer"
-			hMinutos= 15
+			hMinutos= 20
 			ceros = [0 for i in xrange(7*24*60/hMinutos)]
 
 			for accion in ArrayPuntos:
@@ -716,7 +769,7 @@ class HistogramaPonderadoSeguidoresLDATopicTwitter(luigi.Task):
 				if usuario in PesoUsuarioTopic:
 					peso = PesoUsuarioTopic[usuario]
 					for accion in ArrayPuntos[usuario]:
-						ceros[int(((accion.weekday()*24*60)/hMinutos)+((accion.hour*60)/hMinutos))] += peso
+						ceros[int(((accion.weekday()*24*60)/hMinutos)+((accion.hour*60)/hMinutos))+int(math.floor(accion.minute/hMinutos))] += peso
 
 
 

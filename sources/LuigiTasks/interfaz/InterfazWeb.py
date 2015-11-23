@@ -12,7 +12,7 @@ from os.path import isfile, join
 PORT = 8081
 
 # Hash de la contraseña de acceso
-PASSWORD_SHA1_HASH = '81137cffce516c9d72c36bc0231d1c268c584347';
+PASSWORD_SHA1_HASH = '81137cffce516c9d72c36bc0231d1c268c584347'
 
 # Ruta relativa al directorio de tareas Luigi
 TASKS_PATH = '../'
@@ -42,7 +42,7 @@ def acceder():
 
 @app.route('/lanzar/<categoria>/<tarea>', methods=['POST'])
 def lanzarTarea(categoria, tarea):
-    llamada = 'PYTHONPATH=\'\' luigi --module ' + categoria + ' ' + tarea + ' --local-scheduler'
+    llamada = 'PYTHONPATH=\'\' luigi --module ' + categoria + ' ' + tarea;
     jsonObject = request.get_json()
     password = jsonObject['password']
     parametros = jsonObject['parametros[]']
