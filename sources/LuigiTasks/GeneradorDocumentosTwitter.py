@@ -28,7 +28,7 @@ class GeneradorTextoUsuario(luigi.Task):
 
 		tweets = []
 		try:
-			tweets = cs.getTweetsUsuarioCassandra(self.usuario, limit=1000)
+			tweets = cs.getTweetsUsuarioCassandra(self.usuario, limit=10000)
 		except Exception, e:
 			pass
 
@@ -58,7 +58,7 @@ class GeneradorTextoUsuarioSinLem(luigi.Task):
 
 		tweets = []
 		try:
-			tweets = cs.getTweetsUsuarioCassandra(self.usuario, limit=1000)
+			tweets = cs.getTweetsUsuarioCassandra(self.usuario, limit=10000)
 		except Exception, e:
 			pass
 
@@ -125,7 +125,55 @@ class GeneradorTextoSeguidoresUsuario(luigi.Task):
 							out_file.write(line.replace("\n", ""))
 
 					out_file.write(u"\n")
+
+class GeneradorTextoSeguidoresDoc2Vec(luigi.Task):
+	"""docstring for GeneradorTextoSeguidoresDoc2Vec"""
+	"""
+		Uso:
+			PYTHONPATH='' luigi --module GeneradorDocumentosTwitter GeneradorTextoSeguidoresDoc2Vec --usuario ...
+	"""
+	usuario = luigi.Parameter()
+
+	def output(self):
+		return luigi.LocalTarget(path='ficheros/GeneradorTextoSeguidoresDoc2Vec(%s)'%self.usuario, format=luigi.format.TextFormat(encoding='utf8'))
 			
+	def requires(self):
+		consultasNeo4j = ConsultasNeo4j()
+		consultasCassandra = ConsultasCassandra()
+
+		# si no es un identificador, se intenta conseguir desde cassandra
+		identificador = 0
+		try:
+			identificador = long(self.usuario)
+		except Exception, e:
+			if self.usuario[0] == "@":
+				self.usuario = self.usuario[1:]
+			identificador = consultasCassandra.getUserIDByScreenNameCassandra(self.usuario)
+
+		#solo puede no existir ese identificador si es privado, pero debemos controlarlo
+		if identificador > 0:
+			seguidores = consultasNeo4j.getListaIDsSeguidoresByUserID(identificador)
+			tareas = [GeneradorTextoUsuario(seguidor) for seguidor in seguidores]
+			tareas.append(GeneradorTextoUsuario(identificador))
+			return tareas
+		else:
+			return []
+
+	def run(self):
+		with self.output().open('w') as out_file:
+			for input in self.input():
+				with input.open('r') as in_file:
+					seguidor = input.path.replace("GeneradorTextoUsuario(", "").replace(")", "").replace("ficheros/", "") + u""
+					out_file.write(seguidor)
+					out_file.write(u"\n")
+					for line in in_file:
+						if len(line) > 5:
+							out_file.write(line.replace("\n", ""))
+							out_file.write(u" ")
+
+					out_file.write(u"\n")
+
+
 
 class TestGeneradorTextoSeguidoresUsuario(luigi.Task):
 	def requires(self):

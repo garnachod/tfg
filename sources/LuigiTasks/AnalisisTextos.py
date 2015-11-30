@@ -3,6 +3,7 @@ import os
 import sys
 lib_path = os.path.abspath('../')
 sys.path.append(lib_path)
+
 import luigi
 from GeneradorDocumentosTwitter import *
 import gensim
@@ -210,7 +211,7 @@ class CreaMatrizCorreccionTwitterUserPrimerTopic(luigi.Task):
 		for i in range(0, nTopics):
 			matrizIdentidad[i][0] = vectorTopic[i]
 
-		autovalores = numpy.linalg.eigvals(matrizIdentidad)
+		"""autovalores = numpy.linalg.eigvals(matrizIdentidad)
 		mayorAutovalor = autovalores[0]
 		menorAutovalor = autovalores[0]
 		for autovalor in autovalores:
@@ -222,7 +223,7 @@ class CreaMatrizCorreccionTwitterUserPrimerTopic(luigi.Task):
 				menorAutovalor = autovalor
 
 		print "K es:"
-		print mayorAutovalor/menorAutovalor
+		print mayorAutovalor/menorAutovalor"""
 
 		matrizIdentidadInv = numpy.linalg.inv(matrizIdentidad)
 

@@ -23,6 +23,16 @@ if __name__ == '__main__':
 	print len(lda.state.sstats)"""
 	"""
 	"""
+	corpus = gensim.corpora.MmCorpus('corpus_p_molins.mm')
+	dictionary = gensim.corpora.Dictionary.load("dictionary_p_molins.dict")
+	lda = gensim.models.LdaModel.load('model_p_molins.lda')
+
+	#pyLDAvis.enable_notebook()
+	vis_data = pyLDAvis.gensim.prepare(lda, corpus, dictionary)
+	#pyLDAvis.display(vis_data)
+	pyLDAvis.save_json(vis_data, "testLDAvis.json")
+
+
 	corpus = gensim.corpora.MmCorpus('corpus_nolem_p_molins.mm')
 	dictionary = gensim.corpora.Dictionary.load("dictionary_nolem_p_molins.dict")
 	lda = gensim.models.LdaModel.load('model_nolem_p_molins.lda')
@@ -30,7 +40,7 @@ if __name__ == '__main__':
 	#pyLDAvis.enable_notebook()
 	vis_data = pyLDAvis.gensim.prepare(lda, corpus, dictionary)
 	#pyLDAvis.display(vis_data)
-	pyLDAvis.save_json(vis_data, "testLDAvis.json")
+	pyLDAvis.save_json(vis_data, "testLDAvis_nolem.json")
 	#pyLDAvis.show(vis_data, ip='0.0.0.0', port=8082, n_retries=50, local=True, open_browser=False)
 
 	"""print lda.print_topics(num_topics=7, num_words=10)

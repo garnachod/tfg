@@ -19,11 +19,11 @@ import json
 		OPTIMIZACIONES
 
 """
-class GraficaEventosBrutosTwitter(luigi.Task):
+class GraficaAccionesBrutasTwitter(luigi.Task):
 	usuario = luigi.Parameter()
 
 	def output(self):
-		return luigi.LocalTarget(path='graficas/GraficaEventosBrutosTwitter(%s).html'%self.usuario, format=luigi.format.TextFormat(encoding='utf8'))
+		return luigi.LocalTarget(path='graficas/GraficaAccionesBrutasTwitter(%s).html'%self.usuario, format=luigi.format.TextFormat(encoding='utf8'))
 
 	def requires(self):
 		return GeneradorEventosSeguidoresPuntosUsuario(self.usuario)
@@ -49,15 +49,15 @@ class GraficaEventosBrutosTwitter(luigi.Task):
 			salida = template_content.replace("{{}}", cadenaPuntos)
 			out_file.write(salida)
 
-class GraficaEventosAcumuladosOptimizadoTwitter(luigi.Task):
+class GraficaAccionesAcumuladasOptimizadoTwitter(luigi.Task):
 	"""
 		Uso:
-			PYTHONPATH='' luigi --module Analiticas GraficaEventosAcumuladosOptimizadoTwitter --usuario ...
+			PYTHONPATH='' luigi --module Analiticas GraficaAccionesAcumuladasOptimizadoTwitter --usuario ...
 	"""
 	usuario = luigi.Parameter()
 
 	def output(self):
-		return luigi.LocalTarget(path='graficas/GraficaEventosAcumuladosOptimizadoTwitter(%s).html'%self.usuario, format=luigi.format.TextFormat(encoding='utf8'))
+		return luigi.LocalTarget(path='graficas/GraficaAccionesAcumuladasOptimizadoTwitter(%s).html'%self.usuario, format=luigi.format.TextFormat(encoding='utf8'))
 
 	def requires(self):
 		return GeneradorEventosSeguidoresPuntosUsuario(self.usuario)
@@ -92,17 +92,17 @@ class GraficaEventosAcumuladosOptimizadoTwitter(luigi.Task):
 '''
 Vamos a hacer la derivada discreta de la acumulada para que se vean mejor los picos de actividad.
 '''
-class GraficaEventosAcumuladosDerivadaTwitter(luigi.Task):
+class GraficaAccionesAcumuladosDerivadaTwitter(luigi.Task):
 
 	"""
 		Uso:
-			PYTHONPATH='' luigi --module Analiticas GraficaEventosAcumuladosDerivadaTwitter --usuario ...
+			PYTHONPATH='' luigi --module Analiticas GraficaAccionesAcumuladosDerivadaTwitter --usuario ...
 	"""
 
 	usuario = luigi.Parameter()
 
 	def output(self):
-		return luigi.LocalTarget(path='graficas/GraficaEventosAcumuladosDerivadaTwitter(%s).html'%self.usuario, format=luigi.format.TextFormat(encoding='utf8'))
+		return luigi.LocalTarget(path='graficas/GraficaAccionesAcumuladosDerivadaTwitter(%s).html'%self.usuario, format=luigi.format.TextFormat(encoding='utf8'))
 
 	def requires(self):
 		return GeneradorEventosSeguidoresPuntosUsuario(self.usuario)
@@ -431,10 +431,6 @@ class RelevanciaSeguidoresUsuarioByNameAlTodosTopicsJSON(luigi.Task):
 class GraficaAccionesUsuariosMesesTwitter(luigi.Task):
 
 	"""
-	Vamos a cribar la muestra de acciones para luego pasarsela a otra tarea de Luigi y que pinte la derivada discreta del acumulado.
-
-Entonces no hay que escupìr grafica.
-
 		Uso:
 			PYTHONPATH='' luigi --module Analiticas GraficaAccionesUsuariosMesesTwitter --usuario ...
 	"""
@@ -501,7 +497,6 @@ Entonces no hay que escupìr grafica.
 class GraficaAccionesModuloDiaTwitter(luigi.Task):
 
 	"""
-		Probar, que no se si esta bien. 
 		Aqui tambien pintamos la derivada, pero esta vez de las acciones de la lista que contiene todas las acciones que han ocurrido en un dia 
 		concreto de la semana, por ejemplo pintaría la grafica de todos los lunes de un mes.
 
@@ -670,17 +665,20 @@ class GraficaAccionesModuloSemanaTwitterSmooth(luigi.Task):
 
 
 
-class HistogramaEventosSemanaTwitter(luigi.Task):
+class HistogramaAccionesSemanaTwitter(luigi.Task):
 
 	"""
+		IntervaloMinutos deve ser un divisor o multiplo de 60.
+	
 			Uso:
-			PYTHONPATH='' luigi --module Analiticas HistogramaEventosSemanaTwitter --usuario ...
+			PYTHONPATH='' luigi --module Analiticas HistogramaAccionesSemanaTwitter --usuario ...
 	"""
 
 	usuario = luigi.Parameter()
+	IntervaloMinutos = luigi.Parameter()
 
 	def output(self):
-		return luigi.LocalTarget(path='graficas/HistogramaEventosSemanaTwitter(%s).html'%self.usuario, format=luigi.format.TextFormat(encoding='utf8'))
+		return luigi.LocalTarget(path='graficas/HistogramaAccionesSemanaTwitter(%s).html'%self.usuario, format=luigi.format.TextFormat(encoding='utf8'))
 
 	def requires(self):
 		return GeneradorEventosSeguidoresPuntosUsuario(self.usuario)
@@ -699,17 +697,17 @@ class HistogramaEventosSemanaTwitter(luigi.Task):
 						ArrayPuntos.append(parser.parse(punto))
 
 			print "ok leer"
-			hMinutos= 20
-			ceros = [0 for i in xrange(7*24*60/hMinutos)]
+			
+			ceros = [0 for i in xrange(7*24*60/IntervaloMinutos)]
 
 			for accion in ArrayPuntos:
-				ceros[int(((accion.weekday()*24*60)/hMinutos)+((accion.hour*60)/hMinutos))+int(math.floor(accion.minute/hMinutos))] += 1
+				ceros[int(((accion.weekday()*24*60)/IntervaloMinutos)+((accion.hour*60)/IntervaloMinutos))+int(math.floor(accion.minute/IntervaloMinutos))] += 1
 
 
 
 			# Creamos una lista con el numero de acciones por intervalo, por ahora el h será homogeneo.
 			cadenaPuntos=u"["
-			for i in xrange(1, int(math.floor(7*24*60/hMinutos)-1) ):
+			for i in xrange(1, int(math.floor(7*24*60/IntervaloMinutos)-1) ):
 				if i != 1:		
 					cadenaPuntos += u",["+ str(i) + "," + str(ceros[i])  + u"]"
 				else:
@@ -720,18 +718,17 @@ class HistogramaEventosSemanaTwitter(luigi.Task):
 			salida = template_content.replace("{{}}", cadenaPuntos)
 			out_file.write(salida)
 
-class HistogramaPonderadoSeguidoresLDATopicTwitter(luigi.Task):
+class HistogramaAccionesLDATopicSemanaTwitter(luigi.Task):
 	"""docstring for HistogramaPonderadoLDATopic"""
-	"""
-	
+	"""	
 		Uso:
-			PYTHONPATH='' luigi --module Analiticas HistogramaPonderadoSeguidoresLDATopicTwitter --usuario ...
+			PYTHONPATH='' luigi --module Analiticas HistogramaAccionesLDATopicSemanaTwitter --usuario ...
 	"""
 
 	usuario = luigi.Parameter()
 
 	def output(self):
-		return luigi.LocalTarget(path='graficas/HistogramaPonderadoSeguidoresLDATopicTwitter(%s).html'%self.usuario, format=luigi.format.TextFormat(encoding='utf8'))
+		return luigi.LocalTarget(path='graficas/HistogramaAccionesLDATopicSemanaTwitter(%s).html'%self.usuario, format=luigi.format.TextFormat(encoding='utf8'))
 
 	def requires(self):
 		return [GeneradorEventosSeguidoresPuntosUsuario(self.usuario), RelevanciaSeguidoresUsuarioAlTopic(self.usuario)]
@@ -784,3 +781,141 @@ class HistogramaPonderadoSeguidoresLDATopicTwitter(luigi.Task):
 
 			salida = template_content.replace("{{}}", cadenaPuntos)
 			out_file.write(salida)
+
+
+class HistogramaAccionesLDATopicTwitter(luigi.Task):
+	"""docstring for HistogramaPonderadoLDATopic"""
+	"""	
+		IntervaloMinutos deve ser un divisor o multiplo de 60.
+
+		En cada intervalo ponemos el numero de acciones totales, una mejora será calcular las acciones
+		esperadas en cada intervalo con una regresion cuadratica (o al menos no lineal)
+		Uso:
+			PYTHONPATH='' luigi --module Analiticas HistogramaAccionesLDATopicTwitter --usuario ...
+	"""
+
+	usuario = luigi.Parameter()
+	IntervaloMinutos deve ser un divisor o multiplo de 60.
+	IntervaloMinutos = luigi.Parameter()
+
+	def output(self):
+		return luigi.LocalTarget(path='graficas/HistogramaAccionesLDATopicTwitter(%s).html'%self.usuario, format=luigi.format.TextFormat(encoding='utf8'))
+
+	def requires(self):
+		return [GeneradorEventosSeguidoresPuntosUsuario(self.usuario), RelevanciaSeguidoresUsuarioAlTopic(self.usuario)]
+
+	def run(self):
+		#Creamos una lista con los datos sin ordenar, porque al almacenarlos en la lista de intervalos los vamos a ordenar.
+		#El contenido de la lista son los tiempos en los que cada usuario ha actuado.
+		template = codecs.open("templates/TemplateGoogleHistogram.html", "r", "utf-8")
+		template_content = template.read()
+		template.close()
+		with self.output().open('w') as out_file:
+			ArrayPuntos = {}
+			PesoUsuarioTopic = {}
+			for input in self.input():
+				with input.open('r') as in_file:
+					if "RelevanciaSeguidores" not in input.path:
+						for line in in_file:
+							linea = line.replace("\n", "").split(",")
+							puntos = linea[1:]
+							usuario = linea[0]
+							ArrayPuntos[usuario] = blist([])
+							for punto in puntos:
+								ArrayPuntos[usuario].append(parser.parse(punto))
+					else:
+						for line in in_file:
+							linea = line.replace("\n", "").split(",")
+							peso = linea[1]
+							usuario = linea[0]
+							PesoUsuarioTopic[usuario] = float(peso)
+
+			#Sumamos en cada intervalo el peso de ese usuario si ese usuario a actuado
+			FechaInicioIntervalo=parser.parse("01/01/2015")
+
+			#hMinutos= IntervaloMinutos
+			ceros = [0 for i in xrange(int((datetime.datetime.today()-FechaInicioIntervalo).days*24*60/IntervaloMinutos))]
+
+			for usuario in ArrayPuntos:
+				if usuario in PesoUsuarioTopic:
+					peso = PesoUsuarioTopic[usuario]
+					for accion in ArrayPuntos[usuario]:
+						if accion < FechaInicioIntervalo:
+							pass
+						else:
+							ceros[int(int((accion-FechaInicioIntervalo).days)*24*60/IntervaloMinutos)+(accion.hour*60/IntervaloMinutos)+int(math.floor(accion.minute/IntervaloMinutos)) ] += peso
+	
+			cadenaPuntos=u"["
+			for i in xrange(1, int(math.floor((datetime.datetime.today()-FechaInicioIntervalo).days*24*60/IntervaloMinutos)-1) ):
+				if i != 1:		
+					cadenaPuntos += u",["+ str(i) + "," + str(ceros[i])  + u"]"
+				else:
+					cadenaPuntos += u"[0,"+ str(ceros[0]) +"]"
+			cadenaPuntos += "]"
+
+			salida = template_content.replace("{{}}", cadenaPuntos)
+			out_file.write(salida)
+
+
+
+
+
+class HistogramaAccionesLDAVariosTopicsSemanaTwitter(luigi.Task):
+	"""	
+		Uso:
+			PYTHONPATH='' luigi --module Analiticas HistogramaAccionesLDAVariosTopicsSemanaTwitter --usuario ...
+	"""
+
+	usuario = luigi.Parameter()
+
+	def output(self):
+		return luigi.LocalTarget(path='graficas/HistogramaAccionesLDAVariosTopicsSemanaTwitter(%s)'%self.usuario)
+
+	def requires(self):
+		return [GeneradorEventosSeguidoresPuntosUsuario(self.usuario), RelevanciaSeguidoresUsuarioTodosTopics(self.usuario)]
+
+	def run(self):
+		#Creamos una lista con los datos sin ordenar, porque al almacenarlos en la lista de intervalos los vamos a ordenar.
+		template = codecs.open("templates/TemplateGoogleHistogram.html", "r", "utf-8")
+		template_content = template.read()
+		template.close()
+		with self.output().open('w') as out_file:
+			ArrayPuntos = {}
+			PesoUsuarioTopics = {}
+			ntopics = 0
+			for input in self.input():
+				with input.open('r') as in_file:
+					if "RelevanciaSeguidores" not in input.path:
+						for line in in_file:
+							linea = line.replace("\n", "").split(",")
+							puntos = linea[1:]
+							usuario = linea[0]
+							ArrayPuntos[usuario] = blist([])
+							for punto in puntos:
+								ArrayPuntos[usuario].append(parser.parse(punto))
+					else:
+						for line in in_file:
+							linea = line.replace("\n", "").split(",")
+							if len(linea) < 2:
+								break
+
+							pesos = linea[1:]
+							ntopics = len(pesos)
+							usuario = linea[0]
+							PesoUsuarioTopics[usuario] = [float(peso) for peso in pesos]
+
+			hMinutos= 15
+			
+			
+			ceros = [[0 for i in xrange(7*24*60/hMinutos)] for topic in range(ntopics)]
+
+			for topic in range(ntopics):
+				for usuario in ArrayPuntos:
+					if usuario in PesoUsuarioTopics:
+						peso = PesoUsuarioTopics[usuario][topic]
+						for accion in ArrayPuntos[usuario]:
+							ceros[topic][int(((accion.weekday()*24*60)/hMinutos)+((accion.hour*60)/hMinutos))+int(math.floor(accion.minute/hMinutos))] += peso
+
+
+
+			out_file.write(json.dumps(ceros))

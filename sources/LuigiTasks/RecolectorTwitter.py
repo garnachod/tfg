@@ -49,7 +49,10 @@ class RecolectorUsuarioTwitter(luigi.Task):
 
 				break
 			except Exception, e:
-				sleep(1*60)
+				if "LIMITE" in e:
+					sleep(1*60)
+				else:
+					raise e
 
 		with self.output().open('w') as out_file:
 			out_file.write("OK")
@@ -99,8 +102,10 @@ class RecolectorSeguidoresTwitter(luigi.Task):
 					recolector.recolecta(id_user=identificador)
 				break
 			except Exception, e:
-				print e
-				sleep(1*60)
+				if "LIMITE" in e:
+					sleep(1*60)
+				else:
+					raise e
 
 		with self.output().open('w') as out_file:
 			out_file.write("OK")
@@ -145,8 +150,10 @@ class RecolectorSiguiendoTwitter(luigi.Task):
 					recolector.recolecta(id_user=identificador)
 				break
 			except Exception, e:
-				print e
-				sleep(1*60)
+				if "LIMITE" in e:
+					sleep(1*60)
+				else:
+					raise e
 
 		with self.output().open('w') as out_file:
 			out_file.write("OK")
