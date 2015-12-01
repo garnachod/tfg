@@ -6,6 +6,7 @@ sys.path.append(lib_path)
 import luigi
 from GeneradorDocumentosTwitter import *
 from AnalisisTextos import *
+from AnalisisTextosInvestigacion import *
 import codecs
 import random
 import math
@@ -19,6 +20,7 @@ import json
 		OPTIMIZACIONES
 
 """
+
 class GraficaAccionesBrutasTwitter(luigi.Task):
 	usuario = luigi.Parameter()
 
@@ -795,7 +797,7 @@ class HistogramaAccionesLDATopicTwitter(luigi.Task):
 	"""
 
 	usuario = luigi.Parameter()
-	IntervaloMinutos deve ser un divisor o multiplo de 60.
+	#IntervaloMinutos deve ser un divisor o multiplo de 60.
 	IntervaloMinutos = luigi.Parameter()
 
 	def output(self):
@@ -886,6 +888,64 @@ class HistogramaAccionesLDAVariosTopicsSemanaTwitter(luigi.Task):
 			for input in self.input():
 				with input.open('r') as in_file:
 					if "RelevanciaSeguidores" not in input.path:
+						for line in in_file:
+							linea = line.replace("\n", "").split(",")
+							puntos = linea[1:]
+							usuario = linea[0]
+							ArrayPuntos[usuario] = blist([])
+							for punto in puntos:
+								ArrayPuntos[usuario].append(parser.parse(punto))
+					else:
+						for line in in_file:
+							linea = line.replace("\n", "").split(",")
+							if len(linea) < 2:
+								break
+
+							pesos = linea[1:]
+							ntopics = len(pesos)
+							usuario = linea[0]
+							PesoUsuarioTopics[usuario] = [float(peso) for peso in pesos]
+
+			hMinutos= 15
+			
+			
+			ceros = [[0 for i in xrange(7*24*60/hMinutos)] for topic in range(ntopics)]
+
+			for topic in range(ntopics):
+				for usuario in ArrayPuntos:
+					if usuario in PesoUsuarioTopics:
+						peso = PesoUsuarioTopics[usuario][topic]
+						for accion in ArrayPuntos[usuario]:
+							ceros[topic][int(((accion.weekday()*24*60)/hMinutos)+((accion.hour*60)/hMinutos))+int(math.floor(accion.minute/hMinutos))] += peso
+
+
+
+			out_file.write(json.dumps(ceros))
+
+
+class HistogramaAccionesParagraphVectorTopicsSemanaTwitter(luigi.Task):
+	"""	
+		Uso:
+			PYTHONPATH='' luigi --module Analiticas HistogramaAccionesParagraphVectorTopicsSemanaTwitter --usuario ...
+	"""
+
+	usuario = luigi.Parameter()
+
+	def output(self):
+		return luigi.LocalTarget(path='graficas/HistogramaAccionesParagraphVectorTopicsSemanaTwitter(%s)'%self.usuario)
+
+	def requires(self):
+		return [GeneradorEventosSeguidoresPuntosUsuario(self.usuario), SimilitudSeguidoresTodosTopicsLDA2Doc2Vec(self.usuario)]
+
+	def run(self):
+		#Creamos una lista con los datos sin ordenar, porque al almacenarlos en la lista de intervalos los vamos a ordenar.
+		with self.output().open('w') as out_file:
+			ArrayPuntos = {}
+			PesoUsuarioTopics = {}
+			ntopics = 0
+			for input in self.input():
+				with input.open('r') as in_file:
+					if "SimilitudSeguidores" not in input.path:
 						for line in in_file:
 							linea = line.replace("\n", "").split(",")
 							puntos = linea[1:]

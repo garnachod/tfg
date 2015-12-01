@@ -96,7 +96,7 @@ class LDATwitterUser(luigi.Task):
 
 		print "entrenando"
 		#lda = gensim.models.ldamodel.LdaModel(corpus=corpus, id2word=dictionary, num_topics=50, distributed=True)
-		lda = gensim.models.ldamodel.LdaModel(corpus=corpus, id2word=dictionary, num_topics=7, chunksize=200000, passes=1000, alpha='auto')
+		lda = gensim.models.ldamodel.LdaModel(corpus=corpus, id2word=dictionary, num_topics=7, chunksize=200000, passes=500, alpha='auto')
 
 		lda.save('textos/model_%s.lda'%self.usuario)
 

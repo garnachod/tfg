@@ -10,6 +10,9 @@ from DBbridge.ConsultasCassandra import ConsultasCassandra
 
 from ProcesadoresTexto.LimpiadorTweets import LimpiadorTweets
 from RecolectorTwitter import *
+from datetime import date, timedelta, datetime
+from dateutil import parser
+
 
 class GeneradorTextoUsuario(luigi.Task):
 	usuario = luigi.Parameter()
@@ -190,7 +193,7 @@ class GeneradorEventosSeguidoresUsuario(luigi.Task):
 	"""Genera un fichero con los eventos de los seguidores de un usuario
 
 		ej.
-		identificador,número de eventos,(eventoTipo, fechaEvento),...,(eventoTipo, fechaEvento)
+		identificador,(eventoTipo, fechaEvento),...,(eventoTipo, fechaEvento)
 		donde evento tipo puede ser:
 			fav
 			rt
@@ -252,6 +255,58 @@ class TestGeneradorEventosSeguidoresUsuario(luigi.Task):
 			
 	def output(self):
 		return luigi.LocalTarget('tasks/TestGeneradorEventosSeguidoresUsuario()')
+
+
+class AcumulaEventosSeguidoresUsuarioTiempo(luigi.Task):
+	"""Genera un fichero con los eventos de los seguidores de un usuario
+
+		ej.
+		identificador,(eventoTipo, count),...,(eventoTipo, count)
+		donde evento tipo puede ser:
+			fav
+			rt
+			tw
+	"""
+	"""
+		Uso:
+			PYTHONPATH='' luigi --module GeneradorDocumentosTwitter AcumulaEventosSeguidoresUsuarioTiempo --usuario ...
+	"""
+	usuario = luigi.Parameter()
+	dias_atras = luigi.Parameter(default="30")
+
+	def output(self):
+		return luigi.LocalTarget(path='ficheros/AcumulaEventosSeguidoresUsuarioTiempo(%s)'%self.usuario)
+
+	def requires(self):
+		return GeneradorEventosSeguidoresUsuario(self.usuario)
+
+	def run(self):
+		#comparadoTiempo = datetime.today() - timedelta(days=int(self.dias_atras))
+		comparadoTiempoInferior = datetime.today() - (datetime.today() - datetime(2015, 10, 1, 0, 0))
+		comparadoTiempoSuperior = datetime.today() - (datetime.today() - datetime(2015, 11, 1, 0, 0))
+		eventosTipos = ["fav", "rt", "tw"]
+
+		with self.output().open('w') as out_file:
+			with self.input().open('r') as in_file:
+				for line in in_file:
+					eventosCount = {}
+					for evento_tipo in eventosTipos:
+						eventosCount[evento_tipo] = 0
+					#primer elemento id de usuario
+					array_eventos = line.replace("\n", "").split(",")
+					out_file.write(array_eventos[0])
+
+					for evento in array_eventos[1:]:
+						evento_split = evento.replace("(", "").replace(")", "").split(";")
+						tiempo = parser.parse(evento_split[1])
+						if tiempo > comparadoTiempoInferior and tiempo < comparadoTiempoSuperior:
+							eventosCount[evento_split[0]] += 1
+
+					for eventoTipo in eventosCount:
+						out_file.write(",(" + eventoTipo + ";" + str(eventosCount[eventoTipo]) + ")")
+
+					out_file.write("\n")
+
 
 class GeneradorEventosSeguidoresPuntosUsuario(luigi.Task):
 	"""Genera un fichero con los eventos de los seguidores de un usuario

@@ -20,6 +20,10 @@ import numpy
 import time
 import random
 import json
+import nltk
+
+import pyLDAvis.gensim
+import pyLDAvis
 
 
 
@@ -228,6 +232,7 @@ class SimilitudSeguidoresTodosTopicsLDA2Doc2Vec(luigi.Task):
 
 		#print w2v["pp"]
 		nTopicsInicio = 7
+		sumaTotalBetas = 0.3
 
 		similitudesPorUsuario = {}
 
@@ -265,11 +270,172 @@ class SimilitudSeguidoresTodosTopicsLDA2Doc2Vec(luigi.Task):
 				for i, elemento in enumerate(vectorPalabra):
 					vectorTopic[i] += elemento
 
-				if acumulado >= 0.8:
+				if acumulado >= sumaTotalBetas:
 					#print nPalabrasAcumuladas
 					break
 
 			vectorTopic = numpy.array(vectorTopic)
+
+			#print vectorTopic
+
+			
+			for doctag in w2v.docvecs.doctags:
+				similitud = numpy.dot(w2v.docvecs[doctag],vectorTopic)/numpy.linalg.norm(w2v.docvecs[doctag])/numpy.linalg.norm(vectorTopic)
+				similitudesPorUsuario[doctag].append((similitud + 1.0)*5.0)
+
+		#exit()
+		with self.output().open('w') as out_file:
+			for usuario_id in similitudesPorUsuario:
+				out_file.write(usuario_id)
+				for peso in similitudesPorUsuario[usuario_id]:
+					out_file.write(","+ str(peso))
+				out_file.write("\n")
+
+class SimilitudSeguidoresTodosTopicsLDASinLem2Doc2Vec(luigi.Task):
+	"""
+		Uso:
+			PYTHONPATH='' luigi --module AnalisisTextosInvestigacion SimilitudSeguidoresTodosTopicsLDASinLem2Doc2Vec --usuario ...
+	"""
+
+	usuario = luigi.Parameter()
+
+	def output(self):
+		return luigi.LocalTarget(path='textos/SimilitudSeguidoresTodosTopicsLDASinLem2Doc2Vec(%s)'%self.usuario)
+
+	def requires(self):
+		return [Doc2VecSeguidoresYUsuario(self.usuario), LDATwitterUserSinLem(self.usuario)]
+
+	def run(self):
+		lda = gensim.models.LdaModel.load('textos/model_nolem_' + self.usuario + '.lda')
+		w2v = gensim.models.Doc2Vec.load('./textos/model_' + self.usuario + '.d2v')
+
+		#print w2v["pp"]
+		nTopicsInicio = 7
+		sumaTotalBetas = 0.3
+		stemmer = nltk.stem.snowball.SnowballStemmer("spanish")
+
+		similitudesPorUsuario = {}
+
+		for doctag in w2v.docvecs.doctags:
+			similitudesPorUsuario[doctag] = []
+
+		for idTopic in range(nTopicsInicio):
+			topic = lda.show_topic(idTopic, topn=len(lda.state.sstats[0]))
+			#print len(topic)
+			nTopics = 50
+
+			vectorTopic = [0.0 for i in range(0, nTopics)]
+			acumulado = 0.0
+			nPalabrasAcumuladas = 0
+			for tupla in topic:
+				vectorPalabra = []
+
+				palabra = tupla[0]
+				palabra = stemmer.stem(palabra)
+				pesoPalabra = tupla[1]
+
+				acumulado += pesoPalabra
+				nPalabrasAcumuladas += 1
+				vector = None
+				try:
+					vector = w2v[palabra]
+				except Exception, e:
+					vector = None
+
+				if vector is None:
+					continue
+				
+				for indice in range(0, nTopics):
+					vectorPalabra.append(vector[indice]*pesoPalabra)
+
+				for i, elemento in enumerate(vectorPalabra):
+					vectorTopic[i] += elemento
+
+				if acumulado >= sumaTotalBetas:
+					print nPalabrasAcumuladas
+					break
+
+			vectorTopic = numpy.array(vectorTopic)
+
+			#print vectorTopic
+
+			
+			for doctag in w2v.docvecs.doctags:
+				similitud = numpy.dot(w2v.docvecs[doctag],vectorTopic)/numpy.linalg.norm(w2v.docvecs[doctag])/numpy.linalg.norm(vectorTopic)
+				similitudesPorUsuario[doctag].append((similitud + 1.0)*5.0)
+
+		#exit()
+		with self.output().open('w') as out_file:
+			for usuario_id in similitudesPorUsuario:
+				out_file.write(usuario_id)
+				for peso in similitudesPorUsuario[usuario_id]:
+					out_file.write(","+ str(peso))
+				out_file.write("\n")
+
+
+
+#prueba de inferir vectores de topics desde unas palabras.
+#model.infer_vector(words, steps=self.steps, alpha=self.alpha)
+class SimilitudSeguidoresTodosTopicsLDASinLem2Doc2VecInfiere(luigi.Task):
+	"""
+		Uso:
+			PYTHONPATH='' luigi --module AnalisisTextosInvestigacion SimilitudSeguidoresTodosTopicsLDASinLem2Doc2VecInfiere --usuario ...
+	"""
+
+	usuario = luigi.Parameter()
+
+	def output(self):
+		return luigi.LocalTarget(path='textos/SimilitudSeguidoresTodosTopicsLDASinLem2Doc2VecInfiere(%s)'%self.usuario)
+
+	def requires(self):
+		return [Doc2VecSeguidoresYUsuario(self.usuario), LDATwitterUserSinLem(self.usuario)]
+
+	def run(self):
+		lda = gensim.models.LdaModel.load('textos/model_nolem_' + self.usuario + '.lda')
+		w2v = gensim.models.Doc2Vec.load('./textos/model_' + self.usuario + '.d2v')
+
+		#print w2v["pp"]
+		nTopicsInicio = 7
+		sumaTotalBetas = 0.3
+		stemmer = nltk.stem.snowball.SnowballStemmer("spanish")
+
+		similitudesPorUsuario = {}
+
+		for doctag in w2v.docvecs.doctags:
+			similitudesPorUsuario[doctag] = []
+
+		for idTopic in range(nTopicsInicio):
+			topic = lda.show_topic(idTopic, topn=len(lda.state.sstats[0]))
+			#print len(topic)
+			nTopics = 50
+
+			palabras = []
+			acumulado = 0.0
+			nPalabrasAcumuladas = 0
+			for tupla in topic:
+				palabra = tupla[0]
+				palabra = stemmer.stem(palabra)
+				pesoPalabra = tupla[1]
+
+				vector = None
+				try:
+					vector = w2v[palabra]
+				except Exception, e:
+					vector = None
+
+				if vector is None:
+					continue
+
+				acumulado += pesoPalabra
+				nPalabrasAcumuladas += 1
+				palabras.append(palabra)
+
+				if acumulado >= sumaTotalBetas:
+					print nPalabrasAcumuladas
+					break
+
+			print palabras
+			vectorTopic = numpy.array(w2v.infer_vector(palabras, steps=3, alpha=0.1))
 
 			#print vectorTopic
 
@@ -294,12 +460,18 @@ class SimilitudSeguidoresTodosTopicLDA2Doc2VecJSON(luigi.Task):
 	"""
 
 	usuario = luigi.Parameter()
+	lematizar = luigi.Parameter(default="F")
 
 	def output(self):
-		return luigi.LocalTarget(path='textos/SimilitudSeguidoresTodosTopicLDA2Doc2VecJSON(%s)'%self.usuario)
+		return luigi.LocalTarget(path='textos/SimilitudSeguidoresTodosTopicLDA2Doc2VecJSON(%s_%s)'%(self.usuario, self.lematizar))
 
 	def requires(self):
-		return SimilitudSeguidoresTodosTopicsLDA2Doc2Vec(self.usuario)
+		if self.lematizar == "T":
+			return SimilitudSeguidoresTodosTopicsLDA2Doc2Vec(self.usuario)
+		else:
+			#return SimilitudSeguidoresTodosTopicsLDASinLem2Doc2Vec(self.usuario)
+			return SimilitudSeguidoresTodosTopicsLDASinLem2Doc2VecInfiere(self.usuario)
+			
 
 	def run(self):
 		consultasCassandra = ConsultasCassandra()
@@ -327,12 +499,17 @@ class SimilitudSeguidoresTodosTopicLDA2Doc2VecCSV(luigi.Task):
 	"""
 
 	usuario = luigi.Parameter()
+	lematizar = luigi.Parameter(default="F")
 
 	def output(self):
-		return luigi.LocalTarget(path='textos/SimilitudSeguidoresTodosTopicLDA2Doc2VecCSV(%s)'%self.usuario)
+		return luigi.LocalTarget(path='textos/SimilitudSeguidoresTodosTopicLDA2Doc2VecCSV(%s_%s)'%(self.usuario, self.lematizar))
 
 	def requires(self):
-		return SimilitudSeguidoresTodosTopicsLDA2Doc2Vec(self.usuario)
+		if self.lematizar == "T":
+			return SimilitudSeguidoresTodosTopicsLDA2Doc2Vec(self.usuario)
+		else:
+			return SimilitudSeguidoresTodosTopicsLDASinLem2Doc2VecInfiere(self.usuario)
+			#return SimilitudSeguidoresTodosTopicsLDASinLem2Doc2Vec(self.usuario)
 
 	def run(self):
 		consultasCassandra = ConsultasCassandra()
@@ -358,3 +535,41 @@ class SimilitudSeguidoresTodosTopicLDA2Doc2VecCSV(luigi.Task):
 					out_file.write("," + str(peso))
 
 				out_file.write("\n")
+
+
+class LDAvisJSONUsuario(luigi.Task):
+	"""docstring for LDAvisUsuario"""
+	"""
+		Uso:
+			PYTHONPATH='' luigi --module AnalisisTextosInvestigacion LDAvisJSONUsuario --usuario ...
+	"""
+	usuario = luigi.Parameter()
+	lematizar = luigi.Parameter(default="F")
+
+	def output(self):
+		return luigi.LocalTarget(path='textos/LDAvisUsuario(%s_%s).json'%(self.usuario, self.lematizar))
+
+	def requires(self):
+		if self.lematizar == "T":
+			return LDATwitterUser(self.usuario)
+		else:
+			return LDATwitterUserSinLem(self.usuario)
+
+	def run(self):
+		corpus = None
+		dictionary = None
+		lda = None
+		if self.lematizar == "T":
+			corpus = gensim.corpora.MmCorpus('textos/corpus_' + self.usuario + '.mm')
+			dictionary = gensim.corpora.Dictionary.load('textos/dictionary_' + self.usuario + '.dict')
+			lda = gensim.models.LdaModel.load('textos/model_' + self.usuario + '.lda')
+		else:
+			corpus = gensim.corpora.MmCorpus('textos/corpus_nolem_' + self.usuario + '.mm')
+			dictionary = gensim.corpora.Dictionary.load('textos/dictionary_nolem_' + self.usuario + '.dict')
+			lda = gensim.models.LdaModel.load('textos/model_nolem_' + self.usuario + '.lda')
+
+		#pyLDAvis.enable_notebook()
+		vis_data = pyLDAvis.gensim.prepare(lda, corpus, dictionary)
+		#pyLDAvis.display(vis_data)
+		pyLDAvis.save_json(vis_data, self.output().path)
+		
