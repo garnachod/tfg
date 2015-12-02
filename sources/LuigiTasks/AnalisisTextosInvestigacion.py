@@ -54,11 +54,6 @@ class Word2VecIdiomaGenerico(luigi.Task):
 		print "entrenando"
 		model = gensim.models.Word2Vec(sentences, min_count=3, workers=6, iter=20)
 		model.save('textos/model.w2v')
-		#lda = gensim.models.ldamodel.LdaModel(corpus=corpus, id2word=dictionary, num_topics=50, distributed=True)
-		#lda = gensim.models.ldamodel.LdaModel(corpus=corpus, id2word=dictionary, num_topics=100, chunksize=200000, passes=10)
-
-		
-
 
 		with self.output().open('w') as out_file:
 			out_file.write("OK")
@@ -81,9 +76,10 @@ class LabeledLineSentence(object):
 						palabras = utils.to_unicode(line).split()
 						palabras_clean = []
 						for palabra in palabras:
-							if len(palabra)> 1:
+							if len(palabra) > 1:
 								palabras_clean.append(palabra)
-						self.sentences.append(TaggedDocument(palabras_clean, [str(last_identif)]))
+						if len(palabras_clean) > 0:
+							self.sentences.append(TaggedDocument(palabras_clean, [str(last_identif)]))
 					
 		return self.sentences
 		
@@ -112,37 +108,133 @@ class Doc2VecSeguidoresYUsuario(luigi.Task):
 
 		total_start = time.time()
 
-		dbow = True
-		if dbow:
-			model = Doc2Vec(min_count=1, window=7, size=dimension, sample=1e-3, negative=5, dm=0 ,workers=6, alpha=0.04)
-			
-			print "inicio vocab"
-			model.build_vocab(sentences.to_array())
-			print "fin vocab"
-			first_alpha = model.alpha
-			last_alpha = 0.01
-			next_alpha = first_alpha
-			epochs = 30
-			for epoch in range(epochs):
-				start = time.time()
-				print "iniciando epoca DBOW:"
-				print model.alpha
-				model.train(sentences.sentences_perm())
-				end = time.time()
-				next_alpha = (((first_alpha - last_alpha) / float(epochs)) * float(epochs - (epoch+1)) + last_alpha)
-				model.alpha = next_alpha
-				print "tiempo de la epoca " + str(epoch) +": " + str(end - start)
+		model = Doc2Vec(min_count=1, window=7, size=dimension, sample=1e-3, negative=5, dm=0 ,workers=6, alpha=0.04)
+		
+		print "inicio vocab"
+		model.build_vocab(sentences.to_array())
+		print "fin vocab"
+		first_alpha = model.alpha
+		last_alpha = 0.01
+		next_alpha = first_alpha
+		epochs = 30
+		for epoch in range(epochs):
+			start = time.time()
+			print "iniciando epoca DBOW:"
+			print model.alpha
+			model.train(sentences.sentences_perm())
+			end = time.time()
+			next_alpha = (((first_alpha - last_alpha) / float(epochs)) * float(epochs - (epoch+1)) + last_alpha)
+			model.alpha = next_alpha
+			print "tiempo de la epoca " + str(epoch) +": " + str(end - start)
 
-			model.save('./textos/model_' + self.usuario + '.d2v')
-			#model.save_word2vec_format('./textos/tweet_dbow'
-
-
+		model.save('./textos/model_' + self.usuario + '.d2v')
 
 		total_end = time.time()
 
 		print "tiempo total:" + str((total_end - total_start)/60.0)
 		with self.output().open('w') as out_file:
 			out_file.write("OK")
+
+class Doc2VecDMSeguidoresYUsuario(luigi.Task):
+	"""
+		Uso:
+			PYTHONPATH='' luigi --module AnalisisTextosInvestigacion Doc2VecDMSeguidoresYUsuario --usuario ...
+	"""
+	usuario = luigi.Parameter()
+
+	def output(self):
+		return luigi.LocalTarget(path='textos/Doc2VecDMSeguidoresYUsuario(%s)'%self.usuario)
+
+	def requires(self):
+		return GeneradorTextoSeguidoresDoc2Vec(self.usuario)
+
+	def run(self):
+		dimension = 50
+		sentences = LabeledLineSentence(self.input().path)
+
+		total_start = time.time()
+
+		#model = Doc2Vec(min_count=1, window=10, size=dimension, sample=1e-3, negative=5, workers=6, dm_mean=1, alpha=0.04)
+		model = Doc2Vec(min_count=1, window=7, size=dimension, sample=1e-3, negative=5, workers=6, alpha=0.04)
+		#model = Doc2Vec(min_count=1, window=7, size=dimension, sample=1e-3, negative=5, workers=6, alpha=0.04, dm_concat=1)
+		#
+		print "inicio vocab"
+		model.build_vocab(sentences.to_array())
+		print "fin vocab"
+		first_alpha = model.alpha
+		last_alpha = 0.01
+		next_alpha = first_alpha
+		epochs = 30
+		for epoch in range(epochs):
+			start = time.time()
+			print "iniciando epoca DM:"
+			print model.alpha
+			model.train(sentences.sentences_perm())
+			end = time.time()
+			next_alpha = (((first_alpha - last_alpha) / float(epochs)) * float(epochs - (epoch+1)) + last_alpha)
+			model.alpha = next_alpha
+			print "tiempo de la epoca " + str(epoch) +": " + str(end - start)
+
+		model.save('./textos/model_DM_' + self.usuario + '.d2v')
+
+		total_end = time.time()
+
+		print "tiempo total:" + str((total_end - total_start)/60.0)
+		with self.output().open('w') as out_file:
+			out_file.write("OK")
+
+class ComparaModelosDoc2Vec(luigi.Task):
+	"""
+		Uso:
+			PYTHONPATH='' luigi --module AnalisisTextosInvestigacion ComparaModelosDoc2Vec --usuario ...
+	"""
+	usuario = luigi.Parameter()
+
+	def output(self):
+		return luigi.LocalTarget(path='textos/ComparaModelosDoc2Vec(%s)'%self.usuario)
+
+	def requires(self):
+		return [GeneradorTextoSeguidoresDoc2Vec(self.usuario), Doc2VecDMSeguidoresYUsuario(self.usuario), Doc2VecSeguidoresYUsuario(self.usuario)]
+
+	def run(self):
+		sentences = None
+		for input in self.input():
+			if "Generador" in input.path:
+				print "generando sentencias"
+				sentences = LabeledLineSentence(input.path)
+
+		if sentences is None:
+			exit()
+
+		sentencias_array = sentences.to_array()
+
+		modelos = {"d2v_dbow":'./textos/model_' + self.usuario + '.d2v', "d2v_dm":'./textos/model_DM_' + self.usuario + '.d2v'}
+		errores = {}
+		
+		for modelo in modelos:
+			#computa el error cuadratico del coseno de cada uno de los modelos y los imprime
+			w2v = gensim.models.Doc2Vec.load(modelos[modelo])
+			steps = [1, 2, 3, 4, 5, 6, 8, 10]
+			
+			for step in steps:
+				ecm = 0.0
+				for sentencia in sentencias_array:
+					palabras = sentencia.words
+					vectorInferido = numpy.array(w2v.infer_vector(palabras, steps=step, alpha=0.1))
+					vectorReal = w2v.docvecs[sentencia.tags[0]]
+					similitud = numpy.dot(vectorReal,vectorInferido)/numpy.linalg.norm(vectorReal)/numpy.linalg.norm(vectorInferido)
+					ecm += (1.0 - similitud)**2
+
+			
+				ecm = ecm / len(sentencias_array)
+				if str(step) not in errores:
+					errores[str(step)] = []
+			 			
+			 	errores[str(step)].append(ecm)
+
+		print "epocas,DM,DBOW"
+		for error in errores:
+			print error + "," + str(errores[error][0]) + "," + str(errores[error][1])
 
 
 class SimilitudUnTopicLDA2Doc2Vec(luigi.Task):

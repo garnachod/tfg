@@ -935,7 +935,7 @@ class HistogramaAccionesParagraphVectorTopicsSemanaTwitter(luigi.Task):
 		return luigi.LocalTarget(path='graficas/HistogramaAccionesParagraphVectorTopicsSemanaTwitter(%s)'%self.usuario)
 
 	def requires(self):
-		return [GeneradorEventosSeguidoresPuntosUsuario(self.usuario), SimilitudSeguidoresTodosTopicsLDA2Doc2Vec(self.usuario)]
+		return [GeneradorEventosSeguidoresPuntosUsuario(self.usuario), SimilitudSeguidoresTodosTopicsLDASinLem2Doc2VecInfiere(self.usuario)]
 
 	def run(self):
 		#Creamos una lista con los datos sin ordenar, porque al almacenarlos en la lista de intervalos los vamos a ordenar.
