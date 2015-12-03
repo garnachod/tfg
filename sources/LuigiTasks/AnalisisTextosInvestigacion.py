@@ -577,7 +577,10 @@ class SimilitudSeguidoresTodosTopicLDA2Doc2VecJSON(luigi.Task):
 				pesos = elementos[1:]
 				usuario_screenName = consultasCassandra.getScreenNameByUserIDCassandra(usuarioId)
 				if usuario_screenName is not None:
-					JsonObj[usuario_screenName] = [float(peso) for peso in pesos]
+					if usuario_screenName == self.usuario:
+						pass
+					else:
+						JsonObj[usuario_screenName] = [float(peso) for peso in pesos]
 		
 
 

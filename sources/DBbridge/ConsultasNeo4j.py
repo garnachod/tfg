@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+import os
+import sys
+lib_path = os.path.abspath('../')
+sys.path.append(lib_path)
+
 from Neo4j.ConexionNeo4j import ConexionNeo4j
 from blist import blist
 from py2neo import cypher
@@ -35,8 +41,13 @@ class ConsultasNeo4j(object):
 
 		return identificadores
 
+	def getNumberOfUsers(self):
+		queryNeo4j = "MATCH (u:user) return count(*)"
+		nodos = self.graph.cypher.execute(queryNeo4j)
+		print nodos
 		
 if __name__ == '__main__':
 	consultas = ConsultasNeo4j()
 	#funcionando
-	print consultas.getListaIDsSeguidoresByUserID(2383366169)
+	#print consultas.getListaIDsSeguidoresByUserID(2383366169)
+	consultas.getNumberOfUsers()

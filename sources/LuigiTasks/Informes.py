@@ -8,6 +8,7 @@ sys.path.append(lib_path)
 import luigi
 from AnalisisTextosInvestigacion import *
 from Analiticas import *
+from Grafos import *
 
 class InformeVersionDiciembre(luigi.Task):
 	"""
@@ -20,10 +21,17 @@ class InformeVersionDiciembre(luigi.Task):
 		return luigi.LocalTarget(path='./informes/%s/json/terms.json'%self.usuario)
 
 	def requires(self):
-		return [LDAvisJSONUsuario(self.usuario), SimilitudSeguidoresTodosTopicLDA2Doc2VecJSON(self.usuario), HistogramaAccionesParagraphVectorTopicsSemanaTwitter(self.usuario)]
+		return [LDAvisJSONUsuario(self.usuario), 
+				SimilitudSeguidoresTodosTopicLDA2Doc2VecJSON(self.usuario), 
+				HistogramaAccionesParagraphVectorTopicsSemanaTwitter(self.usuario),
+				GeneradorUsuariosPropiedadesToJSON(self.usuario)]
 
 	def run(self):
-		diccionario = {"SimilitudSeguidores" : "users.json", "LDAvis":"terms.json", "HistogramaAcciones" : "hours.json"}
+		diccionario = {"SimilitudSeguidores" : "users.json", 
+						"LDAvis":"terms.json",
+						"HistogramaAcciones" : "hours.json",
+						"GeneradorUsuarios": "stats.json"}
+
 		rutaRelativa = './informes/%s/json/'%self.usuario
 
 		if not os.path.exists(rutaRelativa):
@@ -42,4 +50,20 @@ class InformeVersionDiciembre(luigi.Task):
 							with open(rutaRelativa + diccionario[elemento],"w") as out_file:
 								contenido = in_file.read()
 								out_file.write(contenido)
+
+class UploadInformeVersionDiciembre(luigi.Task):
+	"""
+		Uso:
+			PYTHONPATH='' luigi --module Informes UploadInformeVersionDiciembre --usuario ...
+	"""
+	usuario = luigi.Parameter()
+
+	def output(self):
+		return luigi.LocalTarget(path='./informes/UploadInformeVersionDiciembre(%s)'%self.usuario)
+
+	def requires(self):
+		return InformeVersionDiciembre(self.usuario)
+
+	def run(self):
+		print os.system("/home/dani/tfg/sources/LuigiTasks/subirCliente.sh " + self.usuario)
 						

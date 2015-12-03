@@ -8,11 +8,13 @@ import networkx as nx
 
 import luigi
 import time
+import json
 
 from DBbridge.ConsultasNeo4j import ConsultasNeo4j
 from DBbridge.ConsultasCassandra import ConsultasCassandra
 
 from GeneradorDocumentosTwitter import *
+from AnalisisTextosInvestigacion import *
 
 
 class GeneradorGrafoCSVUsuario(luigi.Task):
@@ -32,7 +34,7 @@ class GeneradorGrafoCSVUsuario(luigi.Task):
 		consultasCassandra = ConsultasCassandra()
 		consultasGrafo = ConsultasNeo4j()
 
-		start = time.clock()
+		#start = time.clock()
 
 		user_id = consultasCassandra.getUserIDByScreenNameCassandra(self.usuario)
 		poblacion = consultasGrafo.getListaIDsSeguidoresByUserID(user_id)
@@ -42,23 +44,23 @@ class GeneradorGrafoCSVUsuario(luigi.Task):
 		G.add_nodes_from(screenNames) #  Se puede sustituir por G = nx.DiGraph(poblacion) 
 		dicPoblacion = dict ( zip ( poblacion, screenNames ) )
 		# Como hablamos, he definido la poblacion como un diccionario para que...
-		duracion1 = time.clock() - start
+		#duracion1 = time.clock() - start
 
 		dicTiemposConsultas = {}
 		duracion2 = 0
 		for nodo in poblacion:
-			start = time.clock()
+			#start = time.clock()
 			padresNodo = consultasGrafo.getListaIDsSiguiendoByUserID( nodo )
 			for padre in padresNodo:
 				if padre in dicPoblacion: # ...esto fuese mas eficiente
 					G.add_edge( dicPoblacion[nodo] , dicPoblacion[padre] )
-			dicTiemposConsultas[ dicPoblacion[nodo] ] = time.clock() - start
-			duracion2 += time.clock() - start
+			#dicTiemposConsultas[ dicPoblacion[nodo] ] = time.clock() - start
+			#duracion2 += time.clock() - start
 
 
 		# PARTE 2: Escritura en CSV
 		
-		start = time.clock()
+		#start = time.clock()
 		nodos = G.nodes()
 		with self.output().open('w') as fichero:
 			# En la primera fila del csv guardo los nodos, podria guardarse en un CSV a parte
@@ -68,12 +70,12 @@ class GeneradorGrafoCSVUsuario(luigi.Task):
 				fichero.write( str(nodo) )
 			fichero.write("\n")
 			
-			dicTiemposEscritura = []
+			#dicTiemposEscritura = []
 			seguidores_raros = []
 			n = 0
 			# En la (n+1)-esima fila del csv guardo los padre del n-esimo nodo
 			for lista in G.adjacency_list():
-				start = time.clock()
+				#start = time.clock()
 				if len(lista) > 0:
 					fichero.write( str(lista[0]) )
 					for padre in lista[1:]:
@@ -83,7 +85,7 @@ class GeneradorGrafoCSVUsuario(luigi.Task):
 					seguidores_raros.append( nodos[n] )
 				n += 1
 				fichero.write("\n")
-				dicTiemposEscritura.append( time.clock() - start )
+				#dicTiemposEscritura.append( time.clock() - start )
 
 class GeneradorGrafoGephiUsuario(luigi.Task):
 	"""
@@ -138,6 +140,7 @@ class GeneradorGrafoGephiUsuario(luigi.Task):
 class GeneradorGrafoGephiUsuarioPropiedades(luigi.Task):
 	"""
 		Genera un grafo csv
+		el codigo es algo horrible
 	"""
 	"""
 		Uso:
@@ -149,7 +152,9 @@ class GeneradorGrafoGephiUsuarioPropiedades(luigi.Task):
 		return luigi.LocalTarget(path='grafos/GeneradorGrafoGephiPropiedades_Nodos(%s)'%self.usuario)
 
 	def requires(self):
-		return [GeneradorGrafoGephiUsuario(self.usuario), AcumulaEventosSeguidoresUsuarioTiempo(self.usuario)]
+		return [GeneradorGrafoGephiUsuario(self.usuario), 
+				AcumulaEventosSeguidoresUsuarioTiempo(self.usuario),
+				SimilitudSeguidoresTodosTopicLDA2Doc2VecJSON(self.usuario)]
 
 	def run(self):
 		nodos = {}
@@ -176,17 +181,28 @@ class GeneradorGrafoGephiUsuarioPropiedades(luigi.Task):
 						if nombreUsuario is None:
 							continue
 
-						actividadTotal = 0
+						actividadDesgranada = {"fav":0,"rt":0,"tw":0}
 						for actividad in lineaSplit[1:]:
 							ac = actividad.replace("(", "").replace(")", "").split(";")
 							tipo = ac[0]
 							numero = int(ac[1])
-							actividadTotal += numero
+							actividadDesgranada[tipo] = numero
+
 
 						if nombreUsuario not in nodos:
 							nodos[nombreUsuario] = {}
 
-						nodos[nombreUsuario]["actividad"] = actividadTotal
+						nodos[nombreUsuario]["actividad"] = actividadDesgranada
+				elif "SimilitudSeguidores" in input.path:
+					jsonSimilitudes = json.loads(in_file.read())
+
+					for nombreUsuario in jsonSimilitudes:
+						if nombreUsuario not in nodos:
+								nodos[nombreUsuario] = {}
+
+						for i, peso in enumerate(jsonSimilitudes[nombreUsuario]):
+							nodos[nombreUsuario]["topic"+str(i+1)] = peso
+
 
 		#ahora conseguimos los followers
 		for usuario in nodos:
@@ -196,19 +212,114 @@ class GeneradorGrafoGephiUsuarioPropiedades(luigi.Task):
 			else:
 				nodos[usuario]["followers"] = consultasCassandra.getFollowersByUserID(usuario_id)[0].followers
 
+		#ahora conseguimos los following
+		for usuario in nodos:
+			usuario_id = consultasCassandra.getUserIDByScreenNameCassandra(usuario)
+			if usuario_id is None:
+				nodos[usuario]["following"] = 0
+			else:
+				nodos[usuario]["following"] = consultasCassandra.getFollowingByUserID(usuario_id)[0].following
+
+
+		#ahora consegimos las métricas del grafo.
+		H = nx.DiGraph()
+		with open('grafos/GeneradorGrafoGephi_Nodos(%s)'%self.usuario, 'r') as in_nodos:
+			for i, linea in enumerate(in_nodos):
+				if i == 0:
+					continue
+
+				splited = linea.replace("\n", "").split(",")
+				H.add_node(int(splited[0]), username=splited[1])
+
+		with open('grafos/GeneradorGrafoGephi_Aristas(%s)'%self.usuario, 'r') as in_aristas:
+			for i, linea in enumerate(in_aristas):
+				if i == 0:
+					continue
+					
+				splited = linea.replace("\n", "").split(",")
+				H.add_edge(int(splited[0]), int(splited[1]))
+
+		diccionarioPR = nx.pagerank_scipy(H)
+		for nodoID in diccionarioPR:
+			if "username" in H.node[nodoID]:
+				username = H.node[nodoID]["username"]
+				nodos[username]["pagerank"] = diccionarioPR[nodoID]
+
+		diccionarioBT = nx.betweenness_centrality(H)
+		for nodoID in diccionarioBT:
+			if "username" in H.node[nodoID]:
+				username = H.node[nodoID]["username"]
+				nodos[username]["betweenness"] = diccionarioBT[nodoID]
+
+		#exit()
 		with self.output().open('w') as out_file:
-			out_file.write("Id,Label,Actividad,Followers\n")
+			out_file.write("Id,Label,Tweets_ventana,RT_ventana,Followers,Following,PageRank,Betweenness,Topic1,Topic2,Topic3,Topic4,Topic5,Topic6,Topic7,Favs,Actividad\n")
 			for nodo in nodos:
-				if "actividad" not in nodos[nodo] or "followers" not in nodos[nodo] or "id_gephi" not in nodos[nodo]:
+				if "actividad" not in nodos[nodo] or "id_gephi" not in nodos[nodo] or "pagerank" not in nodos[nodo] or "betweenness" not in nodos[nodo] or "tw" not in nodos[nodo]["actividad"]:
 					continue
 				out_file.write(str(nodos[nodo]["id_gephi"]))
 				out_file.write(",")
 				out_file.write(nodo)
 				out_file.write(",")
-				out_file.write(str(nodos[nodo]["actividad"]))
+				out_file.write(str(nodos[nodo]["actividad"]["tw"]))
+				out_file.write(",")
+				out_file.write(str(nodos[nodo]["actividad"]["rt"]))
 				out_file.write(",")
 				out_file.write(str(nodos[nodo]["followers"]))
+				out_file.write(",")
+				out_file.write(str(nodos[nodo]["following"]))
+				out_file.write(",")
+				out_file.write(str(nodos[nodo]["pagerank"]))
+				out_file.write(",")
+				out_file.write(str(nodos[nodo]["betweenness"]))
+				for i in range(7):
+					out_file.write(",")
+					out_file.write(str(nodos[nodo]["topic"+str(i+1)]))
+
+				out_file.write(",")
+				out_file.write(str(nodos[nodo]["actividad"]["fav"]))
+				out_file.write(",")
+				out_file.write(str(nodos[nodo]["actividad"]["fav"]+nodos[nodo]["actividad"]["tw"]+nodos[nodo]["actividad"]["rt"]))
 				out_file.write("\n")
+
+class GeneradorUsuariosPropiedadesToJSON(luigi.Task):
+	"""
+		Uso:
+			PYTHONPATH='' luigi --module Grafos GeneradorUsuariosPropiedadesToJSON --usuario ...
+	"""
+	usuario = luigi.Parameter()
+
+	def output(self):
+		return luigi.LocalTarget(path='grafos/GeneradorUsuariosPropiedadesToJSON(%s)'%self.usuario)
+
+	def requires(self):
+		return GeneradorGrafoGephiUsuarioPropiedades(self.usuario)
+
+	def run(self):
+		usuarios = []
+
+		with self.input().open('r') as in_file:
+			for i, linea in enumerate(in_file):
+				if i == 0:
+					continue
+
+				splited = linea.replace("\n", "").split(",")
+				usuario = []
+				for i, elemento in enumerate(splited):
+					if i in [0, 4, 5] or i > 7:
+						continue
+					try:
+						numero = float(elemento)
+						usuario.append(numero)
+					except Exception, e:
+						usuario.append(elemento)
+
+				usuarios.append(usuario)
+
+		with self.output().open('w') as out_file:
+			out_file.write(json.dumps(usuarios))
+
+
 
 
 if __name__ == "__main__":
