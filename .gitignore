@@ -3,3 +3,5 @@ Conf.py
 *.swp
 *.py~
 *.out
+*.lda
+*.d2v
