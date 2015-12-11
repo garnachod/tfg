@@ -12,6 +12,17 @@ from Grafos import *
 
 class InformeVersionDiciembre(luigi.Task):
 	"""
+		Genera 
+
+		Dependencias:
+			Grafos.py -> GeneradorGrafoGephiUsuarioPropiedades("usuario")
+
+		Genera:
+			1 ficheros en la carpeta LuigiTask/grafos:
+				* fichero GeneradorUsuariosPropiedadesToJSON(usuario), contiene usuarios con propiedades en estilo
+					json matriz con [[Nombre usuario,Tweets_ventana,RT_ventana,PageRank,Betweenness], ...]
+	"""
+	"""
 		Uso:
 			PYTHONPATH='' luigi --module Informes InformeVersionDiciembre --usuario ...
 	"""
