@@ -5,3 +5,6 @@ Conf.py
 *.out
 *.lda
 *.d2v
+*.mm
+*.npy
+*.index
