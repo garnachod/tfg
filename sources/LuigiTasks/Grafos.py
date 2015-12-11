@@ -19,7 +19,15 @@ from AnalisisTextosInvestigacion import *
 
 class GeneradorGrafoCSVUsuario(luigi.Task):
 	"""
-		Genera un grafo csv
+		Genera un grafo csv, en el formato creado por Pablo 
+
+		Dependencias:
+			No tiene, lee de las bases de datos
+
+		Genera:
+			Un fichero en la carpeta LuigiTask/grafos GeneradorGrafoCSVUsuario(usuario) con la primera fila,
+			nombres de usuarios diferentes, que van a ser los nodos resto de filas,
+			nombre de usuario, nombre de usuario que son las aristas.
 	"""
 	"""
 		Uso:
@@ -89,7 +97,15 @@ class GeneradorGrafoCSVUsuario(luigi.Task):
 
 class GeneradorGrafoGephiUsuario(luigi.Task):
 	"""
-		Genera un grafo csv
+		Genera un grafo csv, en formato Gephi
+
+		Dependencias:
+			Grafos.py -> GeneradorGrafoCSVUsuario("usuario")
+
+		Genera:
+			2 ficheros en la carpeta LuigiTask/grafos:
+				* fichero GeneradorGrafoGephi_Nodos(usuario), contiene los nodos en formato csv gephi
+				* fichero GeneradorGrafoGephi_Aristas(usuario), contiene las aristas en formato csv gephi
 	"""
 	"""
 		Uso:
@@ -139,8 +155,18 @@ class GeneradorGrafoGephiUsuario(luigi.Task):
 
 class GeneradorGrafoGephiUsuarioPropiedades(luigi.Task):
 	"""
-		Genera un grafo csv
-		el codigo es algo horrible
+		Genera un grafo csv, en formato Gephi, con informacion extra para los grafos
+
+		Dependencias:
+			Grafos.py -> GeneradorGrafoGephiUsuario("usuario")
+			GeneradorDocumentosTwitter.py -> AcumulaEventosSeguidoresUsuarioTiempo("usuario")
+			AnalisisTextosInvestigacion.py -> SimilitudSeguidoresTodosTopicLDA2Doc2VecJSON("usuario")
+
+		Genera:
+			1 fichero en la carpeta LuigiTask/grafos:
+				* fichero GeneradorGrafoGephiPropiedades_Nodos(usuario), contiene los nodos en formato csv gephi, con 
+					la información relativa a Tweets_ventana,RT_ventana,Followers,Following,PageRank,Betweenness,
+						Peso Topic1,Topic2,Topic3,Topic4,Topic5,Topic6,Topic7,Favs,Actividad.
 	"""
 	"""
 		Uso:
@@ -255,7 +281,7 @@ class GeneradorGrafoGephiUsuarioPropiedades(luigi.Task):
 		with self.output().open('w') as out_file:
 			out_file.write("Id,Label,Tweets_ventana,RT_ventana,Followers,Following,PageRank,Betweenness,Topic1,Topic2,Topic3,Topic4,Topic5,Topic6,Topic7,Favs,Actividad\n")
 			for nodo in nodos:
-				if "actividad" not in nodos[nodo] or "id_gephi" not in nodos[nodo] or "pagerank" not in nodos[nodo] or "betweenness" not in nodos[nodo] or "tw" not in nodos[nodo]["actividad"]:
+				if "actividad" not in nodos[nodo] or "id_gephi" not in nodos[nodo] or "topic1" not in nodos[nodo] or "pagerank" not in nodos[nodo] or "betweenness" not in nodos[nodo] or "tw" not in nodos[nodo]["actividad"]:
 					continue
 				out_file.write(str(nodos[nodo]["id_gephi"]))
 				out_file.write(",")
@@ -283,6 +309,18 @@ class GeneradorGrafoGephiUsuarioPropiedades(luigi.Task):
 				out_file.write("\n")
 
 class GeneradorUsuariosPropiedadesToJSON(luigi.Task):
+	"""
+		AVISO, ENCONTRAR UN FICHERO PARA ESTE CODIGO QUE NO SEA ESTE FICHERO
+		Genera las propiedades extraidas de los grafos y otros lugares para que se pueda utilizar en el informe interactivo
+
+		Dependencias:
+			Grafos.py -> GeneradorGrafoGephiUsuarioPropiedades("usuario")
+
+		Genera:
+			1 ficheros en la carpeta LuigiTask/grafos:
+				* fichero GeneradorUsuariosPropiedadesToJSON(usuario), contiene usuarios con propiedades en estilo
+					json matriz con [[Nombre usuario,Tweets_ventana,RT_ventana,PageRank,Betweenness], ...]
+	"""
 	"""
 		Uso:
 			PYTHONPATH='' luigi --module Grafos GeneradorUsuariosPropiedadesToJSON --usuario ...
