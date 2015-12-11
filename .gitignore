@@ -10,3 +10,4 @@ Conf.py
 *.index
 *.state
 *.dict
+*/textos/*
