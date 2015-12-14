@@ -41,7 +41,8 @@ class RecolectorTweetsStatusStream(TwythonStreamer, Recolector):
 		limiteEscritura = 10
 
 		if 'text' in data:
-			print len(self.tweets)
+			#print len(self.tweets)
+			print data["text"]
 			if len(self.tweets) > limiteEscritura:
 				self.guarda(self.tweets)
 				self.tweets = []
@@ -61,4 +62,4 @@ class RecolectorTweetsStatusStream(TwythonStreamer, Recolector):
 if __name__ == '__main__':
 	escritores = [EscritorTweetsCassandra(-1)]
 	recolector = RecolectorTweetsStatusStream(escritores)
-	recolector.recolecta(["martes"])
+	recolector.recolecta(["#RubalcabaEP"])

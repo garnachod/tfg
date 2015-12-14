@@ -11,6 +11,7 @@ from DBbridge.ConsultasCassandra import ConsultasCassandra
 from SocialAPI.TwitterAPI.RecolectorTweetsStatusStream import RecolectorTweetsStatusStream
 from SocialAPI.TwitterAPI.RecolectorTweetsUsersStream import RecolectorTweetsUsersStream
 from SocialAPI.TwitterAPI.RecolectorTweetsUser import RecolectorTweetsUser
+from SocialAPI.TwitterAPI.RecolectorTweetsTags import RecolectorTweetsTags
 from SocialAPI.TwitterAPI.RecolectorFavoritosUser import RecolectorFavoritosUser
 from SocialAPI.TwitterAPI.RecolectorSiguiendoShort import RecolectorSiguiendoShort
 from SocialAPI.TwitterAPI.RecolectorSeguidoresShort import RecolectorSeguidoresShort
@@ -57,7 +58,50 @@ class RecolectorUsuarioTwitter(luigi.Task):
 		with self.output().open('w') as out_file:
 			out_file.write("OK")
 
+class RecolectorContenidoTweet(luigi.Task):
+	"""
+		Realiza una busqueda en TwitterAPI
 
+		Recolecta los tweets que contienen la busqueda, pueden ser hastags, menciones o lo que sea
+		default 1.000.000 tardara unas 6 horas si existen ese millon o twiter nos los da
+		si el limite es -1 no habra limite (MUCHO CUIDADO)
+
+		OTRO MUCHO CUIDADO
+			LUIGI no admite # en la entrada de parametros, no pasa nada, borradlos
+	"""
+	"""
+		Uso:
+			PYTHONPATH='' luigi --module RecolectorTwitter RecolectorContenidoTweet --busqueda ... --limitedescarga ...
+	"""
+	busqueda = luigi.Parameter()
+	limitedescarga = luigi.Parameter(default="1000000")
+
+	def output(self):
+		return luigi.LocalTarget('tasks/RecolectorContenidoTweet(%s)'%self.busqueda)
+
+	def run(self):
+		escritorList = []
+		escritorList.append(EscritorTweetsCassandra(-1))
+		recolector = RecolectorTweetsTags(escritorList)
+		limite = 1000000
+		try:
+			limite = int(self.limitedescarga)
+		except Exception, e:
+			limite = 1000000
+		if limite == -1:
+			limite = 10000000
+
+		try:
+			#recoleccion pura y dura
+			recolector.recolecta(self.busqueda, limite = limite)
+		except Exception, e:
+			if "LIMITE" in e:
+				sleep(1*60)
+			else:
+				raise e
+
+
+"""
 class TestRecolectorUsuarioTwitter(luigi.Task):
 	def requires(self):
 		return [RecolectorUsuarioTwitter(usuario) for usuario in ["@garnachod", "@p_molins", 2383366169]]
@@ -67,7 +111,7 @@ class TestRecolectorUsuarioTwitter(luigi.Task):
 			out_file.write("OK")
 
 	def output(self):
-		return luigi.LocalTarget('tasks/TestRecolectorUsuarioTwitter()')
+		return luigi.LocalTarget('tasks/TestRecolectorUsuarioTwitter()')"""
 
 class RecolectorSeguidoresTwitter(luigi.Task):
 	"""
@@ -109,7 +153,7 @@ class RecolectorSeguidoresTwitter(luigi.Task):
 
 		with self.output().open('w') as out_file:
 			out_file.write("OK")
-		
+"""
 class TestRecolectorSeguidoresTwitter(luigi.Task):
 	def requires(self):
 		return [RecolectorSeguidoresTwitter(usuario) for usuario in ["@garnachod", "@p_molins", 2383366169]]
@@ -119,7 +163,7 @@ class TestRecolectorSeguidoresTwitter(luigi.Task):
 			out_file.write("OK")
 			
 	def output(self):
-		return luigi.LocalTarget('tasks/TestRecolectorSeguidoresTwitter()')
+		return luigi.LocalTarget('tasks/TestRecolectorSeguidoresTwitter()')"""
 
 class RecolectorSiguiendoTwitter(luigi.Task):
 	usuario = luigi.Parameter()

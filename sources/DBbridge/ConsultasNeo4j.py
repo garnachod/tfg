@@ -41,6 +41,15 @@ class ConsultasNeo4j(object):
 
 		return identificadores
 
+	def getUsersFavTweetByID(self, tweet_id):
+		queryNeo4j = "MATCH (u:user)-[r:FAV]->(a:tweet  {id_twitter : {ID}}) return u"
+		nodos = self.graph.cypher.execute(queryNeo4j, {"ID":tweet_id})
+		identificadores = blist([])
+		for nodo in nodos:
+			identificadores.append(long(nodo[0].properties["id_twitter"]))
+
+		return identificadores
+
 	def getNumberOfUsers(self):
 		queryNeo4j = "MATCH (u:user) return count(*)"
 		nodos = self.graph.cypher.execute(queryNeo4j)

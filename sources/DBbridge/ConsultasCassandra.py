@@ -359,7 +359,7 @@ class ConsultasCassandra(object):
 		query += "}\' limit %s;"
 		
 
-		Row = namedtuple('Row', 'status, favorite_count, retweet_count, orig_tweet, media_urls, screen_name, profile_img, id_twitter')
+		Row = namedtuple('Row', 'status, favorite_count, retweet_count, orig_tweet, media_urls, screen_name, profile_img, id_twitter, created_at')
 
 		try:
 			rows = self.session_cassandra.execute(query, [limit])
@@ -367,13 +367,28 @@ class ConsultasCassandra(object):
 			#JOIN
 			for row in rows:
 				user = self.getUserByIDShortCassandra(row.tuser)
-				fila = Row(row.status, row.favorite_count, row.retweet_count, row.orig_tweet, row.media_urls, user.screen_name, user.profile_img, row.id_twitter)
+				fila = Row(row.status, row.favorite_count, row.retweet_count, row.orig_tweet, row.media_urls, user.screen_name, user.profile_img, row.id_twitter, row.created_at)
 				retorno.append(fila)
 			return retorno
 		except Exception, e:
 			print "getTweetsTopicsCassandra"
 			print str(e)
 			return False
+
+	def getUsersHasRetweetedByOrigTweetCassandra(self, identificador):
+		query = "SELECT tuser FROM tweets WHERE orig_tweet = %s;"
+		try:
+			retorno = blist([])
+			rows = self.session_cassandra.execute(query, [identificador])
+			for row in rows:
+				retorno.append(row.tuser)
+
+			return retorno
+		except Exception, e:
+			print "getUsersHasRetweetedByOrigTweetCassandra"
+			print str(e)
+			return False
+
 
 	#TODO Problemas de seguridad?
 	def getIDsTweetsTrainCassandra(self, topics, limit):

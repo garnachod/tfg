@@ -8,70 +8,61 @@ class RecolectorTweetsTags(RecolectorTweetsUser):
 		self.authorizator.set_limit_api(430)
 		self.tipo_id = 2
 		self.inicializa()
+		self.lastQuery = ""
+		self.maximo = long(0)
+		self.cont = 0
 
 
-	def recolecta(self, query):
-		#start_time = time()
-		#tiempo_baseDatos = 0
-		#tiempo_api = 0
-
+	def recolecta(self, query, limite=20000):
 		arrayFinal = []
-		maximo = long(0)
-		cont = 0
+
+		if query != self.lastQuery:
+			self.maximo = long(0)
+			self.cont = 0
+
+		self.lastQuery = query
+
 		while True:
-			#tiempo_api_ini = time()
-			statuses = self.privateRealizaConsulta(query, maxi=maximo)
-			#tiempo_api_fin = time()
-			#tiempo_api += tiempo_api_fin - tiempo_api_ini
+			statuses = self.privateRealizaConsulta(query, maxi=self.maximo)
 			if len(statuses) == 0:
 				break
 
 			for status in statuses:
 				arrayFinal.append(status)
 			
-			maximo = self.getMinIDtweets(arrayFinal, query)
-			if maximo != 0:
-				maximo -= 1
+			self.maximo = self.getMinIDtweets(arrayFinal, query)
+			if self.maximo != 0:
+				self.maximo -= 1
+
 			if len(arrayFinal) > 100:
-				#tiempo_baseDatos_ini = time()
 				self.guarda(arrayFinal)
-				#tiempo_baseDatos_fin = time()
-				#tiempo_baseDatos += tiempo_baseDatos_fin - tiempo_baseDatos_ini
-				cont += len(arrayFinal)
+				self.cont += len(arrayFinal)
 				arrayFinal = []
 				
 			#limite puesto por defecto
-			if cont > 20000:
+			if self.cont > limite:
 				break
 
-		print cont
-		#fin del while
-		#tiempo_baseDatos_ini = time()
+		print self.cont
+		
 		self.guarda(arrayFinal)
-		#tiempo_baseDatos_fin = time()
-		#tiempo_baseDatos += tiempo_baseDatos_fin - tiempo_baseDatos_ini
-
-		#elapsed_time = time() - start_time
-		#print("Elapsed time total: %0.10f seconds." % elapsed_time)
-		#print("Elapsed time DB: %0.10f seconds." % tiempo_baseDatos)
-		#print("Elapsed time API: %0.10f seconds." % tiempo_api)
-
 
 	def privateRealizaConsulta(self, query, maxi=0, mini=0):
 		if self.authorizator.is_limit_api(self.tipo_id):
-			return []
+			raise Exception('LIMITE')
 
 		try:
-			if maxi == 0 and mini == 0: 
-				retorno = self.twitter.search(q=query, count='100')
+			if maxi == 0 and mini == 0:
+				retorno = self.twitter.search(q=query, count='100', result_type="recent")
 			elif maxi == 0 and mini > 0:
-				retorno = self.twitter.search(q=query, since_id=mini, count='100')
+				retorno = self.twitter.search(q=query, since_id=mini, count='100', result_type="recent")
 			elif maxi > 0 and mini == 0:
-				retorno = self.twitter.search(q=query, max_id=maxi, count='100')
+				retorno = self.twitter.search(q=query, max_id=maxi, count='100', result_type="recent")
 			else:
-				retorno = self.twitter.search(q=query, max_id=maxi, since_id=mini, count='100')
+				retorno = self.twitter.search(q=query, max_id=maxi, since_id=mini, count='100', result_type="recent")
 
 			self.authorizator.add_query_to_key(self.tipo_id)
+			#print retorno
 			return retorno["statuses"]
 
 		except Exception, e:

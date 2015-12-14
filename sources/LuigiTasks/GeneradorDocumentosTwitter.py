@@ -4,6 +4,9 @@ import sys
 lib_path = os.path.abspath('../')
 sys.path.append(lib_path)
 import luigi
+import re
+import json
+from blist import blist
 from time import time, sleep
 from DBbridge.ConsultasNeo4j import ConsultasNeo4j
 from DBbridge.ConsultasCassandra import ConsultasCassandra
@@ -72,7 +75,7 @@ class GeneradorTextoUsuarioSinLem(luigi.Task):
 				tweetSinStopWords = LimpiadorTweets.stopWordsByLanguagefilter(tweetLimpio, tweet.lang)
 				out_file.write(tweetSinStopWords)
 				out_file.write(u"\n")
-
+"""
 class TestGeneradorTextoUsuario(luigi.Task):
 	def requires(self):
 		return GeneradorTextoUsuario("@p_molins")
@@ -82,7 +85,7 @@ class TestGeneradorTextoUsuario(luigi.Task):
 			out_file.write("OK")
 			
 	def output(self):
-		return luigi.LocalTarget('tasks/TestGeneradorTextoUsuario()')
+		return luigi.LocalTarget('tasks/TestGeneradorTextoUsuario()')"""
 
 class GeneradorTextoSeguidoresUsuario(luigi.Task):
 	"""
@@ -177,7 +180,7 @@ class GeneradorTextoSeguidoresDoc2Vec(luigi.Task):
 					out_file.write(u"\n")
 
 
-
+"""
 class TestGeneradorTextoSeguidoresUsuario(luigi.Task):
 	def requires(self):
 		return GeneradorTextoSeguidoresUsuario("@p_molins")
@@ -187,7 +190,7 @@ class TestGeneradorTextoSeguidoresUsuario(luigi.Task):
 			out_file.write("OK")
 			
 	def output(self):
-		return luigi.LocalTarget('tasks/TestGeneradorTextoSeguidoresUsuario()')
+		return luigi.LocalTarget('tasks/TestGeneradorTextoSeguidoresUsuario()')"""
 
 class GeneradorEventosSeguidoresUsuario(luigi.Task):
 	"""Genera un fichero con los eventos de los seguidores de un usuario
@@ -245,7 +248,7 @@ class GeneradorEventosSeguidoresUsuario(luigi.Task):
 						
 					out_file.write("\n")
 
-class TestGeneradorEventosSeguidoresUsuario(luigi.Task):
+"""class TestGeneradorEventosSeguidoresUsuario(luigi.Task):
 	def requires(self):
 		return GeneradorEventosSeguidoresUsuario("@p_molins")
 
@@ -254,7 +257,7 @@ class TestGeneradorEventosSeguidoresUsuario(luigi.Task):
 			out_file.write("OK")
 			
 	def output(self):
-		return luigi.LocalTarget('tasks/TestGeneradorEventosSeguidoresUsuario()')
+		return luigi.LocalTarget('tasks/TestGeneradorEventosSeguidoresUsuario()')"""
 
 
 class AcumulaEventosSeguidoresUsuarioTiempo(luigi.Task):
@@ -411,5 +414,49 @@ class GeneradorTextoCorpusIdiomaSinLem(luigi.Task):
 		return luigi.LocalTarget(path='ficheros/GeneradorTextoCorpusIdiomaSinLem(%s)'%self.idioma, format=luigi.format.TextFormat(encoding='utf8'))
 		
 
+class GetActividadPorContenidoTweet(luigi.Task):
+	"""
+		GetActividadPorContenidoTweet:
+			Genera un JSON que contiene un array de tweets, 
+			donde cada tweet, contiene su ID, su autor, fecha,
+			array de hastags si contiene, array de menciones si contiene, 
+			array usuarios que han favoriteado otro para RT
+	"""
+	"""
+		Uso:
+			PYTHONPATH='' luigi --module GeneradorDocumentosTwitter GetActividadPorContenidoTweet --query ...
+	"""
+	query = luigi.Parameter()
+
+	def run(self):
+		consultasCassandra = ConsultasCassandra()
+		consultasNeo4j = ConsultasNeo4j()
+
+		tweets = consultasCassandra.getTweetsTopicsCassandra(self.query, limit=100000)
+		re_hastag = re.compile(r'\#[0-9a-zA-Z]+')
+		re_tuser = re.compile(r'@[a-zA-Z0-9_]+')
+
+		retorno = []
+
+		for tweet in tweets:
+			objRetorno = {}
+			objRetorno["id"] = tweet.id_twitter
+			objRetorno["autor"] = tweet.screen_name			
+			objRetorno["fecha"] = u""+str(tweet.created_at)
+			objRetorno["hastags"] = self.getListRE(tweet.status, re_hastag)
+			objRetorno["menciones"] = self.getListRE(tweet.status, re_tuser)
+			objRetorno["rts"] = list(consultasCassandra.getUsersHasRetweetedByOrigTweetCassandra(tweet.id_twitter))
+			objRetorno["favs"] = list(consultasNeo4j.getUsersFavTweetByID(tweet.id_twitter))
+			retorno.append(objRetorno)
+
+		with self.output().open('w') as out_file:
+			out_file.write(json.dumps(retorno, ensure_ascii=False))
+
+	def getListRE(self, status, regularExpresion):
+		return regularExpresion.findall(status)
+
+	def output(self):
+		return luigi.LocalTarget(path='ficheros/GetActividadPorContenidoTweet(%s)'%self.query, format=luigi.format.TextFormat(encoding='utf8'))
+		
 if __name__ == "__main__":
 	luigi.run()
