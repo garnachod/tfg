@@ -62,4 +62,4 @@ class RecolectorTweetsStatusStream(TwythonStreamer, Recolector):
 if __name__ == '__main__':
 	escritores = [EscritorTweetsCassandra(-1)]
 	recolector = RecolectorTweetsStatusStream(escritores)
-	recolector.recolecta(["#RubalcabaEP"])
+	recolector.recolecta(["#Andorra"])

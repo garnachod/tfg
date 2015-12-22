@@ -2,7 +2,7 @@ from SocialAPI.Recolector import Recolector
 from ApoyoTwitter import ApoyoTwitter
 from getAuthorizations import GetAuthorizations
 from twython import Twython
-
+ 
 class RecolectorSeguidoresShort(Recolector):
 	def __init__(self, escritores):
 		super(RecolectorSeguidoresShort, self).__init__(escritores)
@@ -12,6 +12,7 @@ class RecolectorSeguidoresShort(Recolector):
 		self.tipo_id = 4
 		self.inicializa()
 		self.cursor = -1
+		self.lastQuery = ""
 		
 
 	def inicializa(self):
@@ -19,8 +20,10 @@ class RecolectorSeguidoresShort(Recolector):
 		api_key, access_token = self.authorizator.get_twython_token()
 		self.twitter = Twython(api_key, access_token=access_token)
 
-	def recolecta(self, query=None, id_user = -1, complete=False):
+	def cleanCursor(self):
 		self.cursor = -1
+
+	def recolecta(self, query=None, id_user = -1, complete=False):
 
 		if query is None and id_user == -1:
 			raise Exception('Al menos debe haber un parametro usable')
@@ -29,15 +32,24 @@ class RecolectorSeguidoresShort(Recolector):
 			if query[0] == '@':
 				query = query[1:]
 
+			if self.lastQuery == query:
+				print "query es igual"
+				pass
+			else:
+				self.lastQuery = query
+				self.cursor = -1
+
 			id_user = self.apoyo.getUserIDByScreenName(query)
 			if id_user == None:
 				raise Exception('El usuario debe estar en la base de datos')
+		else:
+			self.cursor = -1
 			
 		
 		retornoFinal = {"ids": []}
 		while True:
 			retorno = self.privateRealizaConsultaById(id_user)
-			
+			print self.cursor
 			if retorno == []:
 				break
 

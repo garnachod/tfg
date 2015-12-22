@@ -375,13 +375,37 @@ class ConsultasCassandra(object):
 			print str(e)
 			return False
 
+	def getStatusTopicsCassandra(self, topics, limit=100, rts=False):
+		"""
+			Realiza una consulta por topic en Cassandra lucene
+
+			El formato de tweet es solo el status y el idioma:
+				status, lang
+		"""
+		query = "SELECT status, lang, created_at FROM tweets WHERE lucene =\'{"
+		if rts == False:
+			query += """filter : {type:\"boolean\", must:[
+					   {type:"match", field:"orig_tweet", value:0} ] },"""
+		query += "query : {type:\"phrase\", field:\"status\", value:\""+topics+"\", slop:1}, "
+		query += "sort : {fields: [ {field:\"created_at\", reverse:true} ] }"
+		query += "}\' limit %s;"
+		
+
+		try:
+			rows = self.session_cassandra.execute(query, [limit])
+			return rows
+		except Exception, e:
+			print "getTweetsTopicsCassandra"
+			print str(e)
+			return False
+
 	def getUsersHasRetweetedByOrigTweetCassandra(self, identificador):
-		query = "SELECT tuser FROM tweets WHERE orig_tweet = %s;"
+		query = "SELECT tuser, created_at FROM tweets WHERE orig_tweet = %s;"
 		try:
 			retorno = blist([])
 			rows = self.session_cassandra.execute(query, [identificador])
 			for row in rows:
-				retorno.append(row.tuser)
+				retorno.append([row.tuser,row.created_at])
 
 			return retorno
 		except Exception, e:
@@ -510,6 +534,19 @@ class ConsultasCassandra(object):
 		except Exception, e:
 			print "getFollowingByUserID"
 			print e
+
+	"""Sentimientos"""
+	def getTweetsTextAndLang(self, lang, limit = 5000000):
+		query = "SELECT status, lang FROM tweets WHERE lang = %s AND orig_tweet = 0 Limit %s ALLOW FILTERING;"
+
+		try:
+			rows = self.session_cassandra.execute(query, [lang, limit])
+			return rows
+		except Exception, e:
+			print str(e)
+			return False
+
+	"""fin de Sentimientos"""
 
 	"""estadisticas"""
 	def getNumTweetsRTCassandra(self):

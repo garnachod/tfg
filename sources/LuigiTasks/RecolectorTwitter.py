@@ -93,7 +93,8 @@ class RecolectorContenidoTweet(luigi.Task):
 
 		try:
 			#recoleccion pura y dura
-			recolector.recolecta(self.busqueda, limite = limite)
+			for busq in self.busqueda.replace(" ", "").split(","):
+				recolector.recolecta(busq, limite = limite)
 		except Exception, e:
 			if "LIMITE" in e:
 				sleep(1*60)
@@ -119,6 +120,7 @@ class RecolectorSeguidoresTwitter(luigi.Task):
 			PYTHONPATH='' luigi --module RecolectorTwitter RecolectorSeguidoresTwitter --usuario ...
 	"""
 	usuario = luigi.Parameter()
+	forcecomplete = luigi.Parameter(default="True")
 
 	def output(self):
 		return luigi.LocalTarget('tasks/RecolectorSeguidoresTwitter(%s)'%self.usuario)
@@ -141,15 +143,18 @@ class RecolectorSeguidoresTwitter(luigi.Task):
 					pass	
 
 				if identificador == 0:
-					recolector.recolecta(query=self.usuario, complete=True)
+					if self.forcecomplete == "True":
+						recolector.recolecta(query=self.usuario, complete=True)
+					else:
+						recolector.recolecta(query=self.usuario)
 				else:
 					recolector.recolecta(id_user=identificador)
 				break
 			except Exception, e:
 				if "LIMITE" in e:
 					sleep(1*60)
-				else:
-					raise e
+				#else:
+				#	raise e
 
 		with self.output().open('w') as out_file:
 			out_file.write("OK")

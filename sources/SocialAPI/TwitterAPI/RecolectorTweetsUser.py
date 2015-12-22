@@ -22,7 +22,7 @@ class RecolectorTweetsUser(Recolector):
 		api_key, access_token = self.authorizator.get_twython_token()
 		self.twitter = Twython(api_key, access_token=access_token)
 
-	def recolecta(self, query=None, identificador=-1):
+	def recolecta(self, query=None, identificador=-1, limit=3200):
 		arrayFinal = []
 
 		if query is None and identificador == -1:
@@ -65,7 +65,7 @@ class RecolectorTweetsUser(Recolector):
 			
 
 			#limite de la api
-			if len(arrayFinal) >= 3200:
+			if len(arrayFinal) >= limit:
 				break
 
 		#fin del while

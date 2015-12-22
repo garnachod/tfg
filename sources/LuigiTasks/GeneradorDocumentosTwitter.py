@@ -47,6 +47,7 @@ class GeneradorTextoUsuario(luigi.Task):
 				out_file.write(tweetStemmed)
 				out_file.write(u"\n")
 
+
 class GeneradorTextoUsuarioSinLem(luigi.Task):
 	usuario = luigi.Parameter()
 
@@ -75,6 +76,43 @@ class GeneradorTextoUsuarioSinLem(luigi.Task):
 				tweetSinStopWords = LimpiadorTweets.stopWordsByLanguagefilter(tweetLimpio, tweet.lang)
 				out_file.write(tweetSinStopWords)
 				out_file.write(u"\n")
+
+class GeneradorTextoPorContenidoSinLem(luigi.Task):
+	"""
+		Realiza una busqueda en la base de datos
+
+		Recolecta los tweets de un contenido dado e imprime todos los tweets sin /n
+	"""
+	"""
+		Uso:
+			PYTHONPATH='' luigi --module GeneradorDocumentosTwitter GeneradorTextoPorContenidoSinLem --query ...
+	"""
+	query = luigi.Parameter()
+
+	def output(self):
+		return luigi.LocalTarget(path='ficheros/GeneradorTextoPorContenidoSinLem(%s)'%self.query, format=luigi.format.TextFormat(encoding='utf8'))
+
+	def run(self):
+		cs = ConsultasCassandra()
+
+		tweets = []
+		try:
+			tweets = cs.getStatusTopicsCassandra(self.query, limit=10000)
+		except Exception, e:
+			print e
+			pass
+
+		with self.output().open('w') as out_file:
+			i = 0
+			for tweet in tweets:
+				i += 1
+				tweetLimpio = LimpiadorTweets.clean(tweet.status)
+				tweetSinStopWords = LimpiadorTweets.stopWordsByLanguagefilter(tweetLimpio, tweet.lang)
+				out_file.write(tweetSinStopWords)
+				out_file.write(u"\n")
+
+			print i
+
 """
 class TestGeneradorTextoUsuario(luigi.Task):
 	def requires(self):
@@ -339,6 +377,34 @@ class GeneradorEventosSeguidoresPuntosUsuario(luigi.Task):
 	def output(self):
 		return luigi.LocalTarget(path='ficheros/GeneradorEventosSeguidoresPuntosUsuario(%s)'%self.usuario)
 
+class GeneradorEventosPorContenidoTweet(luigi.Task):
+	"""docstring for GeneradorEventosPorContenidoTweet"""
+	"""
+		Uso:
+			PYTHONPATH='' luigi --module GeneradorDocumentosTwitter GeneradorEventosPorContenidoTweet --query ...
+	"""
+	query = luigi.Parameter()
+
+	def output(self):
+		return luigi.LocalTarget(path='ficheros/GeneradorEventosPorContenidoTweet(%s)'%self.query)
+
+	def run(self):
+		tiempos = blist([])
+		cs = ConsultasCassandra()
+		tweets = cs.getStatusTopicsCassandra(self.query, limit=100000, rts=True)
+
+		for tweet in tweets:
+			tiempos.append(tweet.created_at)
+
+		with self.output().open("w") as out_file:
+			for i, tiempo in enumerate(tiempos):
+				if i == 0:
+					out_file.write(str(tiempo))
+				else:
+					out_file.write(","+str(tiempo))
+		
+	
+
 
 class GeneradorTextoCorpusIdioma(luigi.Task):
 	"""docstring for GeneradorTextoCorpusIdioma"""
@@ -414,6 +480,63 @@ class GeneradorTextoCorpusIdiomaSinLem(luigi.Task):
 		return luigi.LocalTarget(path='ficheros/GeneradorTextoCorpusIdiomaSinLem(%s)'%self.idioma, format=luigi.format.TextFormat(encoding='utf8'))
 		
 
+class GetActividadPorUsuariosDadoCSV(luigi.Task):
+	"""
+		GetActividadPorContenidoTweet:
+			Genera un JSON que contiene un array de tweets, 
+			donde cada tweet, contiene su ID, su autor, fecha,
+			array de hastags si contiene, array de menciones si contiene, 
+			array usuarios que han favoriteado otro para RT
+			los usuarios vienen definidos por un fichero en propiedades_usuarios/nombrefichero
+	"""
+	"""
+		Uso:
+			PYTHONPATH='' luigi --module GeneradorDocumentosTwitter GetActividadPorUsuariosDadoCSV --nombrefichero ...
+	"""
+	nombrefichero = luigi.Parameter()
+
+	def run(self):
+		consultasCassandra = ConsultasCassandra()
+		consultasNeo4j = ConsultasNeo4j()
+
+		lineas = []
+		with open('propiedades_usuarios/%s'%self.nombrefichero) as in_file:
+			for i, line in enumerate(in_file):
+				if i == 0:
+					pass
+				else:
+					lineas.append(line.replace("\n", "").split(","))
+
+		tweets = []
+		for linea in lineas:
+			tweetsAux = consultasCassandra.getTweetsUsuarioCassandra(linea[0], limit=10000)
+			tweets.extend(tweetsAux)
+
+		re_hastag = re.compile(r'\#[0-9a-zA-Z]+')
+		re_tuser = re.compile(r'@[a-zA-Z0-9_]+')
+
+		retorno = []
+
+		for tweet in tweets:
+			objRetorno = {}
+			objRetorno["id"] = tweet.id_twitter
+			objRetorno["autor"] = tweet.screen_name
+			objRetorno["fecha"] = u""+str(tweet.created_at)
+			objRetorno["hastags"] = self.getListRE(tweet.status, re_hastag)
+			objRetorno["menciones"] = self.getListRE(tweet.status, re_tuser)
+			objRetorno["rts"] = list(consultasCassandra.getUsersHasRetweetedByOrigTweetCassandra(tweet.id_twitter))
+			objRetorno["favs"] = list(consultasNeo4j.getUsersFavTweetByID(tweet.id_twitter))
+			retorno.append(objRetorno)
+
+		with self.output().open('w') as out_file:
+			out_file.write(json.dumps(retorno, ensure_ascii=False))
+
+	def getListRE(self, status, regularExpresion):
+		return regularExpresion.findall(status)
+
+	def output(self):
+		return luigi.LocalTarget(path='ficheros/GetActividadPorUsuariosDadoCSV(%s)'%self.nombrefichero, format=luigi.format.TextFormat(encoding='utf8'))
+
 class GetActividadPorContenidoTweet(luigi.Task):
 	"""
 		GetActividadPorContenidoTweet:
@@ -432,25 +555,33 @@ class GetActividadPorContenidoTweet(luigi.Task):
 		consultasCassandra = ConsultasCassandra()
 		consultasNeo4j = ConsultasNeo4j()
 
-		tweets = consultasCassandra.getTweetsTopicsCassandra(self.query, limit=100000)
+		tweets = {}
+		for consulta in self.query.replace(" ", "").split(","):
+			tweets_aux = consultasCassandra.getTweetsTopicsCassandra(consulta, limit=100000)
+			for tweet in tweets_aux:
+				if str(tweet.id_twitter) not in tweets:
+					tweets[str(tweet.id_twitter)] = tweet
+
 		re_hastag = re.compile(r'\#[0-9a-zA-Z]+')
 		re_tuser = re.compile(r'@[a-zA-Z0-9_]+')
 
 		retorno = []
 
-		for tweet in tweets:
+		for tweetID in tweets:
+			tweet = tweets[tweetID]
 			objRetorno = {}
 			objRetorno["id"] = tweet.id_twitter
-			objRetorno["autor"] = tweet.screen_name			
+			objRetorno["autor"] = tweet.screen_name		
 			objRetorno["fecha"] = u""+str(tweet.created_at)
 			objRetorno["hastags"] = self.getListRE(tweet.status, re_hastag)
 			objRetorno["menciones"] = self.getListRE(tweet.status, re_tuser)
-			objRetorno["rts"] = list(consultasCassandra.getUsersHasRetweetedByOrigTweetCassandra(tweet.id_twitter))
+			rts = [[elemento[0], u""+str(elemento[1])] for elemento in consultasCassandra.getUsersHasRetweetedByOrigTweetCassandra(tweet.id_twitter)]
+			objRetorno["rts"]= rts
 			objRetorno["favs"] = list(consultasNeo4j.getUsersFavTweetByID(tweet.id_twitter))
 			retorno.append(objRetorno)
 
 		with self.output().open('w') as out_file:
-			out_file.write(json.dumps(retorno, ensure_ascii=False))
+			out_file.write(u""+json.dumps(retorno, ensure_ascii=False))
 
 	def getListRE(self, status, regularExpresion):
 		return regularExpresion.findall(status)

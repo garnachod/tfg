@@ -13,6 +13,7 @@ from gensim.models.doc2vec import LabeledSentence
 from gensim.models import Doc2Vec
 
 from AnalisisTextos import *
+from GeneradorTextosSentimientos import *
 
 from blist import blist
 import codecs
@@ -25,6 +26,9 @@ import nltk
 import pyLDAvis.gensim
 import pyLDAvis
 
+import sklearn
+from sklearn.externals import joblib
+from sklearn.ensemble import RandomForestClassifier
 
 
 class Word2VecIdiomaGenerico(luigi.Task):
@@ -59,9 +63,15 @@ class Word2VecIdiomaGenerico(luigi.Task):
 			out_file.write("OK")
 
 class LabeledLineSentence(object):
-	def __init__(self, source):
+	"""
+		ides:
+			Number	
+			String
+	"""
+	def __init__(self, source, ides="Number"):
 		self.source = source
 		self.sentences = None
+		self.ides = ides
 		
 	def to_array(self):
 		if self.sentences is None:
@@ -71,7 +81,10 @@ class LabeledLineSentence(object):
 				for item_no, line in enumerate(fIn):
 					line = line.replace("\n", "")
 					if item_no % 2 == 0:
-						last_identif = long(line)
+						if self.ides == "Number":
+							last_identif = long(line)
+						else:
+							last_identif = line
 					else:
 						palabras = utils.to_unicode(line).split()
 						palabras_clean = []
@@ -668,3 +681,194 @@ class LDAvisJSONUsuario(luigi.Task):
 		#pyLDAvis.display(vis_data)
 		pyLDAvis.save_json(vis_data, self.output().path)
 		
+
+
+class EntrenamientoSentimientos(luigi.Task):
+	"""docstring for EntrenamientoSentimientos"""
+	"""
+		Genera vectores con paragraph vector y lo lleva a un clasificador
+	"""
+	"""
+		Uso:
+			PYTHONPATH='' luigi --module AnalisisTextosInvestigacion EntrenamientoSentimientos --lang ...
+	"""
+
+	lang = luigi.Parameter(default="es")
+
+	def requires(self):
+		return SentimientosPorIdioma(self.lang)
+
+	def output(self):
+		return luigi.LocalTarget(path='sentimientos/EntrenamientoSentimientos(%s)'%self.lang)
+
+	def run(self):
+		sentences = LabeledLineSentence(self.input().path, ides="String")
+
+		dimension = 20
+
+		total_start = time.time()
+
+		#model = Doc2Vec(min_count=1, window=7, size=dimension, sample=1e-3, negative=5, dm=0 ,workers=6, alpha=0.04)
+		model = Doc2Vec(min_count=1, window=7, size=dimension, sample=1e-3, negative=5, workers=6, alpha=0.04)
+		
+		if os.path.isfile('./sentimientos/model_' + self.lang + '.d2v'):
+			pass
+		else:
+			print "inicio vocab"
+			model.build_vocab(sentences.to_array())
+			print "fin vocab"
+			first_alpha = model.alpha
+			last_alpha = 0.01
+			next_alpha = first_alpha
+			epochs = 30
+			for epoch in range(epochs):
+				start = time.time()
+				print "iniciando epoca DBOW:"
+				print model.alpha
+				model.train(sentences.sentences_perm())
+				end = time.time()
+				next_alpha = (((first_alpha - last_alpha) / float(epochs)) * float(epochs - (epoch+1)) + last_alpha)
+				model.alpha = next_alpha
+				print "tiempo de la epoca " + str(epoch) +": " + str(end - start)
+
+			model.save('./sentimientos/model_' + self.lang + '.d2v')
+
+		total_end = time.time()
+
+		print "tiempo total d2v:" + str((total_end - total_start)/60.0)
+
+		model = gensim.models.Doc2Vec.load('./sentimientos/model_' + self.lang + '.d2v')
+
+		
+
+		matr = []
+		vec = []
+		for sentencia in sentences.to_array():
+			if "ns" not in sentencia.tags[0]:
+				vectoGenerated = numpy.array(model.infer_vector(sentencia.words, steps=3, alpha=0.1))
+				matr.append(vectoGenerated)
+				if "ps" in sentencia.tags[0]:
+					vec.append(0)
+				else:
+					vec.append(1)
+
+		
+		numpyMatrTrain = numpy.matrix(matr)
+		numpyArrayTrain = numpy.array(vec)
+		#numpyMatrTrain = numpy.matrix([numpy.array(model.infer_vector(sentencia.words, steps=3, alpha=0.1)) for sentencia in sentences.to_array()])
+		#numpyArrayTrain = numpy.array([0 if ""  else '' for sentencia in sentences.to_array()])
+		print numpyMatrTrain
+		print numpyArrayTrain
+
+		#clasif = sklearn.linear_model.LogisticRegression(tol=1e-6, class_weight='balanced')
+		clasif = sklearn.linear_model.LogisticRegression(tol=1e-6)
+		#clasif = sklearn.svm.SVC()
+
+		clasif.fit(numpyMatrTrain, numpyArrayTrain)
+		print "LogisticRegression"
+		print clasif.score(numpyMatrTrain,numpyArrayTrain)
+
+		joblib.dump(clasif, './sentimientos/model_' + self.lang + '.clf')
+		"""
+		clasif = RandomForestClassifier(n_estimators=31, max_depth=6)
+		clasif.fit(numpyMatrTrain, numpyArrayTrain)
+		print "RandomForestClassifier"
+		print clasif.score(numpyMatrTrain,numpyArrayTrain)
+		exit()"""
+
+		with self.output().open('w') as out_file:
+			out_file.write("OK")
+
+class ClasificaSentimientosPorContenidoYMenciones(luigi.Task):
+	#textos = luigi.Parameter(default="es")
+	"""
+		Uso:
+			PYTHONPATH='' luigi --module AnalisisTextosInvestigacion ClasificaSentimientosPorContenidoYMenciones --lang ...
+			PYTHONPATH='' luigi --module AnalisisTextosInvestigacion ClasificaSentimientosPorContenidoYMenciones --contenidotweet EnCasaDeElisa --menciones "salvadostv;psoe"
+	"""
+
+	"""
+		"salvadostv;PPopular"
+	"""
+	lang = luigi.Parameter(default="es")
+	contenidotweet = luigi.Parameter()
+	menciones = luigi.Parameter()
+
+	def requires(self):
+		return [EntrenamientoSentimientos(self.lang), GetActividadPorContenidoTweet(self.contenidotweet)]
+
+	def output(self):
+		return luigi.LocalTarget(path='sentimientos/ClasificaSentimientosPorContenidoYMenciones(%s_%s_%s)'%(self.lang,self.contenidotweet,self.menciones))
+
+	def run(self):
+		consultasCassandra = ConsultasCassandra()
+		clasif = ClasificaSentimientosFiles('./sentimientos/model_' + self.lang + '.d2v',
+										    './sentimientos/model_' + self.lang + '.clf', 
+										    self.lang)
+
+		diccionarioTweetsYEvaluacion = {}
+		for conjuntoMenciones in self.menciones.replace(" ", "").replace("\"", "").lower().split(";"):
+			diccionarioTweetsYEvaluacion[conjuntoMenciones.replace(",", "-")] = {"tweets":[],
+																				 "evaluacionPositiva":0.5}
+
+		for input in self.input():
+			if "GetActividad" in input.path:
+				with input.open("r") as in_file:
+					jsonTws = json.loads(in_file.read())
+
+					for tweet in jsonTws:
+						for grupo in diccionarioTweetsYEvaluacion:
+							integrantes = grupo.split("-")
+							flag = False
+							for integrante in integrantes:
+								for mencion in tweet["menciones"]:
+									#print integrante + "-" + mencion.lower()
+									if integrante in mencion.lower():
+										flag = True
+							if flag:
+								texto = consultasCassandra.getTweetStatusCassandra(tweet["id"])
+								diccionarioTweetsYEvaluacion[grupo]["tweets"].append(texto)
+
+		#print diccionarioTweetsYEvaluacion
+
+		for grupo in diccionarioTweetsYEvaluacion:
+			clasificado = clasif.clasifica(diccionarioTweetsYEvaluacion[grupo]["tweets"])
+			if clasificado[0] != 0 and clasificado[1] != 0:
+				porcentajePos = clasificado[0]/float(clasificado[0]+clasificado[1])
+				diccionarioTweetsYEvaluacion[grupo]["evaluacionPositiva"] = porcentajePos
+		
+		retorno = {}
+		for grupo in diccionarioTweetsYEvaluacion:
+			retorno[grupo] = diccionarioTweetsYEvaluacion[grupo]["evaluacionPositiva"]
+
+		with self.output().open("w") as out_file:
+			out_file.write(json.dumps(retorno))
+
+
+class ClasificaSentimientosFiles(object):
+	"""Clasifica los sentimientos de una lista de textos, retorna un array con count[0] contador positivos
+		Count[1] contador de negativos"""
+	def __init__(self, modeloD2VFile, modeloClasfFile, lang):
+		super(ClasificaSentimientosFiles, self).__init__()
+		self.clasif = joblib.load(modeloClasfFile)
+		self.model = gensim.models.Doc2Vec.load(modeloD2VFile)
+		self.lang = lang
+
+	def clasifica(self, arrayTextos):
+		#count 0 == Positivo
+		count = [0, 0]
+
+		for tw in arrayTextos:
+			tweetLimpio = LimpiadorTweets.clean(tw)
+			tweetSinStopWords = LimpiadorTweets.stopWordsByLanguagefilter(tweetLimpio, self.lang)
+			tweetStemmed = LimpiadorTweets.stemmingByLanguage(tweetSinStopWords, self.lang)
+
+			vectoGenerated = numpy.array(self.model.infer_vector(tweetStemmed.split(), steps=3, alpha=0.1))
+			count[self.clasif.predict([vectoGenerated])[0]] += 1
+
+		return count
+
+
+
+		
+	

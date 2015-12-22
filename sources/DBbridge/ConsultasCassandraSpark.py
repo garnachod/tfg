@@ -6,7 +6,7 @@ lib_path = os.path.abspath('/home/dani/tfg/sources')
 sys.path.append(lib_path)
 
 from Cassandra.ConexionCassandra import ConexionCassandra
-from spark.SparkContexto import SparkContexto
+#from spark.SparkContexto import SparkContexto
 from StaticFuncSpark import StaticFuncSpark
 from blist import blist
 import time
@@ -17,7 +17,7 @@ class ConsultasCassandraSpark(object):
 	def __init__(self):
 		super(ConsultasCassandraSpark, self).__init__()
 		self.session_cassandra = ConexionCassandra().getSession()
-		self.sc = SparkContexto().getContexto()
+		self.sc = None #SparkContexto().getContexto()
 
 
 
